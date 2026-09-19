@@ -1,0 +1,117 @@
+---
+import Button from "./Button.astro";
+
+interface MenuItem {
+	url: string;
+	target?: string;
+	label: string;
+}
+
+interface Props {
+	siteTitle: string;
+	siteLogo: { url: string; alt?: string | null } | null;
+	menuItems: MenuItem[];
+}
+
+const { siteTitle, siteLogo, menuItems } = Astro.props;
+---
+
+<header class="site-header">
+	<div class="site-header__inner">
+		<a href="/" class="site-header__brand">
+			{
+				siteLogo ? (
+					<img src={siteLogo.url} alt={siteLogo.alt || siteTitle} />
+				) : (
+					<span>{siteTitle}</span>
+				)
+			}
+		</a>
+
+		<nav class="site-header__nav" aria-label="Primary">
+			{
+				menuItems.map((item) => (
+					<a href={item.url} target={item.target}>
+						{item.label}
+					</a>
+				))
+			}
+		</nav>
+
+		<div class="site-header__actions">
+			<slot name="search" />
+			<Button href="/contact" variant="ghost">Get in touch</Button>
+		</div>
+	</div>
+</header>
+
+<style>
+	.site-header {
+		position: sticky;
+		top: 0;
+		z-index: 40;
+		background: var(--color-paper);
+		border-bottom: 1px solid var(--color-line);
+	}
+
+	.site-header__inner {
+		max-width: var(--content-max);
+		margin: 0 auto;
+		padding: 1rem 0;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1.5rem;
+	}
+
+	.site-header__brand {
+		display: flex;
+		align-items: center;
+		text-decoration: none;
+	}
+
+	.site-header__brand img {
+		height: 2.5rem;
+		width: auto;
+		display: block;
+	}
+
+	.site-header__brand span {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: 1.25rem;
+		color: var(--color-text);
+	}
+
+	.site-header__actions {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.site-header__nav {
+		display: flex;
+		align-items: center;
+		gap: 1.75rem;
+		font-family: var(--font-mono);
+		font-size: var(--text-label);
+		letter-spacing: var(--tracking-label);
+		text-transform: uppercase;
+	}
+
+	.site-header__nav a {
+		color: var(--color-text-muted);
+		text-decoration: none;
+		transition: color 0.15s ease;
+	}
+
+	.site-header__nav a:hover {
+		color: var(--color-text);
+	}
+
+	@media (max-width: 720px) {
+		.site-header__nav {
+			display: none;
+		}
+	}
+</style>

@@ -1,0 +1,101 @@
+---
+// Big two-column featured-post card: image left, dark info panel right
+// with date top, title, read time bottom. Matches the Obliq blog-list
+// reference's "Featured blog" treatment.
+import { Image } from "emdash/ui";
+import Eyebrow from "./Eyebrow.astro";
+
+interface Props {
+	title: string;
+	href: string;
+	image?: { src: string; alt?: string | null } | null;
+	date?: string | null;
+	readTime?: string | null;
+}
+
+const { title, href, image, date, readTime } = Astro.props;
+---
+
+<a href={href} class="featured-post">
+	<div class="featured-post__media">
+		{
+			image ? (
+				<Image image={image} />
+			) : (
+				<div class="featured-post__placeholder" aria-hidden="true" />
+			)
+		}
+	</div>
+
+	<div class="featured-post__panel">
+		{date && <span class="featured-post__date">{date}</span>}
+		<h2>{title}</h2>
+		{readTime && <span class="featured-post__read">{readTime}</span>}
+	</div>
+</a>
+
+<style>
+	.featured-post {
+		display: grid;
+		grid-template-columns: 1.4fr 1fr;
+		text-decoration: none;
+		color: inherit;
+		border-radius: var(--radius-card);
+		overflow: hidden;
+	}
+
+	.featured-post__media {
+		aspect-ratio: 5 / 4;
+		overflow: hidden;
+	}
+
+	.featured-post__media :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.featured-post:hover .featured-post__media :global(img) {
+		transform: scale(1.03);
+	}
+
+	.featured-post__placeholder {
+		width: 100%;
+		height: 100%;
+		background: var(--color-paper-soft);
+	}
+
+	.featured-post__panel {
+		background: var(--color-ink);
+		color: var(--color-text-on-ink);
+		padding: 2rem;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+	}
+
+	.featured-post__date {
+		font-size: var(--text-small);
+		color: var(--color-text-on-ink-muted);
+	}
+
+	.featured-post__panel h2 {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+		line-height: var(--leading-snug);
+		margin: 1rem 0;
+	}
+
+	.featured-post__read {
+		font-size: var(--text-small);
+		color: var(--color-text-on-ink-muted);
+	}
+
+	@media (max-width: 720px) {
+		.featured-post {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

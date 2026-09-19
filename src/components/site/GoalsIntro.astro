@@ -1,0 +1,225 @@
+---
+// Matches uploads/"we begin understanding your goals.png": dark section,
+// big headline, pill CTA, then a horizontal-scroll card row (vertical
+// scroll drives horizontal translateX) -- not a static grid. Each card
+// keeps the small geometric mark (outlined square + filled corner square,
+// corner rotates per column).
+import Button from "./Button.astro";
+
+interface Pillar {
+	title: string;
+	description: string;
+}
+
+interface Props {
+	heading: string;
+	ctaLabel: string;
+	ctaHref: string;
+	items: Pillar[];
+}
+
+const { heading, ctaLabel, ctaHref, items } = Astro.props;
+const corners = ["top-left", "top-right", "bottom-right", "bottom-left"];
+---
+
+<section class="goals-intro" data-goals-intro>
+	<div class="goals-intro__track" style={`height:${Math.max(items.length * 60, 220)}vh`}>
+		<div class="goals-intro__viewport" data-viewport>
+			<div class="goals-intro__head">
+				<h2>{heading}</h2>
+				<Button href={ctaHref} variant="primary">{ctaLabel}</Button>
+			</div>
+
+			<ul class="goals-intro__row" data-row>
+				{
+					items.map((item, i) => (
+						<li class="goals-intro__col">
+							<span
+								class:list={["goals-intro__mark", `goals-intro__mark--${corners[i % corners.length]}`]}
+								aria-hidden="true"
+							>
+								<span />
+							</span>
+							<h3>{item.title}</h3>
+							<p>{item.description}</p>
+						</li>
+					))
+				}
+			</ul>
+		</div>
+	</div>
+</section>
+
+
+<script>
+	function initGoalsIntro() {
+		const sections = document.querySelectorAll<HTMLElement>("[data-goals-intro]");
+
+		sections.forEach((section) => {
+			const track = section.querySelector<HTMLElement>(".goals-intro__track");
+			const viewport = section.querySelector<HTMLElement>("[data-viewport]");
+			const row = section.querySelector<HTMLElement>("[data-row]");
+			if (!track || !viewport || !row) return;
+
+			const isNarrow = () => window.matchMedia("(max-width: 780px)").matches;
+			let ticking = false;
+
+			const update = () => {
+				ticking = false;
+				if (isNarrow()) {
+					row.style.transform = "";
+					return;
+				}
+
+				const rect = track.getBoundingClientRect();
+				const vh = window.innerHeight;
+				const dwell = Math.max(rect.height - vh, 1);
+				const scrolled = Math.min(Math.max(-rect.top, 0), dwell);
+				const progress = scrolled / dwell;
+				const maxScroll = Math.max(row.scrollWidth - viewport.clientWidth, 0);
+				row.style.transform = `translateX(${-progress * maxScroll}px)`;
+			};
+
+			const onScroll = () => {
+				if (!ticking) {
+					ticking = true;
+					requestAnimationFrame(update);
+				}
+			};
+
+			window.addEventListener("scroll", onScroll, { passive: true });
+			window.addEventListener("resize", onScroll);
+			update();
+		});
+	}
+
+	initGoalsIntro();
+	document.addEventListener("astro:page-load", initGoalsIntro);
+</script>
+
+<style>
+	.goals-intro {
+		background: var(--color-ink);
+		color: var(--color-text-on-ink);
+	}
+
+	.goals-intro__head {
+		flex-shrink: 0;
+		max-width: var(--content-max);
+		margin: 0 auto;
+		padding: 2.5rem var(--gutter) 2rem;
+		width: 100%;
+	}
+
+	.goals-intro__head h2 {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: clamp(1.75rem, 1.3rem + 1.8vw, 2.75rem);
+		line-height: var(--leading-tight);
+		max-width: 40rem;
+		margin: 0 0 1.5rem;
+	}
+
+	.goals-intro__track {
+		position: relative;
+	}
+
+	.goals-intro__viewport {
+		position: sticky;
+		top: 0;
+		height: 100vh;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	.goals-intro__row {
+		list-style: none;
+		margin: 0;
+		padding: 0 var(--gutter);
+		display: flex;
+		gap: 1.5rem;
+		will-change: transform;
+	}
+
+	.goals-intro__col {
+		flex-shrink: 0;
+		width: min(22rem, 80vw);
+		padding-bottom: 1.75rem;
+		border-bottom: 1px solid var(--color-line-on-ink);
+	}
+
+	.goals-intro__mark {
+		display: block;
+		position: relative;
+		width: 2.75rem;
+		height: 2.75rem;
+		border: 1px solid var(--color-line-on-ink);
+		margin-bottom: 1.5rem;
+	}
+
+	.goals-intro__mark span {
+		position: absolute;
+		width: 45%;
+		height: 45%;
+		background: var(--color-text-on-ink-muted);
+	}
+
+	.goals-intro__mark--top-left span {
+		top: 0;
+		left: 0;
+	}
+
+	.goals-intro__mark--top-right span {
+		top: 0;
+		right: 0;
+	}
+
+	.goals-intro__mark--bottom-right span {
+		bottom: 0;
+		right: 0;
+	}
+
+	.goals-intro__mark--bottom-left span {
+		bottom: 0;
+		left: 0;
+	}
+
+	.goals-intro__col h3 {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: 1.3rem;
+		margin: 0 0 0.75rem;
+	}
+
+	.goals-intro__col p {
+		font-size: var(--text-small);
+		color: var(--color-text-on-ink-muted);
+		line-height: var(--leading-normal);
+		margin: 0;
+	}
+
+	@media (max-width: 780px) {
+		.goals-intro__track {
+			height: auto !important;
+		}
+
+		.goals-intro__viewport {
+			position: static;
+			height: auto;
+			overflow-x: auto;
+			overscroll-behavior-x: contain;
+			scroll-snap-type: x mandatory;
+			padding: 1rem 0;
+		}
+
+		.goals-intro__row {
+			transform: none !important;
+		}
+
+		.goals-intro__col {
+			scroll-snap-align: start;
+		}
+	}
+</style>

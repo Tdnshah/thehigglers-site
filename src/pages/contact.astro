@@ -1,0 +1,354 @@
+---
+// Qualification-style contact form (see strategy doc: don't just collect
+// name/email/message -- capture what they need, timeline, and budget
+// signal so leads arrive pre-qualified).
+//
+// Storage is intentionally minimal for launch: submissions are appended
+// as JSON lines to ./data/contact-submissions.jsonl on the server. No
+// external email/CRM service is wired up yet -- swap this handler for a
+// real integration (or an EmDash "inquiries" collection) later without
+// touching the form markup.
+import { appendFile, mkdir } from "node:fs/promises";
+import path from "node:path";
+import Base from "../layouts/Base.astro";
+import Eyebrow from "../components/site/Eyebrow.astro";
+import Button from "../components/site/Button.astro";
+
+const HELP_OPTIONS = [
+	"Digital transformation",
+	"CMS",
+	"E-commerce",
+	"Custom software",
+	"Business application",
+	"Cloud / DevOps",
+	"Engineering team",
+	"Something else",
+];
+
+const GOAL_OPTIONS = [
+	"New project",
+	"Modernization",
+	"Migration",
+	"Ongoing development",
+	"Consulting",
+	"Team augmentation",
+];
+
+const TIMELINE_OPTIONS = ["ASAP", "1–3 months", "3–6 months", "Exploring"];
+
+const BUDGET_OPTIONS = [
+	"Not sure yet",
+	"Under $10k",
+	"$10k–25k",
+	"$25k–50k",
+	"$50k–100k",
+	"$100k+",
+	"Prefer to discuss",
+];
+
+let errors: string[] = [];
+let values: Record<string, string | string[]> = {};
+
+const submitted = Astro.url.searchParams.get("submitted") === "1";
+
+if (Astro.request.method === "POST") {
+	const form = await Astro.request.formData();
+
+	values = {
+		help: form.getAll("help").map(String),
+		goal: String(form.get("goal") ?? ""),
+		timeline: String(form.get("timeline") ?? ""),
+		budget: String(form.get("budget") ?? ""),
+		project: String(form.get("project") ?? ""),
+		company: String(form.get("company") ?? ""),
+		email: String(form.get("email") ?? ""),
+		name: String(form.get("name") ?? ""),
+	};
+
+	if (!values.name) errors.push("Name is required.");
+	if (!values.email || !String(values.email).includes("@")) errors.push("A valid work email is required.");
+	if (!values.project) errors.push("Tell us a little about the project.");
+
+	if (errors.length === 0) {
+		const dataDir = path.join(process.cwd(), "data");
+		await mkdir(dataDir, { recursive: true });
+		await appendFile(
+			path.join(dataDir, "contact-submissions.jsonl"),
+			JSON.stringify({ ...values, submittedAt: new Date().toISOString() }) + "\n",
+			"utf-8",
+		);
+		return Astro.redirect("/contact?submitted=1");
+	}
+}
+---
+
+<Base title="Contact" description="Tell us what you're trying to build.">
+	<section class="contact">
+		<div class="contact__inner">
+			<Eyebrow tone="accent">Start a conversation</Eyebrow>
+			<h1>Tell us what you're trying to build.</h1>
+
+			{
+				submitted ? (
+					<div class="contact__success">
+						<p>Thanks -- we've received it and will be in touch shortly.</p>
+						<Button href="/" variant="ghost">
+							Back to home
+						</Button>
+					</div>
+				) : (
+					<>
+						{errors.length > 0 && (
+							<ul class="contact__errors">
+								{errors.map((err) => (
+									<li>{err}</li>
+								))}
+							</ul>
+						)}
+
+						<form method="POST" class="contact__form">
+							<fieldset>
+								<legend>What can we help with?</legend>
+								<div class="contact__options">
+									{HELP_OPTIONS.map((option) => (
+										<label class="contact__option">
+											<input
+												type="checkbox"
+												name="help"
+												value={option}
+												checked={
+													Array.isArray(values.help) && values.help.includes(option)
+												}
+											/>
+											<span>{option}</span>
+										</label>
+									))}
+								</div>
+							</fieldset>
+
+							<fieldset>
+								<legend>What are you looking for?</legend>
+								<div class="contact__options">
+									{GOAL_OPTIONS.map((option) => (
+										<label class="contact__option">
+											<input
+												type="radio"
+												name="goal"
+												value={option}
+												checked={values.goal === option}
+											/>
+											<span>{option}</span>
+										</label>
+									))}
+								</div>
+							</fieldset>
+
+							<div class="contact__row">
+								<fieldset>
+									<legend>Expected timeline</legend>
+									<div class="contact__options">
+										{TIMELINE_OPTIONS.map((option) => (
+											<label class="contact__option">
+												<input
+													type="radio"
+													name="timeline"
+													value={option}
+													checked={values.timeline === option}
+												/>
+												<span>{option}</span>
+											</label>
+										))}
+									</div>
+								</fieldset>
+
+								<fieldset>
+									<legend>Budget (optional)</legend>
+									<div class="contact__options">
+										{BUDGET_OPTIONS.map((option) => (
+											<label class="contact__option">
+												<input
+													type="radio"
+													name="budget"
+													value={option}
+													checked={values.budget === option}
+												/>
+												<span>{option}</span>
+											</label>
+										))}
+									</div>
+								</fieldset>
+							</div>
+
+							<label class="contact__field">
+								<span>Tell us about the project</span>
+								<textarea name="project" rows="5" required set:text={typeof values.project === "string" ? values.project : ""} />
+							</label>
+
+							<div class="contact__row">
+								<label class="contact__field">
+									<span>Company</span>
+									<input
+										type="text"
+										name="company"
+										value={typeof values.company === "string" ? values.company : ""}
+									/>
+								</label>
+
+								<label class="contact__field">
+									<span>Work email</span>
+									<input
+										type="email"
+										name="email"
+										required
+										value={typeof values.email === "string" ? values.email : ""}
+									/>
+								</label>
+
+								<label class="contact__field">
+									<span>Name</span>
+									<input
+										type="text"
+										name="name"
+										required
+										value={typeof values.name === "string" ? values.name : ""}
+									/>
+								</label>
+							</div>
+
+							<Button variant="primary">Let's discuss your project</Button>
+						</form>
+					</>
+				)
+			}
+		</div>
+	</section>
+</Base>
+
+<style>
+	.contact {
+		padding: var(--section-pad-y) var(--gutter);
+	}
+
+	.contact__inner {
+		max-width: 42rem;
+		margin: 0 auto;
+	}
+
+	.contact__inner > :global(.eyebrow) {
+		display: block;
+		margin-bottom: 1rem;
+	}
+
+	h1 {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h1);
+		line-height: var(--leading-tight);
+		margin: 0 0 2.5rem;
+	}
+
+	.contact__errors {
+		list-style: none;
+		margin: 0 0 1.5rem;
+		padding: 1rem 1.25rem;
+		border: 1px solid var(--color-line);
+		border-left: 2px solid var(--color-brand);
+		font-size: var(--text-small);
+		color: var(--color-text);
+	}
+
+	.contact__success {
+		padding: 2rem 0;
+	}
+
+	.contact__success p {
+		font-size: var(--text-body);
+		color: var(--color-text-muted);
+		margin: 0 0 1.5rem;
+	}
+
+	.contact__form {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+	}
+
+	fieldset {
+		border: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	legend {
+		font-family: var(--font-mono);
+		font-size: var(--text-label);
+		text-transform: uppercase;
+		letter-spacing: var(--tracking-label);
+		color: var(--color-text-muted);
+		margin: 0 0 0.85rem;
+		padding: 0;
+	}
+
+	.contact__options {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.6rem;
+	}
+
+	.contact__option {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		border: 1px solid var(--color-line);
+		border-radius: 999px;
+		padding: 0.45rem 0.9rem;
+		font-size: var(--text-small);
+		cursor: pointer;
+		transition: border-color 0.15s ease;
+	}
+
+	.contact__option:has(input:checked) {
+		border-color: var(--color-brand);
+		background: var(--color-paper-soft);
+	}
+
+	.contact__option input {
+		accent-color: var(--color-brand);
+	}
+
+	.contact__row {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 1.5rem;
+	}
+
+	.contact__field {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		font-size: var(--text-small);
+		color: var(--color-text-muted);
+	}
+
+	.contact__field input,
+	.contact__field textarea {
+		font: inherit;
+		color: var(--color-text);
+		background: var(--color-paper);
+		border: 1px solid var(--color-line);
+		border-radius: 2px;
+		padding: 0.65rem 0.75rem;
+	}
+
+	.contact__field input:focus,
+	.contact__field textarea:focus {
+		outline: 2px solid var(--color-brand);
+		outline-offset: 1px;
+	}
+
+	@media (max-width: 720px) {
+		.contact__row {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

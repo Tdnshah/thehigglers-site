@@ -1,0 +1,108 @@
+---
+// src/layouts/Layout.astro
+import "../styles/global.css";
+import "../styles/theme.css";
+import { Font } from "astro:assets";
+import { getMenu, getSiteSettings } from "emdash";
+import {
+	WidgetArea,
+	EmDashHead,
+	EmDashBodyStart,
+	EmDashBodyEnd,
+} from "emdash/ui";
+import { createPublicPageContext } from "emdash/page";
+import LiveSearch from "emdash/ui/search";
+import { resolveStarterSiteIdentity } from "../utils/site-identity";
+
+import SiteHeader from "../components/site/SiteHeader.astro";
+import SiteFooter from "../components/site/SiteFooter.astro";
+
+interface Props {
+	title: string;
+	pageTitle?: string | null;
+	description?: string | null;
+	image?: string | null;
+	canonical?: string | null;
+	content?: { collection: string; id: string; slug?: string | null };
+}
+
+const { title, pageTitle, description, image, canonical, content } = Astro.props;
+const { siteTitle, siteTagline, siteLogo } = resolveStarterSiteIdentity(await getSiteSettings());
+const fullTitle = title.includes(siteTitle) ? title : `${title} — ${siteTitle}`;
+const pageDescription = description ?? siteTagline;
+
+const menu = await getMenu("primary");
+// Safe fallback if menu items don't exist yet in the CMS
+const menuItems = menu?.items || []; 
+
+const pageCtx = createPublicPageContext({
+	Astro,
+	kind: content ? "content" : "custom",
+	pageType: "website",
+	title: fullTitle,
+	pageTitle: pageTitle ?? title,
+	description: pageDescription,
+	canonical,
+	image,
+	content,
+	siteName: siteTitle,
+});
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>{fullTitle}</title>
+		{pageDescription && <meta name="description" content={pageDescription} />}
+		{canonical && <link rel="canonical" href={canonical} />}
+		<EmDashHead page={pageCtx} />
+		<Font cssVariable="--font-mono" preload />
+	</head>
+	<body>
+		<EmDashBodyStart page={pageCtx} />
+
+		<SiteHeader siteTitle={siteTitle} siteLogo={siteLogo} menuItems={menuItems}>
+			<LiveSearch slot="search" placeholder="Search..." collections={["posts", "pages"]} />
+		</SiteHeader>
+
+		<main>
+			<slot />
+		</main>
+
+		<SiteFooter
+			siteTitle={siteTitle}
+			siteTagline={siteTagline}
+			groups={[
+				{
+					heading: "Pages",
+					links: [
+						{ label: "Work", url: "/work" },
+						{ label: "Insights", url: "/posts" },
+						{ label: "About", url: "/about" },
+						{ label: "Contact", url: "/contact" },
+					],
+				},
+			]}
+		/>
+
+		<!-- <EmDashBodyEnd page={pageCtx} /> -->
+
+		<script>
+			const revealTargets = document.querySelectorAll("[data-reveal]");
+			const io = new IntersectionObserver(
+				(entries) => {
+					for (const entry of entries) {
+						if (entry.isIntersecting) {
+							entry.target.classList.add("is-in");
+							io.unobserve(entry.target);
+						}
+					}
+				},
+				{ threshold: 0.15, rootMargin: "0px 0px -10% 0px" },
+			);
+			revealTargets.forEach((el) => io.observe(el));
+		</script>
+	</body>
+</html>

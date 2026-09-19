@@ -1,0 +1,73 @@
+---
+import { getTerm, getEmDashCollection, decodeSlug } from "emdash";
+import Base from "../../layouts/Base.astro";
+import Eyebrow from "../../components/site/Eyebrow.astro";
+import PostCardGrid from "../../components/site/PostCardGrid.astro";
+import { estimateReadingMinutes } from "../../utils/reading-time";
+
+const slug = decodeSlug(Astro.params.slug);
+const term = slug ? await getTerm("tag", slug, { includeCounts: false }) : null;
+
+if (!term) {
+	return Astro.redirect("/404");
+}
+
+const { entries: posts } = await getEmDashCollection("posts", {
+	where: { tag: term.slug },
+	orderBy: { published_at: "desc" },
+});
+
+const items = posts.map((post) => ({
+	title: post.data.title,
+	href: `/posts/${post.id}`,
+	image: post.data.featured_image,
+	date: post.data.publishedAt
+		? post.data.publishedAt.toLocaleDateString("en-US", {
+				year: "numeric",
+				month: "long",
+				day: "numeric",
+			})
+		: null,
+	readTime: `${estimateReadingMinutes(post.data.content)} min read`,
+}));
+---
+
+<Base title={`Posts tagged "${term.label}"`} description={`Posts tagged ${term.label}`}>
+	<section class="section">
+		<div class="section__inner">
+			<Eyebrow tone="accent">Tag</Eyebrow>
+			<h1>{term.label}</h1>
+			<p class="count">{posts.length} {posts.length === 1 ? "post" : "posts"}</p>
+			<PostCardGrid items={items} emptyLabel="No posts with this tag yet." />
+		</div>
+	</section>
+</Base>
+
+<style>
+	.section {
+		padding: var(--section-pad-y) var(--gutter);
+	}
+
+	.section__inner {
+		max-width: var(--content-max);
+		margin: 0 auto;
+	}
+
+	.section__inner > :global(.eyebrow) {
+		display: block;
+		margin-bottom: 1rem;
+	}
+
+	h1 {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h1);
+		margin: 0 0 0.5rem;
+	}
+
+	.count {
+		color: var(--color-text-muted);
+		font-size: var(--text-small);
+		margin: 0 0 2.5rem;
+	}
+</style>

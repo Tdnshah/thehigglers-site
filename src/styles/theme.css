@@ -1,0 +1,82 @@
+/*
+  TheHigglers design tokens.
+  Palette: near-black / paper white, one accent (periwinkle, brand-navy-derived).
+  Type: Geist (display + body) + Space Mono (labels, index numbers, meta).
+  Everything downstream should read these variables, not hardcode values.
+*/
+
+:root {
+	/* Surfaces */
+	--color-ink: #0b0b0c;
+	--color-ink-raised: #16161a;
+	--color-paper: #ffffff;
+	--color-paper-soft: #f5f4f2;
+
+	/* Text on paper */
+	--color-text: #14161a;
+	--color-text-muted: #5a5d66;
+
+	/* Text on ink */
+	--color-text-on-ink: #f2f1ee;
+	--color-text-on-ink-muted: #9a9a9f;
+
+	/* Brand + accent */
+	--color-brand: #1a4a6e;
+	--color-accent: #b9c6f2;
+	--color-accent-ink: #1a1f3d;
+
+	/* Lines */
+	--color-line: #e4e2dd;
+	--color-line-on-ink: rgba(242, 241, 238, 0.14);
+
+	/* Type */
+	--font-display: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+	--font-body: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+	/* --font-mono is injected by Astro's fonts config (Space Mono) */
+
+	--text-display: clamp(2.75rem, 2rem + 3.5vw, 5.25rem);
+	--text-h1: clamp(2rem, 1.5rem + 2vw, 3.25rem);
+	--text-h2: clamp(1.5rem, 1.25rem + 1vw, 2.25rem);
+	--text-body: 1.0625rem;
+	--text-small: 0.875rem;
+	--text-label: 0.75rem;
+
+	--leading-tight: 1.05;
+	--leading-snug: 1.3;
+	--leading-normal: 1.6;
+
+	--tracking-label: 0.14em;
+
+	/* Radii */
+	--radius-card: 14px;
+	--radius-pill: 999px;
+
+	/* Rhythm */
+	--section-pad-y: clamp(4rem, 3rem + 5vw, 8rem);
+	--content-max: 72rem;
+	--gutter: clamp(1.25rem, 1rem + 2vw, 3rem);
+}
+
+/*
+  Scroll-reveal utility. Elements start hidden/offset, JS (in Base.astro)
+  adds .is-in via IntersectionObserver. No animation library.
+*/
+[data-reveal] {
+	opacity: 0;
+	transform: translateY(28px);
+	transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+		transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-reveal].is-in {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	[data-reveal] {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+}

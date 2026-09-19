@@ -1,0 +1,91 @@
+---
+import { getEmDashCollection } from "emdash";
+import Base from "../../layouts/Base.astro";
+import Eyebrow from "../../components/site/Eyebrow.astro";
+import FeaturedPost from "../../components/site/FeaturedPost.astro";
+import PostCardGrid from "../../components/site/PostCardGrid.astro";
+import { estimateReadingMinutes } from "../../utils/reading-time";
+
+const { entries: posts, cacheHint } = await getEmDashCollection("posts", {
+	orderBy: { published_at: "desc" },
+});
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+
+const toItem = (post: (typeof posts)[number]) => ({
+	title: post.data.title,
+	href: `/posts/${post.id}`,
+	image: post.data.featured_image,
+	date: post.data.publishedAt
+		? post.data.publishedAt.toLocaleDateString("en-US", {
+				year: "numeric",
+				month: "long",
+				day: "numeric",
+			})
+		: null,
+	readTime: `${estimateReadingMinutes(post.data.content)} min read`,
+});
+
+const featured = posts[0] ? toItem(posts[0]) : null;
+const gridItems = posts.map(toItem);
+---
+
+<Base title="Posts" description="News and blogs, where we share expert insights">
+	<section class="section">
+		<div class="section__inner">
+			<h1>News and blogs, where we share expert insights</h1>
+			<p class="lede">Perspective on the platforms, migrations, and engineering decisions we work through.</p>
+
+			{
+				featured && (
+					<div class="section__featured">
+						<Eyebrow tone="muted">Featured</Eyebrow>
+						<FeaturedPost {...featured} />
+					</div>
+				)
+			}
+
+			<Eyebrow tone="muted">New posts</Eyebrow>
+			<PostCardGrid items={gridItems} emptyLabel="No posts yet." />
+		</div>
+	</section>
+</Base>
+
+<style>
+	.section {
+		padding: var(--section-pad-y) var(--gutter);
+	}
+
+	.section__inner {
+		max-width: var(--content-max);
+		margin: 0 auto;
+	}
+
+	.section__inner > :global(.eyebrow) {
+		display: block;
+		margin: 3rem 0 1.5rem;
+	}
+
+	h1 {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h1);
+		line-height: var(--leading-tight);
+		max-width: 34rem;
+		margin: 0 0 1rem;
+	}
+
+	.lede {
+		color: var(--color-text-muted);
+		font-size: var(--text-body);
+		max-width: 30rem;
+		margin: 0 0 2.5rem;
+	}
+
+	.section__featured {
+		margin-bottom: 1rem;
+	}
+
+	.section__featured > :global(.eyebrow) {
+		margin-top: 0 !important;
+	}
+</style>

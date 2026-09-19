@@ -1,0 +1,35 @@
+---
+import Base from "../layouts/Base.astro";
+import Eyebrow from "../components/site/Eyebrow.astro";
+import Button from "../components/site/Button.astro";
+---
+
+<Base title="Not Found">
+	<section class="not-found">
+		<Eyebrow tone="accent">404</Eyebrow>
+		<h1>Page not found</h1>
+		<p>The page you're looking for doesn't exist.</p>
+		<Button href="/" variant="ghost">Go home</Button>
+	</section>
+</Base>
+
+<style>
+	.not-found {
+		max-width: 32rem;
+		margin: 0 auto;
+		padding: var(--section-pad-y) var(--gutter);
+		text-align: center;
+	}
+
+	.not-found h1 {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h1);
+		margin: 1rem 0 0.5rem;
+	}
+
+	.not-found p {
+		color: var(--color-text-muted);
+		margin: 0 0 2rem;
+	}
+</style>

@@ -1,0 +1,177 @@
+---
+// Flat card grid for blog listings, matching the Obliq blog-list reference:
+// image, then date, bold title, "X min read" -- no excerpt on the card.
+// Equal-size cards -- confirmed against the reference (no featured/bigger
+// first card there).
+import { Image } from "emdash/ui";
+
+interface CardItem {
+	title: string;
+	href: string;
+	image?: { src: string; alt?: string | null } | null;
+	date?: string | null;
+	readTime?: string | null;
+}
+
+interface Props {
+	items: CardItem[];
+	emptyLabel?: string;
+	/** Renders the first card wider than the rest (homepage teaser row only -- confirmed
+	 * against the reference; the full /posts grid is equal-width). */
+	featureFirst?: boolean;
+}
+
+const { items, emptyLabel = "Nothing here yet.", featureFirst = false } = Astro.props;
+---
+
+{
+	items.length === 0 ? (
+		<p class="post-card-grid__empty">{emptyLabel}</p>
+	) : (
+		<ul class:list={["post-card-grid", featureFirst && "post-card-grid--feature-first"]}>
+			{items.map((item, i) => (
+				<li
+					class:list={["post-card", featureFirst && i === 0 && "post-card--featured"]}
+					data-reveal
+					style={`transition-delay:${Math.min(i, 4) * 80}ms`}
+				>
+					<a href={item.href} class="post-card__link">
+						<div class="post-card__media">
+							{item.image ? (
+								<Image image={item.image} />
+							) : (
+								<div class="post-card__placeholder" aria-hidden="true" />
+							)}
+						</div>
+
+						<div class="post-card__body">
+							{item.date && (
+								<>
+									<span class="post-card__date">{item.date}</span>
+									<span class="post-card__divider" aria-hidden="true" />
+								</>
+							)}
+							<h3>{item.title}</h3>
+							{item.readTime && <span class="post-card__read">{item.readTime}</span>}
+						</div>
+					</a>
+				</li>
+			))}
+		</ul>
+	)
+}
+
+<style>
+	.post-card-grid {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 2rem;
+	}
+
+	.post-card-grid--feature-first {
+		grid-template-columns: 1.45fr 1fr 1fr;
+	}
+
+	/* All three share one height (confirmed in the reference: card 1 is
+	   wider but the SAME height as the other two, not the same aspect
+	   ratio) -- so drop aspect-ratio here and use a fixed height instead. */
+	.post-card-grid--feature-first .post-card__media {
+		aspect-ratio: unset;
+		height: clamp(14rem, 22vw, 23rem);
+	}
+
+	.post-card-grid__empty {
+		color: var(--color-text-muted);
+		font-size: var(--text-body);
+	}
+
+	.post-card {
+		border-top: 1px solid var(--color-line);
+	}
+
+	.post-card__link {
+		display: block;
+		text-decoration: none;
+		color: inherit;
+	}
+
+	.post-card__media {
+		aspect-ratio: 4 / 3;
+		overflow: hidden;
+		margin-top: 1.5rem;
+		border-radius: var(--radius-card);
+	}
+
+	.post-card__media :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.post-card__link:hover .post-card__media :global(img) {
+		transform: scale(1.03);
+	}
+
+	.post-card__placeholder {
+		width: 100%;
+		height: 100%;
+		background: var(--color-paper-soft);
+	}
+
+	.post-card__body {
+		padding-top: 1.1rem;
+	}
+
+	.post-card__date {
+		display: block;
+		font-size: var(--text-small);
+		color: var(--color-text-muted);
+		margin-bottom: 0.75rem;
+	}
+
+	.post-card__divider {
+		display: block;
+		border-top: 1px solid var(--color-line);
+		margin-bottom: 1rem;
+	}
+
+	.post-card__body h3 {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: 1.2rem;
+		line-height: var(--leading-snug);
+		margin: 0 0 0.5rem;
+		color: var(--color-text);
+	}
+
+	.post-card__read {
+		display: block;
+		font-size: var(--text-small);
+		color: var(--color-text-muted);
+	}
+
+	@media (max-width: 900px) {
+		.post-card-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.post-card-grid--feature-first {
+			grid-template-columns: 1fr;
+		}
+
+		.post-card-grid--feature-first .post-card__media {
+			aspect-ratio: 4 / 3;
+			height: auto;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.post-card-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

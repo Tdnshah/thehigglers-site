@@ -1,0 +1,36 @@
+---
+// Small mono-caps label used for nav items, section tags, index numbers, meta text.
+interface Props {
+	as?: keyof HTMLElementTagNameMap;
+	class?: string;
+	tone?: "default" | "muted" | "accent";
+}
+
+const { as: Tag = "span", class: className, tone = "default" } = Astro.props;
+---
+
+<Tag class:list={["eyebrow", `eyebrow--${tone}`, className]}>
+	<slot />
+</Tag>
+
+<style>
+	.eyebrow {
+		font-family: var(--font-mono);
+		font-size: var(--text-label);
+		letter-spacing: var(--tracking-label);
+		text-transform: uppercase;
+		line-height: 1;
+	}
+
+	.eyebrow--default {
+		color: currentColor;
+	}
+
+	.eyebrow--muted {
+		color: var(--color-text-muted);
+	}
+
+	.eyebrow--accent {
+		color: var(--color-brand);
+	}
+</style>

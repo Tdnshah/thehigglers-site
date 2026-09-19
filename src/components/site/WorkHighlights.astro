@@ -1,0 +1,405 @@
+---
+// "Our work highlights" -- pinned numbered list + a single image on the
+// right. This is a step carousel, not a passive scroll-position mapping:
+// each wheel/trackpad gesture while the section is pinned advances exactly
+// one item, intercepted and driven by JS (not left to raw scroll), so the
+// next item's image decisively snaps into place rather than dragging along
+// continuously with however far the user happened to scroll. Further input
+// is ignored until the current snap animation finishes. Scrolling past the
+// first/last item releases back to normal page scroll. Matches the Obliq
+// reference (see uploads/...part1.png).
+import { Image } from "emdash/ui";
+import Eyebrow from "./Eyebrow.astro";
+import Button from "./Button.astro";
+
+interface WorkItem {
+	title: string;
+	description?: string;
+	href?: string;
+	image?: { src: string; alt?: string | null } | null;
+}
+
+interface Props {
+	heading: string;
+	ctaLabel?: string;
+	ctaHref?: string;
+	seeAllHref?: string;
+	seeAllLabel?: string;
+	items: WorkItem[];
+}
+
+const { heading, ctaLabel, ctaHref, seeAllHref, seeAllLabel = "See all work", items } = Astro.props;
+---
+
+<section class="work-highlights" id="work-highlights" data-work-highlights>
+	<div class="work-highlights__head">
+		<div class="work-highlights__head-top">
+			<Eyebrow tone="accent">Works</Eyebrow>
+			{seeAllHref && <a class="work-highlights__see-all" href={seeAllHref}>{seeAllLabel} &rarr;</a>}
+		</div>
+		<h2>{heading}</h2>
+		{ctaHref && ctaLabel && (
+			<Button href={ctaHref} variant="primary">
+				{ctaLabel}
+			</Button>
+		)}
+	</div>
+
+	<div class="work-highlights__track" style={`height:${items.length * 100}vh`}>
+		<div class="work-highlights__viewport" data-viewport>
+			<ol class="work-highlights__list">
+				{
+					items.map((item, i) => (
+						<li class="work-highlights__row" data-row data-index={i}>
+							<span class="work-highlights__num">{String(i + 1).padStart(2, "0")}</span>
+							<div>
+								<h3>{item.title}</h3>
+								{item.description && <p>{item.description}</p>}
+							</div>
+						</li>
+					))
+				}
+			</ol>
+
+			<div class="work-highlights__media">
+				{
+					items.map((item, i) => {
+						const isExternal = item.href?.startsWith("http");
+						return (
+							<div class="work-highlights__frame" data-frame data-index={i}>
+								<div class="work-highlights__image">
+									{item.image ? (
+										<Image image={item.image} />
+									) : (
+										<div class="work-highlights__placeholder" aria-hidden="true" />
+									)}
+								</div>
+								{item.href && (
+									<a
+										class="work-highlights__view"
+										href={item.href}
+										target={isExternal ? "_blank" : undefined}
+										rel={isExternal ? "noopener noreferrer" : undefined}
+									>
+										<span>View</span>
+										<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+											<path
+												d="M2 10L10 2M10 2H4M10 2V8"
+												stroke="currentColor"
+												stroke-width="1.4"
+												stroke-linecap="round"
+												stroke-linejoin="round"
+											/>
+										</svg>
+									</a>
+								)}
+							</div>
+						);
+					})
+				}
+			</div>
+		</div>
+	</div>
+</section>
+
+<script>
+	function initWorkHighlights() {
+		const sections = document.querySelectorAll<HTMLElement>("[data-work-highlights]");
+
+		sections.forEach((section) => {
+			const track = section.querySelector<HTMLElement>(".work-highlights__track");
+			const rows = Array.from(section.querySelectorAll<HTMLElement>("[data-row]"));
+			const frames = Array.from(section.querySelectorAll<HTMLElement>("[data-frame]"));
+			if (!track || rows.length === 0) return;
+
+			const count = rows.length;
+			const isNarrow = () => window.matchMedia("(max-width: 900px)").matches;
+			const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+			const ANIM_MS = reduceMotion ? 0 : 600;
+
+			let activeIndex = 0;
+			let animating = false;
+			let animTimer: number | null = null;
+
+			const render = () => {
+				rows.forEach((row, i) => row.classList.toggle("is-active", i === activeIndex));
+				frames.forEach((frame, i) => {
+					frame.classList.remove("is-active", "is-exited");
+					if (i < activeIndex) frame.classList.add("is-exited");
+					else if (i === activeIndex) frame.classList.add("is-active");
+				});
+			};
+
+			// The section is "engaged" while its sticky viewport is pinned
+			// flush to the top of the screen -- only then should wheel input
+			// be intercepted; otherwise let the page scroll normally.
+			const isEngaged = () => {
+				const rect = track.getBoundingClientRect();
+				const vh = window.innerHeight;
+				return rect.top <= 1 && rect.bottom >= vh - 1;
+			};
+
+			const goTo = (index: number) => {
+				const clamped = Math.max(0, Math.min(count - 1, index));
+				if (clamped === activeIndex) return;
+				activeIndex = clamped;
+				animating = true;
+				render();
+
+				const vh = window.innerHeight;
+				const rect = track.getBoundingClientRect();
+				const currentScrolled = Math.min(Math.max(-rect.top, 0), rect.height - vh);
+				const targetScrolled = activeIndex * vh;
+				window.scrollBy({ top: targetScrolled - currentScrolled, behavior: "smooth" });
+
+				if (animTimer !== null) window.clearTimeout(animTimer);
+				animTimer = window.setTimeout(() => {
+					animating = false;
+				}, ANIM_MS + 80);
+			};
+
+			const onWheel = (event: WheelEvent) => {
+				if (isNarrow() || !isEngaged()) return;
+
+				const goingDown = event.deltaY > 0;
+				const atEnd = goingDown && activeIndex >= count - 1;
+				const atStart = !goingDown && activeIndex <= 0;
+				// At either boundary, release the wheel back to normal page
+				// scroll so the user can leave the pinned section.
+				if (atEnd || atStart) return;
+
+				event.preventDefault();
+				if (animating) return;
+				goTo(activeIndex + (goingDown ? 1 : -1));
+			};
+
+			// Keeps activeIndex correct if the section is scrolled into view
+			// by something other than wheel input (keyboard, scrollbar drag,
+			// anchor link) -- snaps to whichever item is nearest.
+			const onScroll = () => {
+				if (isNarrow() || animating) return;
+
+				const rect = track.getBoundingClientRect();
+				const vh = window.innerHeight;
+				const scrolled = Math.min(Math.max(-rect.top, 0), rect.height - vh);
+				const nearest = Math.max(0, Math.min(count - 1, Math.round(scrolled / vh)));
+				if (nearest !== activeIndex) {
+					activeIndex = nearest;
+					render();
+				}
+			};
+
+			window.addEventListener("wheel", onWheel, { passive: false });
+			window.addEventListener("scroll", onScroll, { passive: true });
+			window.addEventListener("resize", onScroll);
+			render();
+		});
+	}
+
+	initWorkHighlights();
+	document.addEventListener("astro:page-load", initWorkHighlights);
+</script>
+
+<style>
+	.work-highlights {
+		background: var(--color-ink);
+		color: var(--color-text-on-ink);
+	}
+
+	.work-highlights__head {
+		max-width: var(--content-max);
+		margin: 0 auto;
+		padding: var(--section-pad-y) var(--gutter) 3rem;
+	}
+
+	.work-highlights__head-top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 1.5rem;
+	}
+
+	.work-highlights__see-all {
+		font-family: var(--font-mono);
+		font-size: var(--text-label);
+		text-transform: uppercase;
+		letter-spacing: var(--tracking-label);
+		color: var(--color-text-on-ink-muted);
+		text-decoration: none;
+		transition: color 0.15s ease;
+	}
+
+	.work-highlights__see-all:hover {
+		color: var(--color-text-on-ink);
+	}
+
+	.work-highlights__head h2 {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h1);
+		line-height: var(--leading-tight);
+		max-width: 42rem;
+		margin: 0 0 2rem;
+	}
+
+	.work-highlights__track {
+		position: relative;
+	}
+
+	.work-highlights__viewport {
+		position: sticky;
+		top: 0;
+		height: 100vh;
+		overflow: hidden;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		max-width: var(--content-max);
+		margin: 0 auto;
+		padding: 0 var(--gutter);
+		align-items: center;
+		gap: 3rem;
+	}
+
+	.work-highlights__list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.work-highlights__row {
+		display: flex;
+		align-items: baseline;
+		gap: 1.25rem;
+		padding: 1.1rem 0;
+		color: var(--color-text-on-ink-muted);
+		transition: color 0.3s ease;
+	}
+
+	.work-highlights__row.is-active {
+		color: var(--color-text-on-ink);
+	}
+
+	.work-highlights__num {
+		font-family: var(--font-mono);
+		font-size: var(--text-label);
+		flex-shrink: 0;
+	}
+
+	.work-highlights__row h3 {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.25rem);
+		line-height: var(--leading-snug);
+		margin: 0;
+	}
+
+	.work-highlights__row p {
+		margin: 0.35rem 0 0;
+		font-size: var(--text-small);
+		color: var(--color-text-on-ink-muted);
+		max-width: 26rem;
+	}
+
+	.work-highlights__row:not(.is-active) p {
+		display: none;
+	}
+
+	.work-highlights__media {
+		position: relative;
+		aspect-ratio: 4 / 3;
+		overflow: hidden;
+	}
+
+	.work-highlights__frame {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		transform: translateY(100%);
+		transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+	}
+
+	.work-highlights__frame.is-active {
+		transform: translateY(0);
+	}
+
+	.work-highlights__frame.is-exited {
+		transform: translateY(-100%);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.work-highlights__frame {
+			transition: none;
+		}
+	}
+
+	.work-highlights__image {
+		flex: 1;
+		overflow: hidden;
+		border-radius: var(--radius-card) var(--radius-card) 0 0;
+		background: rgba(242, 241, 238, 0.06);
+	}
+
+	.work-highlights__image :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.work-highlights__placeholder {
+		width: 100%;
+		height: 100%;
+	}
+
+	.work-highlights__view {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0.9rem 1.25rem;
+		background: var(--color-ink-raised);
+		color: var(--color-text-on-ink);
+		text-decoration: none;
+		font-family: var(--font-mono);
+		font-size: var(--text-label);
+		text-transform: uppercase;
+		letter-spacing: var(--tracking-label);
+		border-radius: 0 0 var(--radius-card) var(--radius-card);
+	}
+
+	@media (max-width: 900px) {
+		.work-highlights__track {
+			height: auto !important;
+		}
+
+		.work-highlights__viewport {
+			position: static;
+			height: auto;
+			overflow: visible;
+			grid-template-columns: 1fr;
+			padding: 2rem var(--gutter);
+			gap: 2.5rem;
+		}
+
+		.work-highlights__row {
+			color: var(--color-text-on-ink);
+		}
+
+		.work-highlights__row p {
+			display: block !important;
+		}
+
+		.work-highlights__media {
+			position: static;
+			aspect-ratio: auto;
+			display: flex;
+			flex-direction: column;
+			gap: 2.5rem;
+		}
+
+		.work-highlights__frame {
+			position: static;
+			transform: none !important;
+			aspect-ratio: 4 / 3;
+		}
+	}
+</style>

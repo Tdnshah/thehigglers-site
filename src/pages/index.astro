@@ -1,0 +1,220 @@
+---
+import { getEmDashCollection, getSiteSettings } from "emdash";
+import Base from "../layouts/Base.astro";
+import Hero from "../components/site/Hero.astro";
+import Eyebrow from "../components/site/Eyebrow.astro";
+import WorkHighlights from "../components/site/WorkHighlights.astro";
+import LogoWall from "../components/site/LogoWall.astro";
+import GoalsIntro from "../components/site/GoalsIntro.astro";
+import Testimonials from "../components/site/Testimonials.astro";
+import Faq from "../components/site/Faq.astro";
+import PostCardGrid from "../components/site/PostCardGrid.astro";
+import { resolveStarterSiteIdentity } from "../utils/site-identity";
+import { estimateReadingMinutes } from "../utils/reading-time";
+
+const { entries: posts, cacheHint } = await getEmDashCollection("posts", {
+	orderBy: { published_at: "desc" },
+	limit: 3,
+});
+const { siteTitle, siteTagline } = resolveStarterSiteIdentity(await getSiteSettings());
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+
+const postItems = posts.map((post) => ({
+	title: post.data.title,
+	href: `/posts/${post.id}`,
+	image: post.data.featured_image,
+	date: post.data.publishedAt
+		? post.data.publishedAt.toLocaleDateString("en-US", {
+				year: "numeric",
+				month: "long",
+				day: "numeric",
+			})
+		: null,
+	readTime: `${estimateReadingMinutes(post.data.content)} min read`,
+}));
+
+// Demo content -- no CMS collection for case studies yet.
+// Replace once the "work" EmDash block/collection exists.
+// Mapped to the real service pillars (CMS, commerce, business apps,
+// custom software, cloud/DevOps) rather than generic placeholders.
+//
+// Image is a placeholder stock photo (the only real photo asset available
+// in uploads/ right now) reused across items -- swap for real project
+// screenshots once you have them, per item.
+const placeholderWorkImage = {
+	src: "/_emdash/api/media/file/01M2TKMXJQ6X3TR9616JCMDPNJ.01M2TKMXK9ANH04MMFMQH1GNHE.jpeg",
+	alt: "Placeholder image -- replace with a real project screenshot",
+};
+
+// href on the first three points at the real upstream project site --
+// there's no internal /technology/[name] landing page yet. Swap for an
+// internal link once those pages exist.
+const workItems = [
+	{
+		title: "Drupal platform migration",
+		description: "A phased migration from a legacy CMS to Drupal for a multi-site editorial team.",
+		image: placeholderWorkImage,
+		href: "https://www.drupal.org",
+	},
+	{
+		title: "Vendure commerce build",
+		description: "A headless commerce platform replacing a rigid proprietary storefront.",
+		image: placeholderWorkImage,
+		href: "https://www.vendure.io",
+	},
+	{
+		title: "Horilla HRMS rollout",
+		description: "Open-source HRMS as the system of record across multiple regional offices.",
+		image: placeholderWorkImage,
+		href: "https://www.horilla.com",
+	},
+	{
+		title: "Cloud & DevOps modernization",
+		description: "Replatforming a monolith onto containerized infrastructure with zero-downtime deploys.",
+		image: placeholderWorkImage,
+		href: "https://kubernetes.io",
+	},
+	{
+		title: "Custom internal platform",
+		description: "A purpose-built application replacing three disconnected tools.",
+		href: "/work",
+		image: placeholderWorkImage,
+	},
+];
+
+// Demo content -- swap in real client quotes when you have them.
+const testimonialItems = [
+	{
+		quote: "Replace this with a real client quote once you have one to feature.",
+		name: "Client name",
+		role: "Title, Company",
+	},
+	{
+		quote: "A second placeholder quote, sized a little differently to check the layout wraps well.",
+		name: "Client name",
+		role: "Title, Company",
+	},
+	{
+		quote: "Third slot for a testimonial.",
+		name: "Client name",
+		role: "Title, Company",
+	},
+];
+
+const faqItems = [
+	{
+		question: "Why open source instead of proprietary platforms?",
+		answer:
+			"Open source gives you the flexibility to evolve the platform without vendor lock-in. We handle the part that makes enterprises hesitate: architecture, security, integration, and long-term support, so you get that flexibility with the engineering discipline you'd expect from a proprietary vendor.",
+	},
+	{
+		question: "What do you actually build?",
+		answer:
+			"Digital experience platforms (Drupal, Payload CMS), commerce (Vendure, Medusa, Shopify), business applications (Horilla, Snipe-IT), custom software, and the cloud/DevOps foundation underneath all of it.",
+	},
+	{
+		question: "Do you only take on full platform builds?",
+		answer:
+			"No. We take on new builds, modernizations of existing platforms, migrations, ongoing development, and staff augmentation for teams that need more engineering capacity.",
+	},
+	{
+		question: "How do you scope a new project?",
+		answer:
+			"A short discovery phase maps requirements and dependencies, then we propose a phased delivery plan with clear milestones.",
+	},
+	{
+		question: "Can you take over an existing platform?",
+		answer: "Yes. We regularly take over platforms built by other teams, starting with an audit before any code changes.",
+	},
+];
+---
+
+<Base title={siteTitle} description={siteTagline}>
+	<Hero
+		eyebrow="Technology Consulting"
+		title="Open technology. Serious engineering. Business outcomes."
+		description="We design, build, and modernize digital platforms on open-source foundations, without the risk enterprises usually associate with 'open source.' Architecture, security, and long-term support included."
+		ctaLabel="Start a conversation"
+		ctaHref="/contact"
+		meta="A global technology consultancy working across CMS, commerce, business applications, and custom software for enterprise, government, and education clients."
+	/>
+
+	<LogoWall
+		logos={[
+			{ label: "Drupal" },
+			{ label: "Payload CMS" },
+			{ label: "Vendure" },
+			{ label: "Medusa" },
+			{ label: "Shopify" },
+			{ label: "Horilla" },
+			{ label: "Snipe-IT" },
+		]}
+	/>
+
+	<GoalsIntro
+		heading="We begin by listening -- understanding your goals."
+		ctaLabel="Work with us"
+		ctaHref="/contact"
+		items={[
+			{
+				title: "Discover",
+				description: "Understand the goals, constraints, and systems already in place before proposing anything.",
+			},
+			{
+				title: "Define",
+				description: "Turn discovery into a scoped plan: what's in, what's out, and what success looks like.",
+			},
+			{
+				title: "Architect",
+				description: "Design the system before writing code that locks in the wrong decisions.",
+			},
+			{
+				title: "Build",
+				description: "Iterative delivery with regular checkpoints, not a black box until launch day.",
+			},
+			{
+				title: "Launch",
+				description: "A deliberate rollout with the monitoring and rollback plan already in place.",
+			},
+			{
+				title: "Evolve",
+				description: "Ongoing support and iteration once the platform is live and being used.",
+			},
+		]}
+	/>
+
+	<WorkHighlights
+		heading="Our work highlights a proven track record of delivering impactful results."
+		ctaLabel="Work with us"
+		ctaHref="/contact"
+		seeAllHref="/work"
+		items={workItems}
+	/>
+
+	<Testimonials items={testimonialItems} />
+
+	<Faq items={faqItems} ctaLabel="Get in touch" ctaHref="/contact" />
+
+	<section class="section">
+		<div class="section__inner">
+			<Eyebrow tone="muted">Latest writing</Eyebrow>
+			<PostCardGrid items={postItems} emptyLabel="No posts yet." featureFirst />
+		</div>
+	</section>
+</Base>
+
+<style>
+	.section {
+		padding: var(--section-pad-y) var(--gutter);
+	}
+
+	.section__inner {
+		max-width: var(--content-max);
+		margin: 0 auto;
+	}
+
+	.section__inner > :global(.eyebrow) {
+		display: block;
+		margin-bottom: 1.5rem;
+	}
+</style>

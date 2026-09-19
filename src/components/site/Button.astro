@@ -1,0 +1,63 @@
+---
+// Pill CTA. No shadcn, no client JS -- plain anchor/button styled off theme tokens.
+interface Props {
+	href?: string;
+	variant?: "primary" | "ghost" | "on-ink";
+	class?: string;
+	target?: string;
+}
+
+const { href, variant = "primary", class: className, target } = Astro.props;
+const Tag = href ? "a" : "button";
+---
+
+<Tag class:list={["btn", `btn--${variant}`, className]} href={href} target={target}>
+	<span><slot /></span>
+	<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+		<path
+			d="M2 10L10 2M10 2H4M10 2V8"
+			stroke="currentColor"
+			stroke-width="1.4"
+			stroke-linecap="round"
+			stroke-linejoin="round"
+		/>
+	</svg>
+</Tag>
+
+<style>
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.65rem 1.25rem;
+		border-radius: 999px;
+		font-family: var(--font-mono);
+		font-size: var(--text-label);
+		letter-spacing: var(--tracking-label);
+		text-transform: uppercase;
+		text-decoration: none;
+		border: 1px solid transparent;
+		cursor: pointer;
+		transition: opacity 0.15s ease, transform 0.15s ease;
+	}
+
+	.btn:hover {
+		opacity: 0.85;
+	}
+
+	.btn--primary {
+		background: var(--color-accent);
+		color: var(--color-accent-ink);
+	}
+
+	.btn--ghost {
+		background: transparent;
+		color: var(--color-text);
+		border-color: var(--color-line);
+	}
+
+	.btn--on-ink {
+		background: var(--color-paper);
+		color: var(--color-ink);
+	}
+</style>

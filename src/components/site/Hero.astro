@@ -1,0 +1,75 @@
+---
+import Button from "./Button.astro";
+import Eyebrow from "./Eyebrow.astro";
+
+interface Props {
+	eyebrow: string;
+	title: string;
+	description: string;
+	ctaLabel: string;
+	ctaHref: string;
+	meta?: string;
+}
+
+const { eyebrow, title, description, ctaLabel, ctaHref, meta } = Astro.props;
+---
+
+<section class="hero">
+	<div class="hero__inner">
+		<div class="hero__main">
+			<Eyebrow tone="accent">{eyebrow}</Eyebrow>
+			<h1>{title}</h1>
+			<p>{description}</p>
+			<Button href={ctaHref} variant="primary">{ctaLabel}</Button>
+		</div>
+
+		{meta && <p class="hero__meta">{meta}</p>}
+	</div>
+</section>
+
+<style>
+	.hero {
+		padding: calc(var(--section-pad-y) * 1.1) var(--gutter) var(--section-pad-y);
+		border-bottom: 1px solid var(--color-line);
+	}
+
+	.hero__inner {
+		max-width: var(--content-max);
+		margin: 0 auto;
+		display: grid;
+		grid-template-columns: 1fr 18rem;
+		gap: 2rem;
+		align-items: end;
+	}
+
+	.hero__main h1 {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-display);
+		line-height: var(--leading-tight);
+		letter-spacing: -0.01em;
+		margin: 1rem 0 1.25rem;
+		color: var(--color-text);
+	}
+
+	.hero__main p {
+		font-size: var(--text-body);
+		color: var(--color-text-muted);
+		max-width: 34rem;
+		margin: 0 0 1.75rem;
+	}
+
+	.hero__meta {
+		font-size: var(--text-small);
+		color: var(--color-text-muted);
+		line-height: var(--leading-normal);
+		margin: 0;
+		padding-bottom: 0.5rem;
+	}
+
+	@media (max-width: 780px) {
+		.hero__inner {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

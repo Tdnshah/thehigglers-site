@@ -1,0 +1,91 @@
+---
+// Case studies index. Demo content -- no CMS collection for case studies
+// yet. Replace with a real EmDash collection query once it exists; the
+// WorkStack component itself won't need to change.
+import Base from "../layouts/Base.astro";
+import Eyebrow from "../components/site/Eyebrow.astro";
+import WorkStack from "../components/site/WorkStack.astro";
+
+// Image is a placeholder stock photo (the only real photo asset available
+// in uploads/ right now) reused across items -- swap for real project
+// screenshots once you have them, per item.
+const placeholderWorkImage = {
+	src: "/_emdash/api/media/file/01M2TKMXJQ6X3TR9616JCMDPNJ.01M2TKMXK9ANH04MMFMQH1GNHE.jpeg",
+	alt: "Placeholder image -- replace with a real project screenshot",
+};
+
+const workItems = [
+	{
+		title: "Drupal platform migration",
+		description:
+			"A phased migration from a legacy CMS to Drupal, built for editorial teams publishing across a dozen regional sites.",
+		tags: ["Drupal", "CMS migration"],
+		image: placeholderWorkImage,
+	},
+	{
+		title: "Headless commerce for a multi-brand retailer",
+		description:
+			"Replacing a rigid proprietary storefront with a Vendure-based commerce platform, integrated with existing fulfillment and ERP systems.",
+		tags: ["Vendure", "Commerce"],
+		image: placeholderWorkImage,
+	},
+	{
+		title: "Open-source HRMS rollout",
+		description:
+			"Standing up Horilla as the system of record for HR operations across multiple regional offices, replacing a patchwork of spreadsheets.",
+		tags: ["Horilla", "Business applications"],
+		image: placeholderWorkImage,
+	},
+	{
+		title: "Cloud infrastructure modernization",
+		description:
+			"Replatforming a monolith onto containerized infrastructure with zero-downtime deploys and CI/CD from day one.",
+		tags: ["Cloud", "DevOps"],
+		image: placeholderWorkImage,
+	},
+	{
+		title: "Custom internal platform for a growing team",
+		description:
+			"A purpose-built application replacing three disconnected tools, designed around how the team actually works rather than a generic SaaS workflow.",
+		tags: ["Custom software", "Integrations"],
+		image: placeholderWorkImage,
+	},
+];
+---
+
+<Base title="Work" description="Case studies and project work.">
+	<section class="work-head">
+		<div class="work-head__inner">
+			<Eyebrow tone="accent">Work</Eyebrow>
+			<h1>Case studies from platforms we've built, migrated, and modernized.</h1>
+		</div>
+	</section>
+
+	<WorkStack items={workItems} />
+</Base>
+
+<style>
+	.work-head {
+		padding: var(--section-pad-y) var(--gutter) 3rem;
+		border-bottom: 1px solid var(--color-line);
+	}
+
+	.work-head__inner {
+		max-width: var(--content-max);
+		margin: 0 auto;
+	}
+
+	.work-head__inner > :global(.eyebrow) {
+		display: block;
+		margin-bottom: 1rem;
+	}
+
+	h1 {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h1);
+		line-height: var(--leading-tight);
+		max-width: 38rem;
+		margin: 0;
+	}
+</style>

@@ -1,0 +1,97 @@
+---
+// Trust strip / "logo wall". Text wordmarks, not fabricated client logos --
+// swap in real client logos via `logos` (image + alt) once you have
+// permission to display them; falls back to plain text otherwise.
+import Eyebrow from "./Eyebrow.astro";
+
+interface Logo {
+	label: string;
+}
+
+interface Props {
+	label?: string;
+	logos: Logo[];
+}
+
+const { label = "Engineering across open-source ecosystems", logos } = Astro.props;
+// Duplicated once so the CSS marquee loop is seamless.
+const track = [...logos, ...logos];
+---
+
+<section class="logo-wall">
+	<div class="logo-wall__inner">
+		<Eyebrow tone="muted">{label}</Eyebrow>
+
+		<div class="logo-wall__viewport">
+			<ul class="logo-wall__track">
+				{track.map((logo, i) => (
+					<li class:list={[i >= logos.length && "logo-wall__duplicate"]} aria-hidden={i >= logos.length}>
+						{logo.label}
+					</li>
+				))}
+			</ul>
+		</div>
+	</div>
+</section>
+
+<style>
+	.logo-wall {
+		padding: 3rem var(--gutter);
+		border-bottom: 1px solid var(--color-line);
+	}
+
+	.logo-wall__inner {
+		max-width: var(--content-max);
+		margin: 0 auto;
+	}
+
+	.logo-wall__inner > :global(.eyebrow) {
+		display: block;
+		margin-bottom: 1.75rem;
+	}
+
+	.logo-wall__viewport {
+		overflow: hidden;
+		mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+	}
+
+	.logo-wall__track {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		align-items: center;
+		gap: 3.5rem;
+		width: max-content;
+		animation: logo-wall-scroll 28s linear infinite;
+	}
+
+	.logo-wall__track li {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: 1.35rem;
+		color: var(--color-text-muted);
+		white-space: nowrap;
+	}
+
+	@keyframes logo-wall-scroll {
+		from {
+			transform: translateX(0);
+		}
+		to {
+			transform: translateX(-50%);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.logo-wall__track {
+			animation: none;
+			flex-wrap: wrap;
+			width: 100%;
+		}
+
+		.logo-wall__duplicate {
+			display: none;
+		}
+	}
+</style>

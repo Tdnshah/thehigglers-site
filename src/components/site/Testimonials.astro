@@ -1,0 +1,129 @@
+---
+// Client review section. Renders whatever is passed in `items` -- no
+// content is invented here. Callers are responsible for real quotes.
+import Eyebrow from "./Eyebrow.astro";
+
+interface Testimonial {
+	quote: string;
+	name: string;
+	role: string;
+}
+
+interface Props {
+	items: Testimonial[];
+}
+
+const { items } = Astro.props;
+---
+
+<section class="testimonials">
+	<div class="testimonials__inner">
+		<Eyebrow tone="muted">Client feedback</Eyebrow>
+
+		<ul class="testimonials__grid">
+			{
+				items.map((item) => (
+					<li class="testimonials__card" data-reveal>
+						<p class="testimonials__quote">&ldquo;{item.quote}&rdquo;</p>
+						<div class="testimonials__byline">
+							<span class="testimonials__avatar" aria-hidden="true">
+								{item.name.charAt(0)}
+							</span>
+							<div>
+								<span class="testimonials__name">{item.name}</span>
+								<span class="testimonials__role">{item.role}</span>
+							</div>
+						</div>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>
+
+<style>
+	.testimonials {
+		padding: var(--section-pad-y) var(--gutter);
+		border-bottom: 1px solid var(--color-line);
+	}
+
+	.testimonials__inner {
+		max-width: var(--content-max);
+		margin: 0 auto;
+	}
+
+	.testimonials__inner > :global(.eyebrow) {
+		display: block;
+		margin-bottom: 1.5rem;
+	}
+
+	.testimonials__grid {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 1px;
+		background: var(--color-line);
+		border: 1px solid var(--color-line);
+	}
+
+	.testimonials__card {
+		background: var(--color-paper);
+		padding: 2rem;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		min-height: 16rem;
+	}
+
+	.testimonials__quote {
+		font-family: var(--font-display);
+		font-size: 1.15rem;
+		line-height: var(--leading-snug);
+		color: var(--color-text);
+		margin: 0 0 1.5rem;
+	}
+
+	.testimonials__byline {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.testimonials__avatar {
+		width: 2.25rem;
+		height: 2.25rem;
+		border-radius: 999px;
+		background: var(--color-accent);
+		color: var(--color-accent-ink);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-family: var(--font-mono);
+		font-size: var(--text-small);
+		flex-shrink: 0;
+	}
+
+	.testimonials__byline div {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.testimonials__name {
+		font-size: var(--text-small);
+		font-weight: 600;
+		color: var(--color-text);
+	}
+
+	.testimonials__role {
+		font-size: var(--text-label);
+		color: var(--color-text-muted);
+	}
+
+	@media (max-width: 780px) {
+		.testimonials__grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
