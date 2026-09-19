@@ -9,6 +9,7 @@
 // first/last item releases back to normal page scroll. Matches the Obliq
 // reference (see uploads/...part1.png).
 import { Image } from "emdash/ui";
+import type { ImageValue } from "emdash";
 import Eyebrow from "./Eyebrow.astro";
 import Button from "./Button.astro";
 
@@ -16,7 +17,7 @@ interface WorkItem {
 	title: string;
 	description?: string;
 	href?: string;
-	image?: { src: string; alt?: string | null } | null;
+	image?: ImageValue | string | null;
 }
 
 interface Props {

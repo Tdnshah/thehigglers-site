@@ -3,12 +3,13 @@
 // with date top, title, read time bottom. Matches the Obliq blog-list
 // reference's "Featured blog" treatment.
 import { Image } from "emdash/ui";
+import type { ImageValue } from "emdash";
 import Eyebrow from "./Eyebrow.astro";
 
 interface Props {
 	title: string;
 	href: string;
-	image?: { src: string; alt?: string | null } | null;
+	image?: ImageValue | null;
 	date?: string | null;
 	readTime?: string | null;
 }

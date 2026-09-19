@@ -85,9 +85,9 @@ const related = recent
 		}
 
 		<div class="post__byline">
-			{post.data.byline && (
+			{post.data.bylines && post.data.bylines.length > 0 && (
 				<span>
-					Written by <strong>{post.data.byline.displayName}</strong>
+					Written by <strong>{post.data.bylines[0].byline.displayName}</strong>
 				</span>
 			)}
 			{publishedLabel && <span>Published {publishedLabel}</span>}

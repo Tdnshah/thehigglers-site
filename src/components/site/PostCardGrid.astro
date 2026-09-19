@@ -4,11 +4,12 @@
 // Equal-size cards -- confirmed against the reference (no featured/bigger
 // first card there).
 import { Image } from "emdash/ui";
+import type { ImageValue } from "emdash";
 
 interface CardItem {
 	title: string;
 	href: string;
-	image?: { src: string; alt?: string | null } | null;
+	image?: ImageValue | null;
 	date?: string | null;
 	readTime?: string | null;
 }
