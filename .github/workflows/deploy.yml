@@ -57,47 +57,46 @@ jobs:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
           PROD_DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
         run: |
+          echo "📋 Deployment Configuration:"
+          echo "  Host: $DEPLOY_HOST"
+          echo "  User: $DEPLOY_USER"
+          echo "  Path: $DEPLOY_PATH"
+
           mkdir -p ~/.ssh
           echo "$DEPLOY_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
 
-          # Create backup of current build
-          ssh -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" << 'DEPLOY_EOF'
-          set -e
-
-          cd "$DEPLOY_PATH"
-
-          # Backup current dist
-          if [ -d dist ]; then
-            timestamp=$(date +%Y%m%d_%H%M%S)
-            mv dist "dist.backup.$timestamp"
-            echo "Backed up previous build to dist.backup.$timestamp"
-          fi
-
-          # Create necessary directories
-          mkdir -p node_modules uploads
-
-          DEPLOY_EOF
+          # Create backup of current build and directories
+          echo "📦 Preparing server..."
+          ssh -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" "
+            set -e
+            echo 'Working directory:' \$(pwd)
+            echo 'Deploy path: $DEPLOY_PATH'
+            cd $DEPLOY_PATH
+            echo 'Changed to: ' \$(pwd)
+            if [ -d dist ]; then
+              timestamp=\$(date +%Y%m%d_%H%M%S)
+              mv dist dist.backup.\$timestamp
+              echo \"✅ Backed up previous build to dist.backup.\$timestamp\"
+            fi
+            mkdir -p node_modules uploads
+            echo '✅ Directories ready'
+          "
 
           # Upload new build
+          echo "📤 Uploading built files..."
           rsync -avz --delete \
             -e "ssh -i ~/.ssh/deploy_key" \
             dist/ \
             "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/dist/"
 
           # Restart the app
-          ssh -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" << 'DEPLOY_EOF'
-          set -e
-
-          cd "$DEPLOY_PATH"
-
-          # Restart pm2 app
-          pm2 restart thehigglers --update-env || pm2 start --name thehigglers npm -- start
-
-          # Save PM2 config
-          pm2 save
-
-          echo "✅ Deployment complete!"
-
-          DEPLOY_EOF
+          echo "🔄 Restarting application..."
+          ssh -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" "
+            set -e
+            cd $DEPLOY_PATH
+            pm2 restart thehigglers --update-env || pm2 start --name thehigglers npm -- start
+            pm2 save
+            echo '✅ Deployment complete!'
+          "
