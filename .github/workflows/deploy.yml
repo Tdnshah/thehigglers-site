@@ -8,15 +8,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.2.0
+      - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v3
         with:
           version: 11
 
-      - uses: actions/setup-node@v4.1.0
+      - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
 
       - name: Install dependencies
@@ -31,7 +31,7 @@ jobs:
         run: pnpm build
 
       - name: Upload dist artifact
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist
@@ -41,10 +41,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.2.0
+      - uses: actions/checkout@v4
 
       - name: Download dist artifact
-        uses: actions/download-artifact@v4.1.0
+        uses: actions/download-artifact@v4
         with:
           name: dist
           path: dist
@@ -69,22 +69,20 @@ jobs:
 
           # Create backup of current build and directories
           echo "📦 Preparing server..."
-          ssh -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" "
+          ssh -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" "bash -i -c '
             set -e
-            source /etc/profile 2>/dev/null || true
-            source ~/.bashrc 2>/dev/null || true
-            echo 'Working directory:' \$(pwd)
-            echo 'Deploy path: $DEPLOY_PATH'
+            echo \"Working directory: \$(pwd)\"
+            echo \"Deploy path: $DEPLOY_PATH\"
             cd $DEPLOY_PATH
-            echo 'Changed to: ' \$(pwd)
+            echo \"Changed to: \$(pwd)\"
             if [ -d dist ]; then
               timestamp=\$(date +%Y%m%d_%H%M%S)
               mv dist dist.backup.\$timestamp
               echo \"✅ Backed up previous build to dist.backup.\$timestamp\"
             fi
             mkdir -p node_modules uploads
-            echo '✅ Directories ready'
-          "
+            echo \"✅ Directories ready\"
+          '"
 
           # Upload new build
           echo "📤 Uploading built files..."
@@ -95,15 +93,13 @@ jobs:
 
           # Restart the app
           echo "🔄 Restarting application..."
-          ssh -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" "
+          ssh -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" "bash -i -c '
             set -e
-            source /etc/profile 2>/dev/null || true
-            source ~/.bashrc 2>/dev/null || true
-            export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:\$PATH
             cd $DEPLOY_PATH
-            echo 'Node version:' \$(node --version)
-            echo 'Using npx to run PM2...'
-            npx pm2 restart thehigglers --update-env 2>/dev/null || npx pm2 start --name thehigglers npm -- start
-            npx pm2 save
-            echo '✅ Deployment complete!'
-          "
+            echo \"Node version: \$(node --version)\"
+            echo \"PM2 location: \$(which pm2)\"
+            echo \"Restarting PM2 app...\"
+            pm2 restart thehigglers --update-env 2>/dev/null || pm2 start --name thehigglers npm -- start
+            pm2 save
+            echo \"✅ Deployment complete!\"
+          '"
