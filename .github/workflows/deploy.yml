@@ -101,8 +101,9 @@ jobs:
             echo \"Current directory: \$(pwd)\"
             echo \"Stopping old PM2 app...\"
             pm2 delete thehigglers 2>/dev/null || true
-            echo \"Starting fresh PM2 app from $DEPLOY_PATH...\"
-            pm2 start --name thehigglers npm -- start
+            echo \"Starting fresh PM2 app...\"
+            pm2 start --name thehigglers --env NODE_ENV=production --env DATABASE_URL=\"$PROD_DATABASE_URL\" --env UPLOADS_DIR=$DEPLOY_PATH/uploads -- node dist/server/entry.mjs
             pm2 save
-            echo \"✅ Deployment complete!\"
+            echo \"✅ App started successfully!\"
+            pm2 logs thehigglers --lines 5
           '"
