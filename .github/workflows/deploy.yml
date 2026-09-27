@@ -96,7 +96,8 @@ jobs:
           ssh -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" "
             set -e
             cd $DEPLOY_PATH
-            pm2 restart thehigglers --update-env || pm2 start --name thehigglers npm -- start
-            pm2 save
+            echo 'Using npx to run PM2...'
+            npx pm2 restart thehigglers --update-env 2>/dev/null || npx pm2 start --name thehigglers npm -- start
+            npx pm2 save
             echo '✅ Deployment complete!'
           "
