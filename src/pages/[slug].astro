@@ -1,8 +1,14 @@
 ---
 import { getEmDashEntry, getSeoMeta, decodeSlug, getSiteSettings } from "emdash";
-import { PortableText } from "emdash/ui";
+import { Blocks, PortableText, defineBlockComponents } from "emdash/ui";
+import type { PageLayoutBlock } from "../../emdash-env";
 import Base from "../layouts/Base.astro";
+import Testimonials from "../components/blocks/Testimonials.astro";
 import { resolveStarterSiteIdentity } from "../utils/site-identity";
+
+const blockComponents = defineBlockComponents<PageLayoutBlock>({
+	testimonials: Testimonials,
+});
 
 const slug = decodeSlug(Astro.params.slug);
 
@@ -39,6 +45,8 @@ const seo = getSeoMeta(page, {
 			<PortableText value={page.data.content} />
 		</div>
 	</article>
+
+	<Blocks value={page.data.layout} components={blockComponents} />
 </Base>
 
 <style>

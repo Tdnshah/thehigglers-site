@@ -10,6 +10,79 @@
 		"title": "My Site",
 		"tagline": "Built with EmDash"
 	},
+	"blockTypes": [
+		{
+			"slug": "testimonials",
+			"label": "Testimonials",
+			"category": "Layout",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "heading",
+							"label": "Heading",
+							"type": "string"
+						},
+						{
+							"slug": "limit",
+							"label": "Limit",
+							"type": "integer",
+							"validation": {
+								"min": 1,
+								"max": 50
+							}
+						},
+						{
+							"slug": "items",
+							"label": "Testimonials",
+							"type": "repeater",
+							"validation": {
+								"minItems": 1,
+								"maxItems": 30,
+								"subFields": [
+									{
+										"slug": "company",
+										"label": "Company",
+										"type": "string",
+										"required": true
+									},
+									{
+										"slug": "company_url",
+										"label": "Company Website",
+										"type": "url"
+									},
+									{
+										"slug": "person_name",
+										"label": "Name",
+										"type": "string",
+										"required": true
+									},
+									{
+										"slug": "person_title",
+										"label": "Title",
+										"type": "string"
+									},
+									{
+										"slug": "person_image",
+										"label": "Photo",
+										"type": "image"
+									},
+									{
+										"slug": "testimonial_text",
+										"label": "Testimonial",
+										"type": "text",
+										"required": true
+									}
+								]
+							}
+						}
+					]
+				}
+			]
+		}
+	],
 	"collections": [
 		{
 			"slug": "posts",
@@ -61,6 +134,15 @@
 					"label": "Content",
 					"type": "portableText",
 					"searchable": true
+				},
+				{
+					"slug": "layout",
+					"label": "Layout",
+					"type": "blocks",
+					"validation": {
+						"allowedTypes": ["testimonials"],
+						"maxItems": 20
+					}
 				}
 			]
 		}
@@ -171,6 +253,30 @@
 								}
 							],
 							"_key": "k0"
+						}
+					],
+					"layout": [
+						{
+							"_type": "testimonials",
+							"_version": 1,
+							"_key": "01JDEMOTESTIMONIALSBLOCK01",
+							"heading": "What our clients say",
+							"items": [
+								{
+									"company": "Example Co",
+									"company_url": "https://example.com",
+									"person_name": "Client name",
+									"person_title": "Title, Example Co",
+									"testimonial_text": "Replace this with a real client quote once you have one to feature."
+								},
+								{
+									"company": "Another Co",
+									"company_url": "https://example.org",
+									"person_name": "Client name",
+									"person_title": "Title, Another Co",
+									"testimonial_text": "A second placeholder quote, sized a little differently to check the layout wraps well."
+								}
+							]
 						}
 					]
 				}
