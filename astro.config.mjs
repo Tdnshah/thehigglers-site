@@ -2,7 +2,17 @@ import node from "@astrojs/node";
 import react from "@astrojs/react";
 import { defineConfig, fontProviders } from "astro/config";
 import emdash, { local } from "emdash/astro";
-import { sqlite } from "emdash/db";
+import { postgres, sqlite } from "emdash/db";
+
+// Local dev uses the SQLite file (no DATABASE_URL set). Production Docker
+// builds pass a Postgres connection string as a build-time env var (see
+// Dockerfile) -- picked automatically since it's the only "postgres:"/
+// "postgresql:" URL that would ever be set here.
+const databaseUrl = process.env.DATABASE_URL;
+const database =
+  databaseUrl && /^postgres(ql)?:/.test(databaseUrl)
+    ? postgres({ connectionString: databaseUrl })
+    : sqlite({ url: databaseUrl ?? "file:./data.db" });
 
 export default defineConfig({
   output: "server",
@@ -28,7 +38,7 @@ export default defineConfig({
   integrations: [
       react(),
       emdash({
-          database: sqlite({ url: process.env.DATABASE_URL ?? "file:./data.db" }),
+          database,
           storage: local({
               directory: process.env.UPLOADS_DIR ?? "./uploads",
               baseUrl: "/_emdash/api/media/file",
