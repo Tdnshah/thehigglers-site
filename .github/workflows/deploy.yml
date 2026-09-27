@@ -55,12 +55,16 @@ jobs:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
           PROD_DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
         run: |
+          DEPLOY_PORT="${DEPLOY_PORT:-3001}"
+
           echo "📋 Deployment Configuration:"
           echo "  Host: $DEPLOY_HOST"
           echo "  User: $DEPLOY_USER"
           echo "  Path: $DEPLOY_PATH"
+          echo "  Port: $DEPLOY_PORT"
 
           mkdir -p ~/.ssh
           echo "$DEPLOY_KEY" > ~/.ssh/deploy_key
@@ -99,7 +103,7 @@ jobs:
                 DATABASE_URL: '${PROD_DATABASE_URL}',
                 UPLOADS_DIR: '${DEPLOY_PATH}/uploads',
                 HOST: '0.0.0.0',
-                PORT: '3000'
+                PORT: '${DEPLOY_PORT}'
               }
             }]
           }
