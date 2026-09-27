@@ -88,7 +88,7 @@ jobs:
           $SSH_CMD "bash -ic 'cd $DEPLOY_PATH && (command -v pnpm >/dev/null 2>&1 || npm install -g pnpm) && pnpm install --prod --frozen-lockfile'"
 
           echo "📝 Writing PM2 ecosystem config..."
-          cat > ecosystem.config.js <<EOF
+          cat > ecosystem.config.cjs <<EOF
           module.exports = {
             apps: [{
               name: 'thehigglers',
@@ -105,10 +105,10 @@ jobs:
           }
           EOF
 
-          scp -i "${HOME}/.ssh/deploy_key" ecosystem.config.js "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/ecosystem.config.js"
+          scp -i "${HOME}/.ssh/deploy_key" ecosystem.config.cjs "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/ecosystem.config.cjs"
 
           echo "🔄 Restarting application..."
-          $SSH_CMD "bash -ic 'cd $DEPLOY_PATH && echo \"node: \$(node --version)\" && echo \"pm2: \$(which pm2)\" && pm2 delete thehigglers >/dev/null 2>&1; pm2 start ecosystem.config.js && pm2 save'"
+          $SSH_CMD "bash -ic 'cd $DEPLOY_PATH && echo \"node: \$(node --version)\" && echo \"pm2: \$(which pm2)\" && pm2 delete thehigglers >/dev/null 2>&1; pm2 start ecosystem.config.cjs && pm2 save'"
 
           echo "📋 Recent logs:"
           $SSH_CMD "bash -ic 'pm2 logs thehigglers --lines 15 --nostream'"
