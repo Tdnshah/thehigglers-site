@@ -60,6 +60,7 @@ jobs:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
           DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
           PROD_DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+          EMDASH_ENCRYPTION_KEY: ${{ secrets.EMDASH_ENCRYPTION_KEY }}
         run: |
           DEPLOY_PORT="${DEPLOY_PORT:-3001}"
 
@@ -107,7 +108,8 @@ jobs:
                 UPLOADS_DIR: '${DEPLOY_PATH}/uploads',
                 HOST: '0.0.0.0',
                 PORT: '${DEPLOY_PORT}',
-                EMDASH_SITE_URL: 'https://thehigglers.com'
+                EMDASH_SITE_URL: 'https://thehigglers.com',
+                EMDASH_ENCRYPTION_KEY: '${EMDASH_ENCRYPTION_KEY}'
               },
               max_restarts: 10,
               min_uptime: '15s',
