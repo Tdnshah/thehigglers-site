@@ -67,43 +67,41 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
 
-          # Create backup of current build and directories
-          echo "📦 Preparing server..."
-          ssh -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" "bash -i -c '
-            set -e
-            echo \"Working directory: \$(pwd)\"
-            echo \"Deploy path: $DEPLOY_PATH\"
-            cd $DEPLOY_PATH
-            echo \"Changed to: \$(pwd)\"
-            if [ -d dist ]; then
-              timestamp=\$(date +%Y%m%d_%H%M%S)
-              mv dist dist.backup.\$timestamp
-              echo \"✅ Backed up previous build to dist.backup.\$timestamp\"
-            fi
-            mkdir -p node_modules uploads
-            echo \"✅ Directories ready\"
-          '"
+          SSH_CMD="ssh -i ${HOME}/.ssh/deploy_key ${DEPLOY_USER}@${DEPLOY_HOST}"
 
-          # Upload new build
+          echo "📦 Backing up previous build..."
+          $SSH_CMD "cd $DEPLOY_PATH && if [ -d dist ]; then mv dist dist.backup.\$(date +%Y%m%d_%H%M%S); fi; mkdir -p uploads"
+
           echo "📤 Uploading built files..."
           rsync -avz --delete \
-            -e "ssh -i ~/.ssh/deploy_key" \
+            -e "ssh -i ${HOME}/.ssh/deploy_key" \
             dist/ \
-            "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/dist/"
+            "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/dist/"
 
-          # Restart the app
+          echo "📝 Writing PM2 ecosystem config..."
+          cat > ecosystem.config.js <<EOF
+          module.exports = {
+            apps: [{
+              name: 'thehigglers',
+              script: '${DEPLOY_PATH}/dist/server/entry.mjs',
+              cwd: '${DEPLOY_PATH}',
+              env: {
+                NODE_ENV: 'production',
+                DATABASE_URL: '${PROD_DATABASE_URL}',
+                UPLOADS_DIR: '${DEPLOY_PATH}/uploads',
+                HOST: '0.0.0.0',
+                PORT: '3000'
+              }
+            }]
+          }
+          EOF
+
+          scp -i "${HOME}/.ssh/deploy_key" ecosystem.config.js "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/ecosystem.config.js"
+
           echo "🔄 Restarting application..."
-          ssh -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" "bash -i -c '
-            set -e
-            cd $DEPLOY_PATH
-            echo \"Node version: \$(node --version)\"
-            echo \"PM2 location: \$(which pm2)\"
-            echo \"Current directory: \$(pwd)\"
-            echo \"Stopping old PM2 app...\"
-            pm2 delete thehigglers 2>/dev/null || true
-            echo \"Starting fresh PM2 app...\"
-            pm2 start --name thehigglers --env NODE_ENV=production --env DATABASE_URL=\"$PROD_DATABASE_URL\" --env UPLOADS_DIR=$DEPLOY_PATH/uploads -- node dist/server/entry.mjs
-            pm2 save
-            echo \"✅ App started successfully!\"
-            pm2 logs thehigglers --lines 5
-          '"
+          $SSH_CMD "bash -ic 'cd $DEPLOY_PATH && echo \"node: \$(node --version)\" && echo \"pm2: \$(which pm2)\" && pm2 delete thehigglers >/dev/null 2>&1; pm2 start ecosystem.config.js && pm2 save'"
+
+          echo "📋 Recent logs:"
+          $SSH_CMD "bash -ic 'pm2 logs thehigglers --lines 15 --nostream'"
+
+          echo "✅ Deployment complete!"
