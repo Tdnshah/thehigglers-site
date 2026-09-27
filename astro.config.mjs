@@ -21,6 +21,15 @@ export default defineConfig({
       mode: "standalone",
 	}),
 
+  // Reverse-proxy deployment (Nginx/Apache -> localhost:3233): Astro only
+  // trusts X-Forwarded-* headers for allowed hostnames, and Vite's dev-mode
+  // Host check needs the same hostname allow-listed. Without this, EmDash
+  // computes the internal http://localhost:3233 origin instead of the public
+  // https://thehigglers.com one, which breaks passkey/WebAuthn verification.
+  security: {
+    allowedDomains: [{ hostname: "thehigglers.com", protocol: "https" }],
+  },
+
   image: {
       layout: "constrained",
       responsiveStyles: true,
@@ -50,6 +59,7 @@ export default defineConfig({
 
   vite: {
     server: {
+			allowedHosts: ["thehigglers.com"],
 			watch: {
 				usePolling: true,
 				interval: 100,

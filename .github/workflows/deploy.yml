@@ -25,6 +25,9 @@ jobs:
       - name: Run typecheck
         run: pnpm typecheck
 
+      - name: Embed production seed
+        run: mkdir -p .emdash && cp seed/seed.prod.json .emdash/seed.json
+
       - name: Build site
         env:
           DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
@@ -103,8 +106,12 @@ jobs:
                 DATABASE_URL: '${PROD_DATABASE_URL}',
                 UPLOADS_DIR: '${DEPLOY_PATH}/uploads',
                 HOST: '0.0.0.0',
-                PORT: '${DEPLOY_PORT}'
-              }
+                PORT: '${DEPLOY_PORT}',
+                EMDASH_SITE_URL: 'https://thehigglers.com'
+              },
+              max_restarts: 10,
+              min_uptime: '15s',
+              restart_delay: 3000
             }]
           }
           EOF
