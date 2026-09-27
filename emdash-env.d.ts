@@ -3,20 +3,7 @@
 
 /// <reference types="emdash/locals" />
 
-import type { BylineSummary, ContentBylineCredit, TaxonomyTerm, PortableTextBlock } from "emdash";
-
-export interface PageLayoutTestimonialsV1Block {
-  _type: "testimonials";
-  _version: 1;
-  _key: string;
-  "heading"?: string | null;
-  "limit"?: number | null;
-  "items"?: { "company": string; "company_url"?: string | null; "person_name": string; "person_title"?: string | null; "person_image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null; "testimonial_text": string }[] | null;
-}
-
-export type PageLayoutTestimonialsBlock = PageLayoutTestimonialsV1Block;
-
-export type PageLayoutBlock = PageLayoutTestimonialsBlock;
+import type { BylineSummary, ContentBylineCredit, TaxonomyTerm, PortableTextBlock, ReferencePage } from "emdash";
 
 export interface Page {
   id: string;
@@ -24,7 +11,7 @@ export interface Page {
   status: string;
   title: string;
   content?: PortableTextBlock[];
-  layout?: PageLayoutBlock[];
+  testimonials_limit?: number;
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date | null;
@@ -49,9 +36,36 @@ export interface Post {
   terms?: Record<string, TaxonomyTerm[]>;
 }
 
+export interface Testimonial {
+  id: string;
+  slug: string | null;
+  status: string;
+  client_company: string;
+  company_logo: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } };
+  full_name: string;
+  person_title: string;
+  person_avtar: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } };
+  testimonial: string;
+  company_website: string;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  byline?: BylineSummary | null;
+  bylines?: ContentBylineCredit[];
+  terms?: Record<string, TaxonomyTerm[]>;
+}
+
+export interface PageReferences {
+  featured_testimonials: ReferencePage<Testimonial>;
+}
+
 declare module "emdash" {
   interface EmDashCollections {
     pages: Page;
     posts: Post;
+    testimonials: Testimonial;
+  }
+  interface EmDashCollectionReferences {
+    pages: PageReferences;
   }
 }

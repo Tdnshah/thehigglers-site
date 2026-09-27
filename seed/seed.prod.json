@@ -10,80 +10,72 @@
 		"title": "The Higglers Company",
 		"tagline": "Technological Solution Delivered"
 	},
-	"blockTypes": [
+	"collections": [
 		{
 			"slug": "testimonials",
 			"label": "Testimonials",
-			"category": "Layout",
-			"currentVersion": 1,
-			"versions": [
+			"labelSingular": "Testimonial",
+			"description": "This Content Type is used to add testimonials from our clients",
+			"supports": ["drafts", "revisions"],
+			"fields": [
 				{
-					"version": 1,
-					"fields": [
-						{
-							"slug": "heading",
-							"label": "Heading",
-							"type": "string"
-						},
-						{
-							"slug": "limit",
-							"label": "Limit",
-							"type": "integer",
-							"validation": {
-								"min": 1,
-								"max": 50
-							}
-						},
-						{
-							"slug": "items",
-							"label": "Testimonials",
-							"type": "repeater",
-							"validation": {
-								"minItems": 1,
-								"maxItems": 30,
-								"subFields": [
-									{
-										"slug": "company",
-										"label": "Company",
-										"type": "string",
-										"required": true
-									},
-									{
-										"slug": "company_url",
-										"label": "Company Website",
-										"type": "url"
-									},
-									{
-										"slug": "person_name",
-										"label": "Name",
-										"type": "string",
-										"required": true
-									},
-									{
-										"slug": "person_title",
-										"label": "Title",
-										"type": "string"
-									},
-									{
-										"slug": "person_image",
-										"label": "Photo",
-										"type": "image"
-									},
-									{
-										"slug": "testimonial_text",
-										"label": "Testimonial",
-										"type": "text",
-										"required": true
-									}
-								]
-							}
-						}
-					]
+					"slug": "client_company",
+					"label": "Client Company",
+					"type": "string",
+					"required": true,
+					"searchable": true,
+					"indexed": true
+				},
+				{
+					"slug": "company_logo",
+					"label": "Company Logo",
+					"type": "image",
+					"required": true,
+					"validation": {
+						"allowedMimeTypes": ["image/png", "image/jpeg", "image/gif", "image/webp", "image/avif"]
+					}
+				},
+				{
+					"slug": "full_name",
+					"label": "Person Full Name",
+					"type": "string",
+					"required": true,
+					"unique": true,
+					"indexed": true
+				},
+				{
+					"slug": "person_title",
+					"label": "Person Title",
+					"type": "string",
+					"required": true,
+					"searchable": true
+				},
+				{
+					"slug": "person_avtar",
+					"label": "Person Avtar",
+					"type": "image",
+					"required": true,
+					"validation": {
+						"allowedMimeTypes": ["image/png", "image/jpeg", "image/gif", "image/webp", "image/avif"]
+					}
+				},
+				{
+					"slug": "testimonial",
+					"label": "Testimonial",
+					"type": "text",
+					"required": true,
+					"searchable": true
+				},
+				{
+					"slug": "company_website",
+					"label": "Company Website",
+					"type": "url",
+					"required": true,
+					"searchable": true,
+					"indexed": true
 				}
 			]
-		}
-	],
-	"collections": [
+		},
 		{
 			"slug": "posts",
 			"label": "Posts",
@@ -136,12 +128,21 @@
 					"searchable": true
 				},
 				{
-					"slug": "layout",
-					"label": "Layout",
-					"type": "blocks",
+					"slug": "featured_testimonials",
+					"label": "Featured Testimonials",
+					"type": "reference",
 					"validation": {
-						"allowedTypes": ["testimonials"],
-						"maxItems": 20
+						"targetCollection": "testimonials",
+						"multiple": true
+					}
+				},
+				{
+					"slug": "testimonials_limit",
+					"label": "Testimonials Limit",
+					"type": "integer",
+					"validation": {
+						"min": 1,
+						"max": 50
 					}
 				}
 			]

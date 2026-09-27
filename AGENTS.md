@@ -9,6 +9,26 @@ npx emdash types      # Regenerate TypeScript types from a running site
 
 The admin UI is at `http://localhost:4321/_emdash/admin`.
 
+## Development Workflow
+
+- All work (schema changes, new blocks/collections, features, deploy pipeline changes) happens on a `dev` branch first -- never commit or push directly to `master`.
+- Verify changes locally against a throwaway/local database before opening a PR. This includes: `pnpm typecheck`, a real `pnpm build`, and (for schema changes) applying the seed to a fresh local db and confirming `emdash-env.d.ts` regenerates as expected.
+- Never test schema, deployment, or infrastructure changes directly against production. Production is only touched through: (a) a merged PR triggering the deploy workflow, or (b) an explicit, deliberate manual step the user runs themselves (e.g. an admin-panel or schema-API change), never as ad-hoc experimentation.
+- Once verified locally, open a PR from `dev` to `master`. `ci.yml` runs typecheck + build on the PR automatically.
+- Merging the PR to `master` triggers `deploy.yml`, which builds and deploys to the Virtualmin server automatically. This is the only path to production.
+- EmDash schema changes (collections, fields, block types) need a manual sync step against production after deploy -- see "Keep schema in sync" below. Redeploying does not apply schema changes to an already-bootstrapped production database.
+- No AI attribution in commit messages for this project.
+
+## Keep Schema in Sync (Local vs. Production)
+
+EmDash only applies `seed/*.json` to bootstrap an *empty* database. Once a site has completed first-time setup (production has), redeploying a changed seed does nothing to the live schema -- collections, fields, and block types only change through the admin panel or the schema REST API (`/_emdash/api/schema/*`), never automatically on deploy.
+
+For every schema change:
+1. Write it to both `seed/seed.json` and `seed/seed.prod.json` in the same commit -- they must always describe the same model.
+2. Verify it locally first (apply to a throwaway sqlite db, confirm `emdash-env.d.ts` regenerates correctly).
+3. After merging to master and deploying, apply the identical change to production via the admin panel (collections/fields) or the schema API (block types -- there's no CLI or admin-UI path for those; see `/_emdash/api/schema/block-types`).
+4. Confirm production matches the seed file (compare `GET /_emdash/api/schema/collections` and `/_emdash/api/schema/block-types` against the seed, or check the admin UI) before considering the change done.
+
 ## Key Files
 
 | File                     | Purpose                                                                            |

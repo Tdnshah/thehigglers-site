@@ -1,0 +1,155 @@
+---
+// Grid of client testimonials, sourced from the "testimonials" collection via
+// a page's `featured_testimonials` reference field. `limit` (from the page's
+// `testimonials_limit` field) caps how many of the editor's picked entries
+// actually render -- the picker order is preserved, limit just slices the head.
+import { sanitizeHref } from "emdash";
+import { Image } from "emdash/ui";
+import type { ContentEntry } from "emdash";
+import type { Testimonial } from "../../../emdash-env";
+
+interface Props {
+	items: ContentEntry<Testimonial>[];
+	limit?: number | null;
+}
+
+const { items, limit } = Astro.props;
+const shown = limit ? items.slice(0, limit) : items;
+---
+
+{
+	shown.length > 0 && (
+		<section class="client-feedback">
+			<div class="client-feedback__inner">
+				<ul class="client-feedback__grid">
+					{shown.map((item) => (
+						<li class="client-feedback__card">
+							<p class="client-feedback__quote">&ldquo;{item.data.testimonial}&rdquo;</p>
+							<div class="client-feedback__byline">
+								<span class="client-feedback__avatar">
+									<Image
+										image={item.data.person_avtar}
+										alt={item.data.full_name}
+										class="client-feedback__avatar-img"
+									/>
+								</span>
+								<div class="client-feedback__meta">
+									<span class="client-feedback__name">{item.data.full_name}</span>
+									<span class="client-feedback__role">
+										{item.data.person_title}, {item.data.client_company}
+									</span>
+								</div>
+							</div>
+							<a
+								class="client-feedback__company-link"
+								href={sanitizeHref(item.data.company_website)}
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								<Image
+									image={item.data.company_logo}
+									alt={item.data.client_company}
+									class="client-feedback__company-logo"
+								/>
+							</a>
+						</li>
+					))}
+				</ul>
+			</div>
+		</section>
+	)
+}
+
+<style>
+	.client-feedback {
+		padding: var(--section-pad-y) var(--gutter);
+		border-bottom: 1px solid var(--color-line);
+	}
+
+	.client-feedback__inner {
+		max-width: var(--content-max);
+		margin: 0 auto;
+	}
+
+	.client-feedback__grid {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 1px;
+		background: var(--color-line);
+		border: 1px solid var(--color-line);
+	}
+
+	.client-feedback__card {
+		background: var(--color-paper);
+		padding: 2rem;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		min-height: 16rem;
+	}
+
+	.client-feedback__quote {
+		font-family: var(--font-display);
+		font-size: 1.15rem;
+		line-height: var(--leading-snug);
+		color: var(--color-text);
+		margin: 0 0 1.5rem;
+	}
+
+	.client-feedback__byline {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.client-feedback__avatar {
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 999px;
+		overflow: hidden;
+		flex-shrink: 0;
+	}
+
+	.client-feedback__avatar :global(.client-feedback__avatar-img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+
+	.client-feedback__meta {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.client-feedback__name {
+		font-size: var(--text-small);
+		font-weight: 600;
+		color: var(--color-text);
+	}
+
+	.client-feedback__role {
+		font-size: var(--text-label);
+		color: var(--color-text-muted);
+	}
+
+	.client-feedback__company-link {
+		display: inline-block;
+		margin-top: 1.25rem;
+	}
+
+	.client-feedback__company-logo :global(img) {
+		max-height: 1.75rem;
+		width: auto;
+		display: block;
+	}
+
+	@media (max-width: 780px) {
+		.client-feedback__grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
