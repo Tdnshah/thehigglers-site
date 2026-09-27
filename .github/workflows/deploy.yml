@@ -98,8 +98,11 @@ jobs:
             cd $DEPLOY_PATH
             echo \"Node version: \$(node --version)\"
             echo \"PM2 location: \$(which pm2)\"
-            echo \"Restarting PM2 app...\"
-            pm2 restart thehigglers --update-env 2>/dev/null || pm2 start --name thehigglers npm -- start
+            echo \"Current directory: \$(pwd)\"
+            echo \"Stopping old PM2 app...\"
+            pm2 delete thehigglers 2>/dev/null || true
+            echo \"Starting fresh PM2 app from $DEPLOY_PATH...\"
+            pm2 start --name thehigglers npm -- start
             pm2 save
             echo \"✅ Deployment complete!\"
           '"
