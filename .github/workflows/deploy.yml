@@ -78,6 +78,15 @@ jobs:
             dist/ \
             "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/dist/"
 
+          echo "📤 Uploading package manifest for production dependencies..."
+          rsync -avz \
+            -e "ssh -i ${HOME}/.ssh/deploy_key" \
+            package.json pnpm-lock.yaml pnpm-workspace.yaml \
+            "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/"
+
+          echo "📦 Installing production dependencies on server..."
+          $SSH_CMD "bash -ic 'cd $DEPLOY_PATH && (command -v pnpm >/dev/null 2>&1 || npm install -g pnpm) && pnpm install --prod --frozen-lockfile'"
+
           echo "📝 Writing PM2 ecosystem config..."
           cat > ecosystem.config.js <<EOF
           module.exports = {
