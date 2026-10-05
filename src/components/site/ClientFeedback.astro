@@ -1,8 +1,7 @@
 ---
-// Grid of client testimonials, sourced from the "testimonials" collection via
-// a page's `featured_testimonials` reference field. `limit` (from the page's
-// `testimonials_limit` field) caps how many of the editor's picked entries
-// actually render -- the picker order is preserved, limit just slices the head.
+// Grid of client testimonials. Sourced by whatever caller queries the
+// "testimonials" collection (see blocks/TestimonialsSection.astro) and hands
+// this component the resulting entries -- this component only renders them.
 import { sanitizeHref } from "emdash";
 import { Image } from "emdash/ui";
 import type { ContentEntry } from "emdash";
@@ -10,19 +9,21 @@ import type { Testimonial } from "../../../emdash-env";
 
 interface Props {
 	items: ContentEntry<Testimonial>[];
-	limit?: number | null;
+	heading?: string | null;
+	viewMoreLabel?: string | null;
+	viewMoreUrl?: string | null;
 }
 
-const { items, limit } = Astro.props;
-const shown = limit ? items.slice(0, limit) : items;
+const { items, heading, viewMoreLabel, viewMoreUrl } = Astro.props;
 ---
 
 {
-	shown.length > 0 && (
+	items.length > 0 && (
 		<section class="client-feedback">
 			<div class="client-feedback__inner">
+				{heading && <h2 class="client-feedback__heading">{heading}</h2>}
 				<ul class="client-feedback__grid">
-					{shown.map((item) => (
+					{items.map((item) => (
 						<li class="client-feedback__card">
 							<p class="client-feedback__quote">&ldquo;{item.data.testimonial}&rdquo;</p>
 							<div class="client-feedback__byline">
@@ -46,15 +47,22 @@ const shown = limit ? items.slice(0, limit) : items;
 								target="_blank"
 								rel="noopener noreferrer"
 							>
-								<Image
-									image={item.data.company_logo}
-									alt={item.data.client_company}
-									class="client-feedback__company-logo"
-								/>
+								<span class="client-feedback__company-logo">
+									<Image
+										image={item.data.company_logo}
+										alt={item.data.client_company}
+										class="client-feedback__company-logo-img"
+									/>
+								</span>
 							</a>
 						</li>
 					))}
 				</ul>
+				{viewMoreUrl && viewMoreLabel && (
+					<a class="client-feedback__view-more" href={sanitizeHref(viewMoreUrl)}>
+						{viewMoreLabel}
+					</a>
+				)}
 			</div>
 		</section>
 	)
@@ -62,7 +70,7 @@ const shown = limit ? items.slice(0, limit) : items;
 
 <style>
 	.client-feedback {
-		padding: var(--section-pad-y) var(--gutter);
+		padding: var(--pad-top, var(--section-pad-y)) var(--gutter) var(--pad-bottom, var(--section-pad-y));
 		border-bottom: 1px solid var(--color-line);
 	}
 
@@ -71,19 +79,44 @@ const shown = limit ? items.slice(0, limit) : items;
 		margin: 0 auto;
 	}
 
+	.client-feedback__heading {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h2);
+		line-height: var(--leading-tight);
+		margin: 0 0 1.5rem;
+		text-align: center;
+	}
+
+	.client-feedback__view-more {
+		display: block;
+		text-align: center;
+		margin-top: 2rem;
+		font-family: var(--font-mono);
+		font-size: var(--text-label);
+		text-transform: uppercase;
+		letter-spacing: var(--tracking-label);
+		color: var(--color-text);
+		text-decoration: underline;
+		text-underline-offset: 2px;
+	}
+
 	.client-feedback__grid {
 		list-style: none;
 		margin: 0;
 		padding: 0;
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
-		gap: 1px;
-		background: var(--color-line);
-		border: 1px solid var(--color-line);
+		/* Hairlines come from card borders (not a grey grid background) so an
+		   incomplete last row never shows an empty grey cell. */
+		border-top: 1px solid var(--color-line);
+		border-left: 1px solid var(--color-line);
 	}
 
 	.client-feedback__card {
 		background: var(--color-paper);
+		border-right: 1px solid var(--color-line);
+		border-bottom: 1px solid var(--color-line);
 		padding: 2rem;
 		display: flex;
 		flex-direction: column;
@@ -117,6 +150,10 @@ const shown = limit ? items.slice(0, limit) : items;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
+		/* Fallback when the image has no focal point set in the Media Library --
+		   <Image> applies object-position from focalX/focalY as an inline style
+		   when present, which (being inline) always wins over this rule. */
+		object-position: center;
 		display: block;
 	}
 
@@ -141,9 +178,19 @@ const shown = limit ? items.slice(0, limit) : items;
 		margin-top: 1.25rem;
 	}
 
-	.client-feedback__company-logo :global(img) {
-		max-height: 1.75rem;
-		width: auto;
+	.client-feedback__company-logo {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		width: 6rem;
+		height: 1.75rem;
+	}
+
+	.client-feedback__company-logo :global(.client-feedback__company-logo-img) {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+		object-position: left center;
 		display: block;
 	}
 

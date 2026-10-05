@@ -1,0 +1,35 @@
+---
+// "Work Section" page-layout block: section title, CTA, "see all" link and a
+// repeater of work items (title, description, image, link) for the pinned
+// step-carousel.
+import type { BlockComponentProps } from "emdash/ui";
+import type { PageLayoutBlock } from "../../../emdash-env";
+import WorkHighlights from "../site/WorkHighlights.astro";
+import SectionShell from "../site/SectionShell.astro";
+
+type WorkSectionValue = Extract<PageLayoutBlock, { _type: "work_section" }>;
+type Props = BlockComponentProps<WorkSectionValue>;
+
+const { value } = Astro.props;
+const items = (value.items ?? []).filter((item) => item.title);
+---
+
+{
+	items.length > 0 && (
+		<SectionShell background={value.background} paddingTop={value.padding_top} paddingBottom={value.padding_bottom} image={value.background_image} overlay={value.image_overlay} imagePosition={value.image_position} pinned>
+		<WorkHighlights
+			heading={value.heading ?? ""}
+			ctaLabel={value.cta_label ?? undefined}
+			ctaHref={value.cta_href ?? undefined}
+			seeAllHref={value.see_all_href ?? undefined}
+			seeAllLabel={value.see_all_label || undefined}
+			items={items.map((item) => ({
+				title: item.title,
+				description: item.description ?? undefined,
+				image: item.image ?? null,
+				href: item.link ?? undefined,
+			}))}
+		/>
+		</SectionShell>
+	)
+}

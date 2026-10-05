@@ -35,7 +35,7 @@ const { heading, ctaLabel, ctaHref, seeAllHref, seeAllLabel = "See all work", it
 <section class="work-highlights" id="work-highlights" data-work-highlights>
 	<div class="work-highlights__head">
 		<div class="work-highlights__head-top">
-			<Eyebrow tone="accent">Works</Eyebrow>
+			<Eyebrow tone="muted" class="work-highlights__eyebrow">Works</Eyebrow>
 			{seeAllHref && <a class="work-highlights__see-all" href={seeAllHref}>{seeAllLabel} &rarr;</a>}
 		</div>
 		<h2>{heading}</h2>
@@ -202,9 +202,14 @@ const { heading, ctaLabel, ctaHref, seeAllHref, seeAllLabel = "See all work", it
 </script>
 
 <style>
+	/* Readable on whatever background the section sits on (dark by default). */
+	.work-highlights :global(.work-highlights__eyebrow) {
+		color: var(--section-fg-muted, var(--color-text-on-ink-muted));
+	}
+
 	.work-highlights {
-		background: var(--color-ink);
-		color: var(--color-text-on-ink);
+		background: var(--section-bg, var(--color-ink));
+		color: var(--section-fg, var(--color-text-on-ink));
 	}
 
 	.work-highlights__head {
@@ -225,13 +230,13 @@ const { heading, ctaLabel, ctaHref, seeAllHref, seeAllLabel = "See all work", it
 		font-size: var(--text-label);
 		text-transform: uppercase;
 		letter-spacing: var(--tracking-label);
-		color: var(--color-text-on-ink-muted);
+		color: var(--section-fg-muted, var(--color-text-on-ink-muted));
 		text-decoration: none;
 		transition: color 0.15s ease;
 	}
 
 	.work-highlights__see-all:hover {
-		color: var(--color-text-on-ink);
+		color: var(--section-fg, var(--color-text-on-ink));
 	}
 
 	.work-highlights__head h2 {
@@ -272,12 +277,12 @@ const { heading, ctaLabel, ctaHref, seeAllHref, seeAllLabel = "See all work", it
 		align-items: baseline;
 		gap: 1.25rem;
 		padding: 1.1rem 0;
-		color: var(--color-text-on-ink-muted);
+		color: var(--section-fg-muted, var(--color-text-on-ink-muted));
 		transition: color 0.3s ease;
 	}
 
 	.work-highlights__row.is-active {
-		color: var(--color-text-on-ink);
+		color: var(--section-fg, var(--color-text-on-ink));
 	}
 
 	.work-highlights__num {
@@ -297,7 +302,7 @@ const { heading, ctaLabel, ctaHref, seeAllHref, seeAllLabel = "See all work", it
 	.work-highlights__row p {
 		margin: 0.35rem 0 0;
 		font-size: var(--text-small);
-		color: var(--color-text-on-ink-muted);
+		color: var(--section-fg-muted, var(--color-text-on-ink-muted));
 		max-width: 26rem;
 	}
 
@@ -358,7 +363,7 @@ const { heading, ctaLabel, ctaHref, seeAllHref, seeAllLabel = "See all work", it
 		justify-content: space-between;
 		padding: 0.9rem 1.25rem;
 		background: var(--color-ink-raised);
-		color: var(--color-text-on-ink);
+		color: var(--section-fg, var(--color-text-on-ink));
 		text-decoration: none;
 		font-family: var(--font-mono);
 		font-size: var(--text-label);
@@ -382,7 +387,7 @@ const { heading, ctaLabel, ctaHref, seeAllHref, seeAllLabel = "See all work", it
 		}
 
 		.work-highlights__row {
-			color: var(--color-text-on-ink);
+			color: var(--section-fg, var(--color-text-on-ink));
 		}
 
 		.work-highlights__row p {

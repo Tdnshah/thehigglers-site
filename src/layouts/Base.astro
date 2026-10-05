@@ -24,9 +24,11 @@ interface Props {
 	image?: string | null;
 	canonical?: string | null;
 	content?: { collection: string; id: string; slug?: string | null };
+	/** Home-page header: fixed, full-width, morphs to a container on scroll. */
+	overlayHeader?: boolean;
 }
 
-const { title, pageTitle, description, image, canonical, content } = Astro.props;
+const { title, pageTitle, description, image, canonical, content, overlayHeader = false } = Astro.props;
 const { siteTitle, siteTagline, siteLogo } = resolveStarterSiteIdentity(await getSiteSettings());
 const fullTitle = title.includes(siteTitle) ? title : `${title} — ${siteTitle}`;
 const pageDescription = description ?? siteTagline;
@@ -63,7 +65,7 @@ const pageCtx = createPublicPageContext({
 	<body>
 		<EmDashBodyStart page={pageCtx} />
 
-		<SiteHeader siteTitle={siteTitle} siteLogo={siteLogo} menuItems={menuItems}>
+		<SiteHeader siteTitle={siteTitle} siteLogo={siteLogo} menuItems={menuItems} overlay={overlayHeader}>
 			<LiveSearch slot="search" placeholder="Search..." collections={["posts", "pages"]} />
 		</SiteHeader>
 

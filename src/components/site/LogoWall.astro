@@ -2,18 +2,23 @@
 // Trust strip / "logo wall". Text wordmarks, not fabricated client logos --
 // swap in real client logos via `logos` (image + alt) once you have
 // permission to display them; falls back to plain text otherwise.
+import { Image } from "emdash/ui";
+import type { ImageValue } from "emdash";
 import Eyebrow from "./Eyebrow.astro";
 
 interface Logo {
 	label: string;
+	image?: ImageValue | null;
+	href?: string | null;
 }
 
 interface Props {
-	label?: string;
+	label?: string | null;
 	logos: Logo[];
 }
 
-const { label = "Engineering across open-source ecosystems", logos } = Astro.props;
+const { label: labelProp, logos } = Astro.props;
+const label = labelProp || "Engineering across open-source ecosystems";
 // Duplicated once so the CSS marquee loop is seamless.
 const track = [...logos, ...logos];
 ---
@@ -26,7 +31,15 @@ const track = [...logos, ...logos];
 			<ul class="logo-wall__track">
 				{track.map((logo, i) => (
 					<li class:list={[i >= logos.length && "logo-wall__duplicate"]} aria-hidden={i >= logos.length}>
-						{logo.label}
+						{logo.href ? (
+							<a href={logo.href} tabindex={i >= logos.length ? -1 : undefined} target="_blank" rel="noopener noreferrer">
+								{logo.image ? <Image image={{ ...logo.image, alt: logo.label }} height={36} /> : logo.label}
+							</a>
+						) : logo.image ? (
+							<Image image={{ ...logo.image, alt: logo.label }} height={36} />
+						) : (
+							logo.label
+						)}
 					</li>
 				))}
 			</ul>
@@ -36,7 +49,7 @@ const track = [...logos, ...logos];
 
 <style>
 	.logo-wall {
-		padding: 3rem var(--gutter);
+		padding: var(--pad-top, 3rem) var(--gutter) var(--pad-bottom, 3rem);
 		border-bottom: 1px solid var(--color-line);
 	}
 
@@ -72,6 +85,30 @@ const track = [...logos, ...logos];
 		font-size: 1.35rem;
 		color: var(--color-text-muted);
 		white-space: nowrap;
+	}
+
+	.logo-wall__track li :global(img) {
+		display: block;
+		height: 2.25rem;
+		width: auto;
+		max-width: 9rem;
+		object-fit: contain;
+		filter: grayscale(1);
+		opacity: 0.65;
+		transition:
+			filter 0.2s ease,
+			opacity 0.2s ease;
+	}
+
+	.logo-wall__track li :global(img:hover),
+	.logo-wall__track li a:hover :global(img) {
+		filter: none;
+		opacity: 1;
+	}
+
+	.logo-wall__track li a {
+		color: inherit;
+		text-decoration: none;
 	}
 
 	@keyframes logo-wall-scroll {

@@ -10,18 +10,19 @@ interface FaqItem {
 
 interface Props {
 	items: FaqItem[];
-	ctaLabel?: string;
-	ctaHref?: string;
+	heading?: string | null;
+	ctaLabel?: string | null;
+	ctaHref?: string | null;
 }
 
-const { items, ctaLabel, ctaHref } = Astro.props;
+const { items, heading, ctaLabel, ctaHref } = Astro.props;
 ---
 
 <section class="faq">
 	<div class="faq__inner">
 		<div class="faq__intro" data-reveal>
 			<Eyebrow tone="muted">FAQ</Eyebrow>
-			<h2>Questions worth answering upfront.</h2>
+			<h2>{heading || "Questions worth answering upfront."}</h2>
 			{ctaHref && ctaLabel && <Button href={ctaHref} variant="ghost">{ctaLabel}</Button>}
 		</div>
 
@@ -43,7 +44,7 @@ const { items, ctaLabel, ctaHref } = Astro.props;
 
 <style>
 	.faq {
-		padding: var(--section-pad-y) var(--gutter);
+		padding: var(--pad-top, var(--section-pad-y)) var(--gutter) var(--pad-bottom, var(--section-pad-y));
 	}
 
 	.faq__inner {

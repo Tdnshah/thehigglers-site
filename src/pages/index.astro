@@ -1,5 +1,7 @@
 ---
-import { getEmDashCollection, getSiteSettings } from "emdash";
+import { getEmDashCollection, getEmDashEntry, getSiteSettings } from "emdash";
+import { Blocks } from "emdash/ui";
+import { blockComponents, startsWithHero } from "../utils/block-components";
 import Base from "../layouts/Base.astro";
 import Hero from "../components/site/Hero.astro";
 import Eyebrow from "../components/site/Eyebrow.astro";
@@ -17,7 +19,14 @@ const { entries: posts, cacheHint } = await getEmDashCollection("posts", {
 	limit: 3,
 });
 const { siteTitle, siteTagline } = resolveStarterSiteIdentity(await getSiteSettings());
-if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+
+// The home page is a CMS page (slug "home") composed of layout blocks. Until
+// that entry exists (e.g. production before it is created), fall back to the
+// hardcoded sections below so the site never renders empty.
+const { entry: homePage, cacheHint: homeCacheHint } = await getEmDashEntry("pages", "home");
+const layout = homePage?.data.layout ?? [];
+const cmsDriven = layout.length > 0;
+if (Astro.cache?.enabled) Astro.cache.set(cmsDriven ? homeCacheHint : cacheHint);
 
 const postItems = posts.map((post) => ({
 	title: post.data.title,
@@ -127,8 +136,18 @@ const faqItems = [
 ];
 ---
 
-<Base title={siteTitle} description={siteTagline}>
+<Base
+	title={siteTitle}
+	description={siteTagline}
+	overlayHeader={cmsDriven ? startsWithHero(layout) : true}
+	content={cmsDriven && homePage ? { collection: "pages", id: homePage.data.id, slug: "home" } : undefined}
+>
+{cmsDriven ? (
+	<Blocks value={layout} components={blockComponents} />
+) : (
+<>
 	<Hero
+		overlay
 		eyebrow="Technology Consulting"
 		title="Open technology. Serious engineering. Business outcomes."
 		description="We design, build, and modernize digital platforms on open-source foundations, without the risk enterprises usually associate with 'open source.' Architecture, security, and long-term support included."
@@ -199,6 +218,8 @@ const faqItems = [
 			<PostCardGrid items={postItems} emptyLabel="No posts yet." featureFirst />
 		</div>
 	</section>
+</>
+)}
 </Base>
 
 <style>

@@ -3,15 +3,152 @@
 
 /// <reference types="emdash/locals" />
 
-import type { BylineSummary, ContentBylineCredit, TaxonomyTerm, PortableTextBlock, ReferencePage } from "emdash";
+import type { BylineSummary, ContentBylineCredit, TaxonomyTerm, PortableTextBlock } from "emdash";
+
+export interface PageLayoutHeroSectionV1Block {
+  _type: "hero_section";
+  _version: 1;
+  _key: string;
+  "eyebrow"?: string | null;
+  "headline"?: string | null;
+  "subheadline"?: string | null;
+  "cta_label"?: string | null;
+  "cta_href"?: string | null;
+  "side_text"?: string | null;
+}
+
+export type PageLayoutHeroSectionBlock = PageLayoutHeroSectionV1Block;
+
+export interface PageLayoutLogoWallV1Block {
+  _type: "logo_wall";
+  _version: 1;
+  _key: string;
+  "label"?: string | null;
+  "logos"?: { "image": { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } }; "name"?: string | null; "link"?: string | null }[] | null;
+  "background"?: "default" | "white" | "soft" | "dark" | "accent" | null;
+  "padding_top"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "padding_bottom"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "background_image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null;
+  "image_overlay"?: "dark" | "light" | "none" | null;
+  "image_position"?: "center" | "top" | "bottom" | null;
+}
+
+export type PageLayoutLogoWallBlock = PageLayoutLogoWallV1Block;
+
+export interface PageLayoutGoalsSectionV1Block {
+  _type: "goals_section";
+  _version: 1;
+  _key: string;
+  "heading"?: string | null;
+  "cta_label"?: string | null;
+  "cta_href"?: string | null;
+  "steps"?: { "icon"?: "discover" | "define" | "design" | "architect" | "develop" | "build" | "test" | "uat" | "preprod" | "deploy" | "launch" | "evolve" | "support" | "security" | "cloud" | "data" | "integrate" | null; "icon_image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null; "title": string; "description": string }[] | null;
+  "background"?: "default" | "white" | "soft" | "dark" | "accent" | null;
+  "padding_top"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "padding_bottom"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "background_image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null;
+  "image_overlay"?: "dark" | "light" | "none" | null;
+  "image_position"?: "center" | "top" | "bottom" | null;
+}
+
+export type PageLayoutGoalsSectionBlock = PageLayoutGoalsSectionV1Block;
+
+export interface PageLayoutWorkSectionV1Block {
+  _type: "work_section";
+  _version: 1;
+  _key: string;
+  "heading"?: string | null;
+  "cta_label"?: string | null;
+  "cta_href"?: string | null;
+  "see_all_label"?: string | null;
+  "see_all_href"?: string | null;
+  "items"?: { "title": string; "description"?: string | null; "image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null; "link"?: string | null }[] | null;
+  "background"?: "default" | "white" | "soft" | "dark" | "accent" | null;
+  "padding_top"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "padding_bottom"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "background_image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null;
+  "image_overlay"?: "dark" | "light" | "none" | null;
+  "image_position"?: "center" | "top" | "bottom" | null;
+}
+
+export type PageLayoutWorkSectionBlock = PageLayoutWorkSectionV1Block;
+
+export interface PageLayoutTestimonialsSectionV1Block {
+  _type: "testimonials_section";
+  _version: 1;
+  _key: string;
+  "heading"?: string | null;
+  "limit"?: number | null;
+  "only_featured"?: boolean | null;
+  "view_more_label"?: string | null;
+  "view_more_url"?: string | null;
+  "background"?: "default" | "white" | "soft" | "dark" | "accent" | null;
+  "padding_top"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "padding_bottom"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "background_image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null;
+  "image_overlay"?: "dark" | "light" | "none" | null;
+  "image_position"?: "center" | "top" | "bottom" | null;
+}
+
+export type PageLayoutTestimonialsSectionBlock = PageLayoutTestimonialsSectionV1Block;
+
+export interface PageLayoutFaqSectionV1Block {
+  _type: "faq_section";
+  _version: 1;
+  _key: string;
+  "heading"?: string | null;
+  "cta_label"?: string | null;
+  "cta_href"?: string | null;
+  "items"?: { "question": string; "answer": string }[] | null;
+  "background"?: "default" | "white" | "soft" | "dark" | "accent" | null;
+  "padding_top"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "padding_bottom"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "background_image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null;
+  "image_overlay"?: "dark" | "light" | "none" | null;
+  "image_position"?: "center" | "top" | "bottom" | null;
+}
+
+export type PageLayoutFaqSectionBlock = PageLayoutFaqSectionV1Block;
+
+export interface PageLayoutLatestWritingV1Block {
+  _type: "latest_writing";
+  _version: 1;
+  _key: string;
+  "heading"?: string | null;
+  "count"?: number | null;
+  "background"?: "default" | "white" | "soft" | "dark" | "accent" | null;
+  "padding_top"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "padding_bottom"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "background_image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null;
+  "image_overlay"?: "dark" | "light" | "none" | null;
+  "image_position"?: "center" | "top" | "bottom" | null;
+}
+
+export type PageLayoutLatestWritingBlock = PageLayoutLatestWritingV1Block;
+
+export interface PageLayoutRichTextV1Block {
+  _type: "rich_text";
+  _version: 1;
+  _key: string;
+  "content"?: PortableTextBlock[] | null;
+  "background"?: "default" | "white" | "soft" | "dark" | "accent" | null;
+  "padding_top"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "padding_bottom"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "background_image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null;
+  "image_overlay"?: "dark" | "light" | "none" | null;
+  "image_position"?: "center" | "top" | "bottom" | null;
+}
+
+export type PageLayoutRichTextBlock = PageLayoutRichTextV1Block;
+
+export type PageLayoutBlock = PageLayoutHeroSectionBlock | PageLayoutLogoWallBlock | PageLayoutGoalsSectionBlock | PageLayoutWorkSectionBlock | PageLayoutTestimonialsSectionBlock | PageLayoutFaqSectionBlock | PageLayoutLatestWritingBlock | PageLayoutRichTextBlock;
 
 export interface Page {
   id: string;
   slug: string | null;
   status: string;
   title: string;
-  content?: PortableTextBlock[];
-  testimonials_limit?: number;
+  layout?: PageLayoutBlock[];
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date | null;
@@ -47,6 +184,8 @@ export interface Testimonial {
   person_avtar: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } };
   testimonial: string;
   company_website: string;
+  featured?: boolean;
+  sort_order?: number;
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date | null;
@@ -55,17 +194,10 @@ export interface Testimonial {
   terms?: Record<string, TaxonomyTerm[]>;
 }
 
-export interface PageReferences {
-  featured_testimonials: ReferencePage<Testimonial>;
-}
-
 declare module "emdash" {
   interface EmDashCollections {
     pages: Page;
     posts: Post;
     testimonials: Testimonial;
-  }
-  interface EmDashCollectionReferences {
-    pages: PageReferences;
   }
 }

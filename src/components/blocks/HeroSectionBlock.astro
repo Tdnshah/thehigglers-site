@@ -1,0 +1,23 @@
+---
+// "Hero" page-layout block -- lets editors place a CMS-managed hero (eyebrow,
+// headline, subheadline, CTA, side text) into a page's block composition.
+// Renders the same visual as the homepage hero.
+import type { BlockComponentProps } from "emdash/ui";
+import type { PageLayoutBlock } from "../../../emdash-env";
+import Hero from "../site/Hero.astro";
+
+type HeroSectionBlockValue = Extract<PageLayoutBlock, { _type: "hero_section" }>;
+type Props = BlockComponentProps<HeroSectionBlockValue>;
+
+const { value, index } = Astro.props;
+---
+
+<Hero
+	eyebrow={value.eyebrow ?? ""}
+	title={value.headline ?? ""}
+	description={value.subheadline ?? ""}
+	ctaLabel={value.cta_label ?? ""}
+	ctaHref={value.cta_href ?? "#"}
+	meta={value.side_text ?? undefined}
+	overlay={index === 0}
+/>

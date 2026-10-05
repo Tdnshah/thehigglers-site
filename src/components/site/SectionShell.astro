@@ -1,0 +1,151 @@
+---
+/**
+ * Wraps a CMS section block and applies the editor's "Appearance" choices:
+ * background colour and top/bottom padding. Every value is a preset (no free
+ * colours) so text always keeps its contrast.
+ *
+ * - background: "default" keeps the section's own look (Goals and Work are
+ *   dark by default, the rest are light). "white" | "soft" | "accent" are
+ *   light; "dark" is ink. Dark remaps the colour tokens so light-by-default
+ *   sections flip to light text.
+ * - image: optional background photo with an overlay (dark, light or none).
+ * - padding_*: "default" keeps the section's built-in spacing. Light sections
+ *   read --pad-top/--pad-bottom. `pinned` sections (Goals, Work: a sticky
+ *   100vh viewport) cannot shrink their built-in spacing, so for them the
+ *   shell adds the chosen space above/below instead.
+ */
+import { Image } from "emdash/ui";
+import type { ImageValue } from "emdash";
+
+interface Props {
+	background?: string | null;
+	paddingTop?: string | null;
+	paddingBottom?: string | null;
+	pinned?: boolean;
+	/** Optional background photo, drawn under an overlay that keeps text readable. */
+	image?: ImageValue | null;
+	overlay?: string | null;
+	imagePosition?: string | null;
+}
+
+const { background, paddingTop, paddingBottom, pinned = false, image, overlay, imagePosition } = Astro.props;
+
+const PADDING: Record<string, string> = { none: "0rem", small: "2rem", medium: "4rem", large: "8rem" };
+const THEMES = ["white", "soft", "dark", "accent"];
+
+const hasImage = Boolean(image && (image.src || image.id));
+const OVERLAYS = ["none", "light", "dark"];
+const overlayTone = hasImage ? (OVERLAYS.includes(overlay ?? "") ? (overlay as string) : "dark") : "none";
+const POSITIONS: Record<string, string> = { top: "center top", center: "center center", bottom: "center bottom" };
+
+let theme = THEMES.includes(background ?? "") ? (background as string) : "default";
+// With an image, text colour follows the overlay: a dark overlay means light
+// text, a light overlay means dark text. "none" keeps the chosen background.
+if (hasImage && overlayTone === "dark") theme = "dark";
+else if (hasImage && overlayTone === "light") theme = "white";
+const vars: string[] = [];
+if (paddingTop && PADDING[paddingTop]) vars.push(`--pad-top:${PADDING[paddingTop]}`);
+if (paddingBottom && PADDING[paddingBottom]) vars.push(`--pad-bottom:${PADDING[paddingBottom]}`);
+---
+
+<div
+	class="section-shell"
+	data-bg={theme}
+	data-image={hasImage ? "" : undefined}
+	data-pinned={pinned ? "" : undefined}
+	style={vars.join(";") || undefined}
+>
+	{
+		hasImage && image && (
+			<>
+				<Image
+					image={{ ...image, alt: "" }}
+					class="section-shell__image"
+					loading="lazy"
+					style={`object-position:${POSITIONS[imagePosition ?? ""] ?? POSITIONS.center}`}
+				/>
+				{overlayTone !== "none" && <span class:list={["section-shell__overlay", `section-shell__overlay--${overlayTone}`]} />}
+			</>
+		)
+	}
+	<slot />
+</div>
+
+<style>
+	.section-shell {
+		position: relative;
+		isolation: isolate;
+	}
+
+	/* Photo and overlay sit behind the content (negative z-index inside this
+	   shell's own stacking context), so section components need no changes. */
+	.section-shell :global(.section-shell__image) {
+		position: absolute;
+		inset: 0;
+		z-index: -2;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.section-shell__overlay {
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+	}
+
+	.section-shell__overlay--dark {
+		background: rgba(11, 11, 12, 0.62);
+	}
+
+	.section-shell__overlay--light {
+		background: rgba(255, 255, 255, 0.78);
+	}
+
+	.section-shell[data-bg="white"],
+	.section-shell[data-bg="soft"],
+	.section-shell[data-bg="accent"] {
+		--section-fg: var(--color-text);
+		--section-fg-muted: var(--color-text-muted);
+		--section-line: var(--color-line);
+		background: var(--section-bg);
+	}
+
+	.section-shell[data-bg="white"] {
+		--section-bg: var(--color-paper);
+	}
+
+	.section-shell[data-bg="soft"] {
+		--section-bg: var(--color-paper-soft);
+	}
+
+	.section-shell[data-bg="accent"] {
+		--section-bg: var(--color-accent-soft);
+	}
+
+	.section-shell[data-bg="dark"] {
+		--section-bg: var(--color-ink);
+		--section-fg: var(--color-text-on-ink);
+		--section-fg-muted: var(--color-text-on-ink-muted);
+		--section-line: var(--color-line-on-ink);
+		/* Flip the tokens light-by-default sections are written against. */
+		--color-text: var(--color-text-on-ink);
+		--color-text-muted: var(--color-text-on-ink-muted);
+		--color-line: var(--color-line-on-ink);
+		--color-paper: var(--color-ink);
+		--color-paper-soft: var(--color-ink-raised);
+		background: var(--section-bg);
+		color: var(--color-text-on-ink);
+	}
+
+	/* With a photo, the sections' own solid backgrounds step aside. */
+	.section-shell[data-image][data-bg] {
+		--section-bg: transparent;
+		background: transparent;
+	}
+
+	.section-shell[data-pinned] {
+		padding-top: var(--pad-top, 0);
+		padding-bottom: var(--pad-bottom, 0);
+	}
+</style>

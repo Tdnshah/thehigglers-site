@@ -1,0 +1,90 @@
+---
+/**
+ * Decorative hero background (aria-hidden), anchored to the full-bleed hero:
+ *  - a quarter-circle gradient in the top-right corner
+ *  - a tapered, flowing gradient ribbon in the bottom-left corner that reads
+ *    as the tail of the orbital on the right.
+ * Inline SVG so it scales crisply and costs no extra requests.
+ */
+---
+
+<div class="hero-backdrop" aria-hidden="true">
+	<svg class="hero-backdrop__corner" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<defs>
+			<radialGradient id="hb-corner" cx="100" cy="0" r="100" gradientUnits="userSpaceOnUse">
+				<stop offset="0" stop-color="#8B5CF6" stop-opacity=".34"></stop>
+				<stop offset=".5" stop-color="#6C7CFF" stop-opacity=".2"></stop>
+				<stop offset="1" stop-color="#B8C8FF" stop-opacity=".03"></stop>
+			</radialGradient>
+		</defs>
+		<path d="M0 0A100 100 0 0 0 100 100V0Z" fill="url(#hb-corner)"></path>
+		<path d="M30 0A70 70 0 0 0 100 70" stroke="#6C7CFF" stroke-opacity=".22" stroke-width=".35" vector-effect="non-scaling-stroke"></path>
+		<path d="M55 0A45 45 0 0 0 100 45" stroke="#8B5CF6" stroke-opacity=".26" stroke-width=".35" vector-effect="non-scaling-stroke"></path>
+	</svg>
+
+	<svg class="hero-backdrop__flow" viewBox="0 0 800 320" fill="none" preserveAspectRatio="xMinYMax meet" xmlns="http://www.w3.org/2000/svg">
+		<defs>
+			<linearGradient id="hb-flow" x1="0" y1="0" x2="800" y2="0" gradientUnits="userSpaceOnUse">
+				<stop offset="0" stop-color="#5C8EFF" stop-opacity=".42"></stop>
+				<stop offset=".45" stop-color="#6C7CFF" stop-opacity=".28"></stop>
+				<stop offset="1" stop-color="#8B5CF6" stop-opacity="0"></stop>
+			</linearGradient>
+			<linearGradient id="hb-flow-line" x1="0" y1="0" x2="800" y2="0" gradientUnits="userSpaceOnUse">
+				<stop offset="0" stop-color="#5C8EFF" stop-opacity=".5"></stop>
+				<stop offset="1" stop-color="#8B5CF6" stop-opacity="0"></stop>
+			</linearGradient>
+		</defs>
+		<!-- Tapered ribbon: widest at the corner, thinning to a point as it sweeps right -->
+		<path
+			d="M-20 214C150 130 330 250 530 150C660 85 760 100 830 40C790 112 680 158 540 212C340 290 140 214 -20 300Z"
+			fill="url(#hb-flow)"></path>
+		<path
+			d="M-20 262C160 190 330 292 540 204C670 150 770 160 840 112"
+			stroke="url(#hb-flow-line)"
+			stroke-width="1.2"></path>
+		<path
+			d="M-20 296C170 236 340 322 560 246C690 200 780 214 850 176"
+			stroke="url(#hb-flow-line)"
+			stroke-width=".9"
+			stroke-opacity=".7"></path>
+	</svg>
+</div>
+
+<style>
+	.hero-backdrop {
+		position: absolute;
+		inset: 0;
+		overflow: hidden;
+		pointer-events: none;
+		z-index: 0;
+	}
+
+	.hero-backdrop__corner {
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: clamp(12rem, 24vw, 26rem);
+		height: auto;
+		aspect-ratio: 1;
+	}
+
+	.hero-backdrop__flow {
+		position: absolute;
+		left: 0;
+		bottom: 0;
+		width: clamp(20rem, 56vw, 62rem);
+		height: auto;
+		aspect-ratio: 800 / 320;
+	}
+
+	@media (max-width: 960px) {
+		.hero-backdrop__corner {
+			width: 11rem;
+		}
+
+		.hero-backdrop__flow {
+			width: 120vw;
+			opacity: 0.8;
+		}
+	}
+</style>

@@ -4,17 +4,24 @@
 // scroll drives horizontal translateX) -- not a static grid. Each card
 // keeps the small geometric mark (outlined square + filled corner square,
 // corner rotates per column).
+import { Image } from "emdash/ui";
+import type { ImageValue } from "emdash";
 import Button from "./Button.astro";
+import { STEP_ICONS, isStepIcon } from "../../utils/step-icons";
 
 interface Pillar {
 	title: string;
 	description: string;
+	/** Preset icon name (see utils/step-icons.ts). */
+	icon?: string | null;
+	/** Custom uploaded icon (PNG/WebP); wins over the preset. */
+	iconImage?: ImageValue | null;
 }
 
 interface Props {
 	heading: string;
-	ctaLabel: string;
-	ctaHref: string;
+	ctaLabel?: string | null;
+	ctaHref?: string | null;
 	items: Pillar[];
 }
 
@@ -27,19 +34,39 @@ const corners = ["top-left", "top-right", "bottom-right", "bottom-left"];
 		<div class="goals-intro__viewport" data-viewport>
 			<div class="goals-intro__head">
 				<h2>{heading}</h2>
-				<Button href={ctaHref} variant="primary">{ctaLabel}</Button>
+				{ctaLabel && ctaHref && <Button href={ctaHref} variant="primary">{ctaLabel}</Button>}
 			</div>
 
 			<ul class="goals-intro__row" data-row>
 				{
 					items.map((item, i) => (
 						<li class="goals-intro__col">
-							<span
-								class:list={["goals-intro__mark", `goals-intro__mark--${corners[i % corners.length]}`]}
-								aria-hidden="true"
-							>
-								<span />
-							</span>
+							{item.iconImage?.src || item.iconImage?.id ? (
+								<span class="goals-intro__icon" aria-hidden="true">
+									<Image image={{ ...item.iconImage, alt: "" }} width={44} height={44} />
+								</span>
+							) : isStepIcon(item.icon) ? (
+								<span class="goals-intro__icon" aria-hidden="true">
+									<svg
+										viewBox="0 0 24 24"
+										width="22"
+										height="22"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="1.5"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										set:html={STEP_ICONS[item.icon]}
+									/>
+								</span>
+							) : (
+								<span
+									class:list={["goals-intro__mark", `goals-intro__mark--${corners[i % corners.length]}`]}
+									aria-hidden="true"
+								>
+									<span />
+								</span>
+							)}
 							<h3>{item.title}</h3>
 							<p>{item.description}</p>
 						</li>
@@ -99,8 +126,8 @@ const corners = ["top-left", "top-right", "bottom-right", "bottom-left"];
 
 <style>
 	.goals-intro {
-		background: var(--color-ink);
-		color: var(--color-text-on-ink);
+		background: var(--section-bg, var(--color-ink));
+		color: var(--section-fg, var(--color-text-on-ink));
 	}
 
 	.goals-intro__head {
@@ -147,7 +174,32 @@ const corners = ["top-left", "top-right", "bottom-right", "bottom-left"];
 		flex-shrink: 0;
 		width: min(22rem, 80vw);
 		padding-bottom: 1.75rem;
-		border-bottom: 1px solid var(--color-line-on-ink);
+		border-bottom: 1px solid var(--section-line, var(--color-line-on-ink));
+	}
+
+	.goals-intro__icon {
+		display: grid;
+		place-items: center;
+		width: 2.75rem;
+		height: 2.75rem;
+		margin-bottom: 1.5rem;
+		border: 1px solid var(--section-line, var(--color-line-on-ink));
+		border-radius: 0.6rem;
+		color: var(--section-fg, var(--color-text-on-ink));
+		transition:
+			border-color 0.25s ease,
+			color 0.25s ease;
+	}
+
+	.goals-intro__col:hover .goals-intro__icon {
+		border-color: var(--color-accent);
+		color: var(--color-accent);
+	}
+
+	.goals-intro__icon :global(img) {
+		width: 62%;
+		height: 62%;
+		object-fit: contain;
 	}
 
 	.goals-intro__mark {
@@ -155,7 +207,7 @@ const corners = ["top-left", "top-right", "bottom-right", "bottom-left"];
 		position: relative;
 		width: 2.75rem;
 		height: 2.75rem;
-		border: 1px solid var(--color-line-on-ink);
+		border: 1px solid var(--section-line, var(--color-line-on-ink));
 		margin-bottom: 1.5rem;
 	}
 
@@ -163,7 +215,7 @@ const corners = ["top-left", "top-right", "bottom-right", "bottom-left"];
 		position: absolute;
 		width: 45%;
 		height: 45%;
-		background: var(--color-text-on-ink-muted);
+		background: var(--section-fg-muted, var(--color-text-on-ink-muted));
 	}
 
 	.goals-intro__mark--top-left span {
@@ -195,9 +247,15 @@ const corners = ["top-left", "top-right", "bottom-right", "bottom-left"];
 
 	.goals-intro__col p {
 		font-size: var(--text-small);
-		color: var(--color-text-on-ink-muted);
+		color: var(--section-fg-muted, var(--color-text-on-ink-muted));
 		line-height: var(--leading-normal);
 		margin: 0;
+		/* Descriptions never run past two lines on the card. */
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		overflow: hidden;
 	}
 
 	@media (max-width: 780px) {
