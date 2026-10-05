@@ -1,0 +1,28 @@
+---
+// "Logo Wall" page-layout block: caption plus a repeater of logo images.
+import type { BlockComponentProps } from "emdash/ui";
+import type { PageLayoutBlock } from "../../../emdash-env";
+import LogoWall from "../site/LogoWall.astro";
+import SectionShell from "../site/SectionShell.astro";
+
+type LogoWallValue = Extract<PageLayoutBlock, { _type: "logo_wall" }>;
+type Props = BlockComponentProps<LogoWallValue>;
+
+const { value } = Astro.props;
+const logos = (value.logos ?? []).filter((logo) => logo.image);
+---
+
+{
+	logos.length > 0 && (
+		<SectionShell background={value.background} paddingTop={value.padding_top} paddingBottom={value.padding_bottom} image={value.background_image} overlay={value.image_overlay} imagePosition={value.image_position}>
+		<LogoWall
+			label={value.label}
+			logos={logos.map((logo) => ({
+				label: logo.name ?? "",
+				image: logo.image,
+				href: logo.link,
+			}))}
+		/>
+		</SectionShell>
+	)
+}

@@ -1,0 +1,39 @@
+---
+// "Latest Writing" page-layout block: the newest published posts.
+import { getEmDashCollection } from "emdash";
+import type { BlockComponentProps } from "emdash/ui";
+import type { PageLayoutBlock } from "../../../emdash-env";
+import LatestWriting from "../site/LatestWriting.astro";
+import SectionShell from "../site/SectionShell.astro";
+import { estimateReadingMinutes } from "../../utils/reading-time";
+
+type LatestWritingValue = Extract<PageLayoutBlock, { _type: "latest_writing" }>;
+type Props = BlockComponentProps<LatestWritingValue>;
+
+const { value } = Astro.props;
+const count = value.count && value.count > 0 ? value.count : 3;
+
+const { entries: posts, cacheHint } = await getEmDashCollection("posts", {
+	orderBy: { published_at: "desc" },
+	limit: count,
+});
+Astro.cache?.set(cacheHint);
+
+const items = posts.map((post) => ({
+	title: post.data.title,
+	href: `/posts/${post.id}`,
+	image: post.data.featured_image,
+	date: post.data.publishedAt
+		? post.data.publishedAt.toLocaleDateString("en-US", {
+				year: "numeric",
+				month: "long",
+				day: "numeric",
+			})
+		: null,
+	readTime: `${estimateReadingMinutes(post.data.content)} min read`,
+}));
+---
+
+<SectionShell background={value.background} paddingTop={value.padding_top} paddingBottom={value.padding_bottom} image={value.background_image} overlay={value.image_overlay} imagePosition={value.image_position}>
+	<LatestWriting heading={value.heading} items={items} />
+</SectionShell>

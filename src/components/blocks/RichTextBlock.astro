@@ -1,0 +1,43 @@
+---
+// "Rich Text" page-layout block -- a plain prose section within the page's
+// block composition. Lets editors mix free-form text between other block
+// types (testimonials section, etc.) instead of pages having one fixed
+// content field.
+import { PortableText } from "emdash/ui";
+import type { BlockComponentProps } from "emdash/ui";
+import type { PageLayoutBlock } from "../../../emdash-env";
+import SectionShell from "../site/SectionShell.astro";
+
+type RichTextBlockValue = Extract<PageLayoutBlock, { _type: "rich_text" }>;
+type Props = BlockComponentProps<RichTextBlockValue>;
+
+const { value } = Astro.props;
+---
+
+<SectionShell background={value.background} paddingTop={value.padding_top} paddingBottom={value.padding_bottom} image={value.background_image} overlay={value.image_overlay} imagePosition={value.image_position}>
+	<div class="rich-text-block">
+		<PortableText value={value.content} />
+	</div>
+</SectionShell>
+
+<style>
+	.rich-text-block {
+		max-width: 42rem;
+		margin: 0 auto;
+		padding: var(--pad-top, var(--section-pad-y)) var(--gutter) var(--pad-bottom, var(--section-pad-y));
+		font-size: var(--text-body);
+		line-height: var(--leading-normal);
+		color: var(--color-text);
+	}
+
+	.rich-text-block :global(h2) {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h2);
+		margin: 2rem 0 1rem;
+	}
+
+	.rich-text-block :global(p) {
+		margin: 0 0 1.25rem;
+	}
+</style>

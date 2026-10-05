@@ -12,9 +12,52 @@
 	},
 	"blockTypes": [
 		{
-			"slug": "testimonials",
-			"label": "Testimonials",
-			"category": "Layout",
+			"slug": "hero_section",
+			"label": "Hero",
+			"category": "Marketing",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "eyebrow",
+							"label": "Eyebrow",
+							"type": "string"
+						},
+						{
+							"slug": "headline",
+							"label": "Headline",
+							"type": "text"
+						},
+						{
+							"slug": "subheadline",
+							"label": "Subheadline",
+							"type": "text"
+						},
+						{
+							"slug": "cta_label",
+							"label": "CTA Button Label",
+							"type": "string"
+						},
+						{
+							"slug": "cta_href",
+							"label": "CTA Button Link",
+							"type": "url"
+						},
+						{
+							"slug": "side_text",
+							"label": "Side Text",
+							"type": "text"
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "testimonials_section",
+			"label": "Testimonials Section",
+			"category": "Marketing",
 			"currentVersion": 1,
 			"versions": [
 				{
@@ -22,59 +65,856 @@
 					"fields": [
 						{
 							"slug": "heading",
-							"label": "Heading",
+							"label": "Section Header",
 							"type": "string"
 						},
 						{
 							"slug": "limit",
-							"label": "Limit",
+							"label": "Number to show",
 							"type": "integer",
+							"defaultValue": 5,
 							"validation": {
 								"min": 1,
-								"max": 50
+								"max": 20
 							}
 						},
 						{
-							"slug": "items",
-							"label": "Testimonials",
+							"slug": "only_featured",
+							"label": "Show only featured testimonials",
+							"type": "boolean",
+							"defaultValue": true
+						},
+						{
+							"slug": "view_more_label",
+							"label": "\"View more\" link label",
+							"type": "string"
+						},
+						{
+							"slug": "view_more_url",
+							"label": "\"View more\" link URL",
+							"type": "url"
+						},
+						{
+							"slug": "background",
+							"label": "Background colour (default = the section's own look)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"white",
+									"soft",
+									"dark",
+									"accent"
+								]
+							}
+						},
+						{
+							"slug": "padding_top",
+							"label": "Padding top (default = built-in spacing)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"none",
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "padding_bottom",
+							"label": "Padding bottom (default = built-in spacing)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"none",
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "background_image",
+							"label": "Background image (optional, shown behind the section)",
+							"type": "image"
+						},
+						{
+							"slug": "image_overlay",
+							"label": "Image overlay (dark = light text, light = dark text; none can make text hard to read)",
+							"type": "select",
+							"defaultValue": "dark",
+							"validation": {
+								"options": [
+									"dark",
+									"light",
+									"none"
+								]
+							}
+						},
+						{
+							"slug": "image_position",
+							"label": "Image position",
+							"type": "select",
+							"defaultValue": "center",
+							"validation": {
+								"options": [
+									"center",
+									"top",
+									"bottom"
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "rich_text",
+			"label": "Rich Text",
+			"category": "Content",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "content",
+							"label": "Content",
+							"type": "portableText"
+						},
+						{
+							"slug": "background",
+							"label": "Background colour (default = the section's own look)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"white",
+									"soft",
+									"dark",
+									"accent"
+								]
+							}
+						},
+						{
+							"slug": "padding_top",
+							"label": "Padding top (default = built-in spacing)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"none",
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "padding_bottom",
+							"label": "Padding bottom (default = built-in spacing)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"none",
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "background_image",
+							"label": "Background image (optional, shown behind the section)",
+							"type": "image"
+						},
+						{
+							"slug": "image_overlay",
+							"label": "Image overlay (dark = light text, light = dark text; none can make text hard to read)",
+							"type": "select",
+							"defaultValue": "dark",
+							"validation": {
+								"options": [
+									"dark",
+									"light",
+									"none"
+								]
+							}
+						},
+						{
+							"slug": "image_position",
+							"label": "Image position",
+							"type": "select",
+							"defaultValue": "center",
+							"validation": {
+								"options": [
+									"center",
+									"top",
+									"bottom"
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "goals_section",
+			"label": "Goals Section",
+			"category": "Marketing",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "heading",
+							"label": "Section Heading",
+							"type": "string"
+						},
+						{
+							"slug": "cta_label",
+							"label": "Button Label",
+							"type": "string"
+						},
+						{
+							"slug": "cta_href",
+							"label": "Button Link",
+							"type": "url"
+						},
+						{
+							"slug": "steps",
+							"label": "Steps",
 							"type": "repeater",
 							"validation": {
 								"minItems": 1,
-								"maxItems": 30,
+								"maxItems": 12,
 								"subFields": [
 									{
-										"slug": "company",
-										"label": "Company",
-										"type": "string",
-										"required": true
+										"slug": "icon",
+										"label": "Icon",
+										"type": "select",
+										"options": [
+											"discover",
+											"define",
+											"design",
+											"architect",
+											"develop",
+											"build",
+											"test",
+											"uat",
+											"preprod",
+											"deploy",
+											"launch",
+											"evolve",
+											"support",
+											"security",
+											"cloud",
+											"data",
+											"integrate"
+										]
 									},
 									{
-										"slug": "company_url",
-										"label": "Company Website",
-										"type": "url"
-									},
-									{
-										"slug": "person_name",
-										"label": "Name",
-										"type": "string",
-										"required": true
-									},
-									{
-										"slug": "person_title",
-										"label": "Title",
-										"type": "string"
-									},
-									{
-										"slug": "person_image",
-										"label": "Photo",
+										"slug": "icon_image",
+										"label": "Custom Icon (PNG or WebP, optional, overrides Icon)",
 										"type": "image"
 									},
 									{
-										"slug": "testimonial_text",
-										"label": "Testimonial",
+										"slug": "title",
+										"label": "Step Name",
+										"type": "string",
+										"required": true
+									},
+									{
+										"slug": "description",
+										"label": "Description (keep under about 90 characters, max two lines on the card)",
 										"type": "text",
 										"required": true
 									}
+								]
+							}
+						},
+						{
+							"slug": "background",
+							"label": "Background colour (default = the section's own look)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"white",
+									"soft",
+									"dark",
+									"accent"
+								]
+							}
+						},
+						{
+							"slug": "padding_top",
+							"label": "Padding top (default = built-in spacing)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"none",
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "padding_bottom",
+							"label": "Padding bottom (default = built-in spacing)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"none",
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "background_image",
+							"label": "Background image (optional, shown behind the section)",
+							"type": "image"
+						},
+						{
+							"slug": "image_overlay",
+							"label": "Image overlay (dark = light text, light = dark text; none can make text hard to read)",
+							"type": "select",
+							"defaultValue": "dark",
+							"validation": {
+								"options": [
+									"dark",
+									"light",
+									"none"
+								]
+							}
+						},
+						{
+							"slug": "image_position",
+							"label": "Image position",
+							"type": "select",
+							"defaultValue": "center",
+							"validation": {
+								"options": [
+									"center",
+									"top",
+									"bottom"
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "work_section",
+			"label": "Work Section",
+			"category": "Marketing",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "heading",
+							"label": "Section Title",
+							"type": "string"
+						},
+						{
+							"slug": "cta_label",
+							"label": "Call to Action Label",
+							"type": "string"
+						},
+						{
+							"slug": "cta_href",
+							"label": "Call to Action URL",
+							"type": "url"
+						},
+						{
+							"slug": "see_all_label",
+							"label": "See All Label",
+							"type": "string"
+						},
+						{
+							"slug": "see_all_href",
+							"label": "See All Work URL",
+							"type": "url"
+						},
+						{
+							"slug": "items",
+							"label": "Work Items",
+							"type": "repeater",
+							"validation": {
+								"minItems": 1,
+								"maxItems": 12,
+								"subFields": [
+									{
+										"slug": "title",
+										"label": "Title",
+										"type": "string",
+										"required": true
+									},
+									{
+										"slug": "description",
+										"label": "Short Description",
+										"type": "text"
+									},
+									{
+										"slug": "image",
+										"label": "Image",
+										"type": "image"
+									},
+									{
+										"slug": "link",
+										"label": "Link",
+										"type": "url"
+									}
+								]
+							}
+						},
+						{
+							"slug": "background",
+							"label": "Background colour (default = the section's own look)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"white",
+									"soft",
+									"dark",
+									"accent"
+								]
+							}
+						},
+						{
+							"slug": "padding_top",
+							"label": "Padding top (default = built-in spacing)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"none",
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "padding_bottom",
+							"label": "Padding bottom (default = built-in spacing)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"none",
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "background_image",
+							"label": "Background image (optional, shown behind the section)",
+							"type": "image"
+						},
+						{
+							"slug": "image_overlay",
+							"label": "Image overlay (dark = light text, light = dark text; none can make text hard to read)",
+							"type": "select",
+							"defaultValue": "dark",
+							"validation": {
+								"options": [
+									"dark",
+									"light",
+									"none"
+								]
+							}
+						},
+						{
+							"slug": "image_position",
+							"label": "Image position",
+							"type": "select",
+							"defaultValue": "center",
+							"validation": {
+								"options": [
+									"center",
+									"top",
+									"bottom"
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "logo_wall",
+			"label": "Logo Wall",
+			"category": "Marketing",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "label",
+							"label": "Caption",
+							"type": "string"
+						},
+						{
+							"slug": "logos",
+							"label": "Logos",
+							"type": "repeater",
+							"validation": {
+								"minItems": 1,
+								"maxItems": 24,
+								"subFields": [
+									{
+										"slug": "image",
+										"label": "Logo Image",
+										"type": "image",
+										"required": true
+									},
+									{
+										"slug": "name",
+										"label": "Name (alt text)",
+										"type": "string"
+									},
+									{
+										"slug": "link",
+										"label": "Link",
+										"type": "url"
+									}
+								]
+							}
+						},
+						{
+							"slug": "background",
+							"label": "Background colour (default = the section's own look)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"white",
+									"soft",
+									"dark",
+									"accent"
+								]
+							}
+						},
+						{
+							"slug": "padding_top",
+							"label": "Padding top (default = built-in spacing)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"none",
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "padding_bottom",
+							"label": "Padding bottom (default = built-in spacing)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"none",
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "background_image",
+							"label": "Background image (optional, shown behind the section)",
+							"type": "image"
+						},
+						{
+							"slug": "image_overlay",
+							"label": "Image overlay (dark = light text, light = dark text; none can make text hard to read)",
+							"type": "select",
+							"defaultValue": "dark",
+							"validation": {
+								"options": [
+									"dark",
+									"light",
+									"none"
+								]
+							}
+						},
+						{
+							"slug": "image_position",
+							"label": "Image position",
+							"type": "select",
+							"defaultValue": "center",
+							"validation": {
+								"options": [
+									"center",
+									"top",
+									"bottom"
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "faq_section",
+			"label": "FAQ Section",
+			"category": "Marketing",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "heading",
+							"label": "Section Heading",
+							"type": "string"
+						},
+						{
+							"slug": "cta_label",
+							"label": "Button Label",
+							"type": "string"
+						},
+						{
+							"slug": "cta_href",
+							"label": "Button Link",
+							"type": "url"
+						},
+						{
+							"slug": "items",
+							"label": "Questions",
+							"type": "repeater",
+							"validation": {
+								"minItems": 1,
+								"maxItems": 20,
+								"subFields": [
+									{
+										"slug": "question",
+										"label": "Question",
+										"type": "string",
+										"required": true
+									},
+									{
+										"slug": "answer",
+										"label": "Answer",
+										"type": "text",
+										"required": true
+									}
+								]
+							}
+						},
+						{
+							"slug": "background",
+							"label": "Background colour (default = the section's own look)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"white",
+									"soft",
+									"dark",
+									"accent"
+								]
+							}
+						},
+						{
+							"slug": "padding_top",
+							"label": "Padding top (default = built-in spacing)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"none",
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "padding_bottom",
+							"label": "Padding bottom (default = built-in spacing)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"none",
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "background_image",
+							"label": "Background image (optional, shown behind the section)",
+							"type": "image"
+						},
+						{
+							"slug": "image_overlay",
+							"label": "Image overlay (dark = light text, light = dark text; none can make text hard to read)",
+							"type": "select",
+							"defaultValue": "dark",
+							"validation": {
+								"options": [
+									"dark",
+									"light",
+									"none"
+								]
+							}
+						},
+						{
+							"slug": "image_position",
+							"label": "Image position",
+							"type": "select",
+							"defaultValue": "center",
+							"validation": {
+								"options": [
+									"center",
+									"top",
+									"bottom"
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "latest_writing",
+			"label": "Latest Writing",
+			"category": "Content",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "heading",
+							"label": "Section Heading",
+							"type": "string"
+						},
+						{
+							"slug": "count",
+							"label": "Number of posts",
+							"type": "integer",
+							"defaultValue": 3,
+							"validation": {
+								"min": 1,
+								"max": 12
+							}
+						},
+						{
+							"slug": "background",
+							"label": "Background colour (default = the section's own look)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"white",
+									"soft",
+									"dark",
+									"accent"
+								]
+							}
+						},
+						{
+							"slug": "padding_top",
+							"label": "Padding top (default = built-in spacing)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"none",
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "padding_bottom",
+							"label": "Padding bottom (default = built-in spacing)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"none",
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "background_image",
+							"label": "Background image (optional, shown behind the section)",
+							"type": "image"
+						},
+						{
+							"slug": "image_overlay",
+							"label": "Image overlay (dark = light text, light = dark text; none can make text hard to read)",
+							"type": "select",
+							"defaultValue": "dark",
+							"validation": {
+								"options": [
+									"dark",
+									"light",
+									"none"
+								]
+							}
+						},
+						{
+							"slug": "image_position",
+							"label": "Image position",
+							"type": "select",
+							"defaultValue": "center",
+							"validation": {
+								"options": [
+									"center",
+									"top",
+									"bottom"
 								]
 							}
 						}
@@ -85,10 +925,110 @@
 	],
 	"collections": [
 		{
+			"slug": "testimonials",
+			"label": "Testimonials",
+			"labelSingular": "Testimonial",
+			"description": "This Content Type is used to add testimonials from our clients",
+			"supports": [
+				"drafts",
+				"revisions"
+			],
+			"fields": [
+				{
+					"slug": "client_company",
+					"label": "Client Company",
+					"type": "string",
+					"required": true,
+					"searchable": true,
+					"indexed": true
+				},
+				{
+					"slug": "company_logo",
+					"label": "Company Logo",
+					"type": "image",
+					"required": true,
+					"validation": {
+						"allowedMimeTypes": [
+							"image/png",
+							"image/jpeg",
+							"image/gif",
+							"image/webp",
+							"image/avif"
+						]
+					}
+				},
+				{
+					"slug": "full_name",
+					"label": "Person Full Name",
+					"type": "string",
+					"required": true,
+					"unique": true,
+					"indexed": true
+				},
+				{
+					"slug": "person_title",
+					"label": "Person Title",
+					"type": "string",
+					"required": true,
+					"searchable": true
+				},
+				{
+					"slug": "person_avtar",
+					"label": "Person Avtar",
+					"type": "image",
+					"required": true,
+					"validation": {
+						"allowedMimeTypes": [
+							"image/png",
+							"image/jpeg",
+							"image/gif",
+							"image/webp",
+							"image/avif"
+						]
+					}
+				},
+				{
+					"slug": "testimonial",
+					"label": "Testimonial",
+					"type": "text",
+					"required": true,
+					"searchable": true
+				},
+				{
+					"slug": "company_website",
+					"label": "Company Website",
+					"type": "url",
+					"required": true,
+					"searchable": true,
+					"indexed": true
+				},
+				{
+					"slug": "featured",
+					"label": "Featured (show on homepage)",
+					"type": "boolean",
+					"defaultValue": false
+				},
+				{
+					"slug": "sort_order",
+					"label": "Display order (lower shows first)",
+					"type": "integer",
+					"validation": {
+						"min": 0,
+						"max": 9999
+					}
+				}
+			]
+		},
+		{
 			"slug": "posts",
 			"label": "Posts",
 			"labelSingular": "Post",
-			"supports": ["drafts", "revisions", "search", "seo"],
+			"supports": [
+				"drafts",
+				"revisions",
+				"search",
+				"seo"
+			],
 			"fields": [
 				{
 					"slug": "title",
@@ -120,7 +1060,11 @@
 			"label": "Pages",
 			"labelSingular": "Page",
 			"urlPattern": "/{slug}",
-			"supports": ["drafts", "revisions", "search"],
+			"supports": [
+				"drafts",
+				"revisions",
+				"search"
+			],
 			"fields": [
 				{
 					"slug": "title",
@@ -130,18 +1074,21 @@
 					"searchable": true
 				},
 				{
-					"slug": "content",
-					"label": "Content",
-					"type": "portableText",
-					"searchable": true
-				},
-				{
 					"slug": "layout",
 					"label": "Layout",
 					"type": "blocks",
 					"validation": {
-						"allowedTypes": ["testimonials"],
-						"maxItems": 20
+						"allowedTypes": [
+							"hero_section",
+							"logo_wall",
+							"goals_section",
+							"work_section",
+							"testimonials_section",
+							"faq_section",
+							"latest_writing",
+							"rich_text"
+						],
+						"maxItems": 30
 					}
 				}
 			]
@@ -153,7 +1100,9 @@
 			"label": "Categories",
 			"labelSingular": "Category",
 			"hierarchical": true,
-			"collections": ["posts"],
+			"collections": [
+				"posts"
+			],
 			"terms": [
 				{
 					"slug": "general",
@@ -170,7 +1119,9 @@
 			"label": "Tags",
 			"labelSingular": "Tag",
 			"hierarchical": false,
-			"collections": ["posts"],
+			"collections": [
+				"posts"
+			],
 			"terms": [
 				{
 					"slug": "starter",
@@ -241,42 +1192,148 @@
 				"status": "published",
 				"data": {
 					"title": "About",
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "This is the about page. Edit it in the admin panel or replace this template with your own design.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						}
-					],
 					"layout": [
 						{
-							"_type": "testimonials",
+							"_type": "rich_text",
 							"_version": 1,
-							"_key": "01JDEMOTESTIMONIALSBLOCK01",
-							"heading": "What our clients say",
-							"items": [
+							"_key": "01JDEMOABOUTRICHTEXT00001",
+							"content": [
 								{
-									"company": "Example Co",
-									"company_url": "https://example.com",
-									"person_name": "Client name",
-									"person_title": "Title, Example Co",
-									"testimonial_text": "Replace this with a real client quote once you have one to feature."
-								},
-								{
-									"company": "Another Co",
-									"company_url": "https://example.org",
-									"person_name": "Client name",
-									"person_title": "Title, Another Co",
-									"testimonial_text": "A second placeholder quote, sized a little differently to check the layout wraps well."
+									"_type": "block",
+									"style": "normal",
+									"children": [
+										{
+											"_type": "span",
+											"text": "This is the about page. Edit it in the admin panel or replace this template with your own design.",
+											"_key": "k1"
+										}
+									],
+									"_key": "k0"
 								}
 							]
+						}
+					]
+				}
+			},
+			{
+				"id": "home",
+				"slug": "home",
+				"status": "published",
+				"data": {
+					"title": "Home",
+					"layout": [
+						{
+							"_type": "hero_section",
+							"_version": 1,
+							"_key": "01JDEMOHOME00000000000001",
+							"eyebrow": "Technology Consulting",
+							"headline": "Open technology. Serious engineering. Business outcomes.",
+							"subheadline": "We design, build, and modernize digital platforms on open-source foundations, without the risk enterprises usually associate with 'open source.' Architecture, security, and long-term support included.",
+							"cta_label": "Start a conversation",
+							"cta_href": "/contact",
+							"side_text": "A global technology consultancy working across CMS, commerce, business applications, and custom software for enterprise, government, and education clients."
+						},
+						{
+							"_type": "goals_section",
+							"_version": 1,
+							"_key": "01JDEMOHOME00000000000002",
+							"heading": "We begin by listening -- understanding your goals.",
+							"cta_label": "Work with us",
+							"cta_href": "/contact",
+							"steps": [
+								{
+									"title": "Discover",
+									"description": "Understand the goals, constraints, and systems already in place before proposing anything.",
+									"icon": "discover"
+								},
+								{
+									"title": "Define",
+									"description": "Turn discovery into a scoped plan: what's in, what's out, and what success looks like.",
+									"icon": "define"
+								},
+								{
+									"title": "Architect",
+									"description": "Design the system before writing code that locks in the wrong decisions.",
+									"icon": "architect"
+								},
+								{
+									"title": "Build",
+									"description": "Iterative delivery with regular checkpoints, not a black box until launch day.",
+									"icon": "build"
+								},
+								{
+									"title": "Launch",
+									"description": "A deliberate rollout with the monitoring and rollback plan already in place.",
+									"icon": "launch"
+								},
+								{
+									"title": "Evolve",
+									"description": "Ongoing support and iteration once the platform is live and being used.",
+									"icon": "evolve"
+								}
+							]
+						},
+						{
+							"_type": "work_section",
+							"_version": 1,
+							"_key": "01JDEMOHOME00000000000003",
+							"heading": "Our work highlights a proven track record of delivering impactful results.",
+							"cta_label": "Work with us",
+							"cta_href": "/contact",
+							"see_all_label": "See all work",
+							"see_all_href": "/work",
+							"items": [
+								{
+									"title": "Drupal platform migration",
+									"description": "A phased migration from a legacy CMS to Drupal for a multi-site editorial team.",
+									"link": "/work"
+								},
+								{
+									"title": "Vendure commerce build",
+									"description": "A headless commerce platform replacing a rigid proprietary storefront.",
+									"link": "/work"
+								},
+								{
+									"title": "Horilla HRMS rollout",
+									"description": "Open-source HRMS as the system of record across multiple regional offices.",
+									"link": "/work"
+								}
+							]
+						},
+						{
+							"_type": "testimonials_section",
+							"_version": 1,
+							"_key": "01JDEMOHOME00000000000004",
+							"heading": "Client feedback",
+							"limit": 5
+						},
+						{
+							"_type": "faq_section",
+							"_version": 1,
+							"_key": "01JDEMOHOME00000000000005",
+							"cta_label": "Get in touch",
+							"cta_href": "/contact",
+							"items": [
+								{
+									"question": "Why open source instead of proprietary platforms?",
+									"answer": "Open source gives you the flexibility to evolve the platform without vendor lock-in. We handle the part that makes enterprises hesitate: architecture, security, integration, and long-term support."
+								},
+								{
+									"question": "Do you only take on full platform builds?",
+									"answer": "No. We take on new builds, modernizations, migrations, ongoing development, and staff augmentation."
+								},
+								{
+									"question": "Can you take over an existing platform?",
+									"answer": "Yes. We regularly take over platforms built by other teams, starting with an audit before any code changes."
+								}
+							]
+						},
+						{
+							"_type": "latest_writing",
+							"_version": 1,
+							"_key": "01JDEMOHOME00000000000006",
+							"heading": "Latest writing",
+							"count": 3
 						}
 					]
 				}
@@ -330,8 +1387,13 @@
 					]
 				},
 				"taxonomies": {
-					"category": ["general"],
-					"tag": ["starter", "example"]
+					"category": [
+						"general"
+					],
+					"tag": [
+						"starter",
+						"example"
+					]
 				}
 			}
 		]

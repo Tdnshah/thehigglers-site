@@ -1,0 +1,43 @@
+---
+// "Latest writing" teaser row. Pure presentation: callers pass post cards
+// (see blocks/LatestWritingBlock.astro for the CMS query).
+import type { ImageValue } from "emdash";
+import Eyebrow from "./Eyebrow.astro";
+import PostCardGrid from "./PostCardGrid.astro";
+
+interface Props {
+	heading?: string | null;
+	items: Array<{
+		title: string;
+		href: string;
+		image?: ImageValue | null;
+		date?: string | null;
+		readTime?: string | null;
+	}>;
+}
+
+const { heading, items } = Astro.props;
+---
+
+<section class="latest-writing">
+	<div class="latest-writing__inner">
+		<Eyebrow tone="muted">{heading || "Latest writing"}</Eyebrow>
+		<PostCardGrid items={items} emptyLabel="No posts yet." featureFirst />
+	</div>
+</section>
+
+<style>
+	.latest-writing {
+		padding: var(--pad-top, var(--section-pad-y)) var(--gutter) var(--pad-bottom, var(--section-pad-y));
+	}
+
+	.latest-writing__inner {
+		max-width: var(--content-max);
+		margin: 0 auto;
+	}
+
+	.latest-writing__inner > :global(.eyebrow) {
+		display: block;
+		margin-bottom: 1.5rem;
+	}
+</style>

@@ -1,0 +1,27 @@
+---
+// "FAQ Section" page-layout block: optional heading, CTA button and a
+// repeater of question/answer pairs.
+import type { BlockComponentProps } from "emdash/ui";
+import type { PageLayoutBlock } from "../../../emdash-env";
+import Faq from "../site/Faq.astro";
+import SectionShell from "../site/SectionShell.astro";
+
+type FaqSectionValue = Extract<PageLayoutBlock, { _type: "faq_section" }>;
+type Props = BlockComponentProps<FaqSectionValue>;
+
+const { value } = Astro.props;
+const items = (value.items ?? []).filter((item) => item.question && item.answer);
+---
+
+{
+	items.length > 0 && (
+		<SectionShell background={value.background} paddingTop={value.padding_top} paddingBottom={value.padding_bottom} image={value.background_image} overlay={value.image_overlay} imagePosition={value.image_position}>
+		<Faq
+			heading={value.heading}
+			ctaLabel={value.cta_label}
+			ctaHref={value.cta_href}
+			items={items.map((item) => ({ question: item.question, answer: item.answer }))}
+		/>
+		</SectionShell>
+	)
+}

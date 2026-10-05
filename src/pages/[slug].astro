@@ -1,14 +1,9 @@
 ---
 import { getEmDashEntry, getSeoMeta, decodeSlug, getSiteSettings } from "emdash";
-import { Blocks, PortableText, defineBlockComponents } from "emdash/ui";
-import type { PageLayoutBlock } from "../../emdash-env";
+import { Blocks } from "emdash/ui";
 import Base from "../layouts/Base.astro";
-import Testimonials from "../components/blocks/Testimonials.astro";
+import { blockComponents, startsWithHero } from "../utils/block-components";
 import { resolveStarterSiteIdentity } from "../utils/site-identity";
-
-const blockComponents = defineBlockComponents<PageLayoutBlock>({
-	testimonials: Testimonials,
-});
 
 const slug = decodeSlug(Astro.params.slug);
 
@@ -24,6 +19,7 @@ if (!page) {
 
 if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
 const { siteTitle } = resolveStarterSiteIdentity(await getSiteSettings());
+const heroFirst = startsWithHero(page.data.layout);
 
 const seo = getSeoMeta(page, {
 	siteTitle,
@@ -38,46 +34,31 @@ const seo = getSeoMeta(page, {
 	description={seo.description}
 	canonical={seo.canonical}
 	content={{ collection: "pages", id: page.data.id, slug }}
+	overlayHeader={heroFirst}
 >
-	<article class="page">
-		<h1 {...page.edit.title}>{page.data.title}</h1>
-		<div class="page__body">
-			<PortableText value={page.data.content} />
-		</div>
-	</article>
+	{
+		!heroFirst && (
+			<header class="page-header">
+				<h1 {...page.edit.title}>{page.data.title}</h1>
+			</header>
+		)
+	}
 
 	<Blocks value={page.data.layout} components={blockComponents} />
 </Base>
 
 <style>
-	.page {
+	.page-header {
 		max-width: 42rem;
 		margin: 0 auto;
-		padding: var(--section-pad-y) var(--gutter);
+		padding: var(--section-pad-y) var(--gutter) 0;
 	}
 
-	.page h1 {
+	.page-header h1 {
 		font-family: var(--font-display);
 		font-weight: 600;
 		font-size: var(--text-h1);
 		line-height: var(--leading-tight);
-		margin: 0 0 1.5rem;
-	}
-
-	.page__body {
-		font-size: var(--text-body);
-		line-height: var(--leading-normal);
-		color: var(--color-text);
-	}
-
-	.page__body :global(h2) {
-		font-family: var(--font-display);
-		font-weight: 600;
-		font-size: var(--text-h2);
-		margin: 2rem 0 1rem;
-	}
-
-	.page__body :global(p) {
-		margin: 0 0 1.25rem;
+		margin: 0;
 	}
 </style>

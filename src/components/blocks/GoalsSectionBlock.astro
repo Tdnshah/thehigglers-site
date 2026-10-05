@@ -1,0 +1,32 @@
+---
+// "Goals Section" page-layout block: heading, CTA and a repeater of steps
+// (icon, name, short description). Renders the horizontal-scroll card row.
+import type { BlockComponentProps } from "emdash/ui";
+import type { PageLayoutBlock } from "../../../emdash-env";
+import GoalsIntro from "../site/GoalsIntro.astro";
+import SectionShell from "../site/SectionShell.astro";
+
+type GoalsSectionValue = Extract<PageLayoutBlock, { _type: "goals_section" }>;
+type Props = BlockComponentProps<GoalsSectionValue>;
+
+const { value } = Astro.props;
+const steps = (value.steps ?? []).filter((step) => step.title);
+---
+
+{
+	steps.length > 0 && (
+		<SectionShell background={value.background} paddingTop={value.padding_top} paddingBottom={value.padding_bottom} image={value.background_image} overlay={value.image_overlay} imagePosition={value.image_position} pinned>
+		<GoalsIntro
+			heading={value.heading ?? ""}
+			ctaLabel={value.cta_label}
+			ctaHref={value.cta_href}
+			items={steps.map((step) => ({
+				title: step.title,
+				description: step.description ?? "",
+				icon: step.icon ?? null,
+				iconImage: step.icon_image ?? null,
+			}))}
+		/>
+		</SectionShell>
+	)
+}

@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs -I{} echo {})",
+      "Bash(node -e \"console.log\\(Object.keys\\(require\\('astro/config'\\)\\)\\)\")",
+      "Bash(gh api *)",
+      "Bash(git add *)",
+      "Bash(pnpm -v)",
+      "Bash(pnpm install *)",
+      "Bash(pnpm typecheck *)",
+      "Bash(grep -n 'interface MediaValue' -A20 __CMDSUB_OUTPUT__/src/media/types.ts)",
+      "Bash(D=$\\(echo /Users/tdnshah/Projects/personal/thehigglers-new-website/node_modules/.pnpm/emdash@0.38.0*/node_modules/emdash\\) && grep -n \"alt\" \"$D/src/media/types.ts\" \"$D/src/fields/types.ts\" \"$D/src/fields/image.ts\" \"$D/src/components/EmDashImage.astro\")",
+      "Bash(grep -n ImageValue __CMDSUB_OUTPUT__/src/index.ts __CMDSUB_OUTPUT__/src/fields/index.ts __CMDSUB_OUTPUT__/dist/index.d.mts)",
+      "Bash(grep -rn 'interface ContentBylineCredit' -A10 __CMDSUB_OUTPUT__/src)",
+      "Bash(grep -rn 'interface BylineSummary' -A10 __CMDSUB_OUTPUT__/src)",
+      "Bash(pnpm build *)",
+      "WebFetch(domain:docs.dokploy.com)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(d.get\\('dependencies',{}\\).keys\\(\\)\\)\")",
+      "Bash(grep -rn 'package.json\\\\b' __CMDSUB_OUTPUT__/src)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "emdash-docs"
+  ]
+}

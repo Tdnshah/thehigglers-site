@@ -1,0 +1,137 @@
+{
+	"title": "Home",
+	"layout": [
+		{
+			"_type": "hero_section",
+			"_version": 1,
+			"_key": "01JHOMEPAGE0000000000000001",
+			"eyebrow": "Technology Consulting",
+			"headline": "Open technology. Serious engineering. Business outcomes.",
+			"subheadline": "We design, build, and modernize digital platforms on open-source foundations, without the risk enterprises usually associate with 'open source.' Architecture, security, and long-term support included.",
+			"cta_label": "Start a conversation",
+			"cta_href": "/contact",
+			"side_text": "A global technology consultancy working across CMS, commerce, business applications, and custom software for enterprise, government, and education clients."
+		},
+		{
+			"_type": "goals_section",
+			"_version": 1,
+			"_key": "01JHOMEPAGE0000000000000002",
+			"heading": "We begin by listening -- understanding your goals.",
+			"cta_label": "Work with us",
+			"cta_href": "/contact",
+			"steps": [
+				{
+					"icon": "discover",
+					"title": "Discover",
+					"description": "Understand the goals, constraints, and systems already in place before proposing anything."
+				},
+				{
+					"icon": "define",
+					"title": "Define",
+					"description": "Turn discovery into a scoped plan: what's in, what's out, and what success looks like."
+				},
+				{
+					"icon": "architect",
+					"title": "Architect",
+					"description": "Design the system before writing code that locks in the wrong decisions."
+				},
+				{
+					"icon": "build",
+					"title": "Build",
+					"description": "Iterative delivery with regular checkpoints, not a black box until launch day."
+				},
+				{
+					"icon": "launch",
+					"title": "Launch",
+					"description": "A deliberate rollout with the monitoring and rollback plan already in place."
+				},
+				{
+					"icon": "evolve",
+					"title": "Evolve",
+					"description": "Ongoing support and iteration once the platform is live and being used."
+				}
+			]
+		},
+		{
+			"_type": "work_section",
+			"_version": 1,
+			"_key": "01JHOMEPAGE0000000000000003",
+			"heading": "Our work highlights a proven track record of delivering impactful results.",
+			"cta_label": "Work with us",
+			"cta_href": "/contact",
+			"see_all_label": "See all work",
+			"see_all_href": "/work",
+			"items": [
+				{
+					"title": "Drupal platform migration",
+					"description": "A phased migration from a legacy CMS to Drupal for a multi-site editorial team.",
+					"link": "https://www.drupal.org"
+				},
+				{
+					"title": "Vendure commerce build",
+					"description": "A headless commerce platform replacing a rigid proprietary storefront.",
+					"link": "https://www.vendure.io"
+				},
+				{
+					"title": "Horilla HRMS rollout",
+					"description": "Open-source HRMS as the system of record across multiple regional offices.",
+					"link": "https://www.horilla.com"
+				},
+				{
+					"title": "Cloud & DevOps modernization",
+					"description": "Replatforming a monolith onto containerized infrastructure with zero-downtime deploys.",
+					"link": "https://kubernetes.io"
+				},
+				{
+					"title": "Custom internal platform",
+					"description": "A purpose-built application replacing three disconnected tools.",
+					"link": "/work"
+				}
+			]
+		},
+		{
+			"_type": "testimonials_section",
+			"_version": 1,
+			"_key": "01JHOMEPAGE0000000000000004",
+			"heading": "Client feedback",
+			"limit": 5,
+			"only_featured": true
+		},
+		{
+			"_type": "faq_section",
+			"_version": 1,
+			"_key": "01JHOMEPAGE0000000000000005",
+			"cta_label": "Get in touch",
+			"cta_href": "/contact",
+			"items": [
+				{
+					"question": "Why open source instead of proprietary platforms?",
+					"answer": "Open source gives you the flexibility to evolve the platform without vendor lock-in. We handle the part that makes enterprises hesitate: architecture, security, integration, and long-term support, so you get that flexibility with the engineering discipline you'd expect from a proprietary vendor."
+				},
+				{
+					"question": "What do you actually build?",
+					"answer": "Digital experience platforms (Drupal, Payload CMS), commerce (Vendure, Medusa, Shopify), business applications (Horilla, Snipe-IT), custom software, and the cloud/DevOps foundation underneath all of it."
+				},
+				{
+					"question": "Do you only take on full platform builds?",
+					"answer": "No. We take on new builds, modernizations of existing platforms, migrations, ongoing development, and staff augmentation for teams that need more engineering capacity."
+				},
+				{
+					"question": "How do you scope a new project?",
+					"answer": "A short discovery phase maps requirements and dependencies, then we propose a phased delivery plan with clear milestones."
+				},
+				{
+					"question": "Can you take over an existing platform?",
+					"answer": "Yes. We regularly take over platforms built by other teams, starting with an audit before any code changes."
+				}
+			]
+		},
+		{
+			"_type": "latest_writing",
+			"_version": 1,
+			"_key": "01JHOMEPAGE0000000000000006",
+			"heading": "Latest writing",
+			"count": 3
+		}
+	]
+}

@@ -1,0 +1,49 @@
+---
+// "Testimonials Section" page-layout block.
+//
+// Which testimonials show is chosen in the testimonials collection, not in the
+// block (blocks cannot hold reference fields): tick "Featured" on an entry and
+// set "Display order" (lower first). With "Show only featured" on (the
+// default) only featured entries appear; if none are featured yet, the latest
+// testimonials show instead so the section is never blank during rollout.
+// With it off, every published testimonial is eligible. `limit` caps the count.
+import { getEmDashCollection } from "emdash";
+import type { BlockComponentProps } from "emdash/ui";
+import type { PageLayoutBlock } from "../../../emdash-env";
+import ClientFeedback from "../site/ClientFeedback.astro";
+import SectionShell from "../site/SectionShell.astro";
+
+type TestimonialsSectionBlock = Extract<PageLayoutBlock, { _type: "testimonials_section" }>;
+type Props = BlockComponentProps<TestimonialsSectionBlock>;
+
+const { value } = Astro.props;
+const limit = value.limit && value.limit > 0 ? value.limit : 5;
+const onlyFeatured = value.only_featured ?? true;
+
+const { entries, cacheHint } = await getEmDashCollection("testimonials", {
+	status: "published",
+	limit: 100,
+});
+Astro.cache.set(cacheHint);
+
+const byOrder = (a: (typeof entries)[number], b: (typeof entries)[number]) =>
+	(a.data.sort_order ?? Number.MAX_SAFE_INTEGER) - (b.data.sort_order ?? Number.MAX_SAFE_INTEGER) ||
+	(b.data.createdAt?.getTime?.() ?? 0) - (a.data.createdAt?.getTime?.() ?? 0);
+
+const featured = entries.filter((entry) => entry.data.featured);
+const pool = onlyFeatured && featured.length > 0 ? featured : entries;
+const items = [...pool].sort(byOrder).slice(0, limit);
+---
+
+{
+	items.length > 0 && (
+		<SectionShell background={value.background} paddingTop={value.padding_top} paddingBottom={value.padding_bottom} image={value.background_image} overlay={value.image_overlay} imagePosition={value.image_position}>
+			<ClientFeedback
+				items={items}
+				heading={value.heading}
+				viewMoreLabel={value.view_more_label}
+				viewMoreUrl={value.view_more_url}
+			/>
+		</SectionShell>
+	)
+}
