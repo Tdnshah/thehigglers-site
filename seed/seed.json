@@ -169,6 +169,19 @@
 									"bottom"
 								]
 							}
+						},
+						{
+							"slug": "text_color",
+							"label": "Text colour (default = automatic; override if a background image makes text hard to read)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"light",
+									"dark"
+								]
+							}
 						}
 					]
 				}
@@ -261,6 +274,314 @@
 									"center",
 									"top",
 									"bottom"
+								]
+							}
+						},
+						{
+							"slug": "text_color",
+							"label": "Text colour (default = automatic; override if a background image makes text hard to read)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"light",
+									"dark"
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "text_image",
+			"label": "Text & Image",
+			"category": "Content",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "show_heading",
+							"label": "Show section heading (eyebrow, heading, description above the columns)",
+							"type": "boolean",
+							"defaultValue": true
+						},
+						{
+							"slug": "eyebrow",
+							"label": "Eyebrow",
+							"type": "string"
+						},
+						{
+							"slug": "heading",
+							"label": "Section Heading",
+							"type": "string"
+						},
+						{
+							"slug": "description",
+							"label": "Section Description",
+							"type": "text"
+						},
+						{
+							"slug": "heading_align",
+							"label": "Heading alignment",
+							"type": "select",
+							"defaultValue": "left",
+							"validation": {
+								"options": [
+									"left",
+									"center",
+									"right"
+								]
+							}
+						},
+						{
+							"slug": "content",
+							"label": "Text",
+							"type": "portableText"
+						},
+						{
+							"slug": "cta_label",
+							"label": "Button 1 label",
+							"type": "string"
+						},
+						{
+							"slug": "cta_href",
+							"label": "Button 1 link",
+							"type": "url"
+						},
+						{
+							"slug": "cta_style",
+							"label": "Button 1 style",
+							"type": "select",
+							"defaultValue": "primary",
+							"validation": {
+								"options": [
+									"primary",
+									"ghost"
+								]
+							}
+						},
+						{
+							"slug": "cta_new_tab",
+							"label": "Button 1 opens in a new tab",
+							"type": "boolean",
+							"defaultValue": false
+						},
+						{
+							"slug": "cta2_label",
+							"label": "Button 2 label (optional)",
+							"type": "string"
+						},
+						{
+							"slug": "cta2_href",
+							"label": "Button 2 link",
+							"type": "url"
+						},
+						{
+							"slug": "cta2_style",
+							"label": "Button 2 style",
+							"type": "select",
+							"defaultValue": "ghost",
+							"validation": {
+								"options": [
+									"primary",
+									"ghost"
+								]
+							}
+						},
+						{
+							"slug": "cta2_new_tab",
+							"label": "Button 2 opens in a new tab",
+							"type": "boolean",
+							"defaultValue": false
+						},
+						{
+							"slug": "image",
+							"label": "Image (alt text is set on the image)",
+							"type": "image"
+						},
+						{
+							"slug": "image_caption",
+							"label": "Image caption (optional)",
+							"type": "string"
+						},
+						{
+							"slug": "image_href",
+							"label": "Image link (optional)",
+							"type": "url"
+						},
+						{
+							"slug": "image_new_tab",
+							"label": "Image link opens in a new tab",
+							"type": "boolean",
+							"defaultValue": false
+						},
+						{
+							"slug": "image_side",
+							"label": "Image side",
+							"type": "select",
+							"defaultValue": "right",
+							"validation": {
+								"options": [
+									"left",
+									"right"
+								]
+							}
+						},
+						{
+							"slug": "image_frame",
+							"label": "Image frame (none, thin offset border, or soft tinted panel)",
+							"type": "select",
+							"defaultValue": "offset",
+							"validation": {
+								"options": [
+									"none",
+									"offset",
+									"panel"
+								]
+							}
+						},
+						{
+							"slug": "image_ratio",
+							"label": "Image ratio (fixed ratios letterbox, never crop)",
+							"type": "select",
+							"defaultValue": "original",
+							"validation": {
+								"options": [
+									"original",
+									"4:3",
+									"1:1",
+									"16:9"
+								]
+							}
+						},
+						{
+							"slug": "image_width",
+							"label": "Image column width",
+							"type": "select",
+							"defaultValue": "50",
+							"validation": {
+								"options": [
+									"40",
+									"50",
+									"60"
+								]
+							}
+						},
+						{
+							"slug": "vertical_align",
+							"label": "Vertical alignment of text vs image",
+							"type": "select",
+							"defaultValue": "center",
+							"validation": {
+								"options": [
+									"top",
+									"center",
+									"bottom"
+								]
+							}
+						},
+						{
+							"slug": "mobile_order",
+							"label": "On mobile show",
+							"type": "select",
+							"defaultValue": "text_first",
+							"validation": {
+								"options": [
+									"text_first",
+									"image_first"
+								]
+							}
+						},
+						{
+							"slug": "background",
+							"label": "Background colour (default = the section's own look)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"white",
+									"soft",
+									"dark",
+									"accent"
+								]
+							}
+						},
+						{
+							"slug": "padding_top",
+							"label": "Padding top (default = built-in spacing)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"none",
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "padding_bottom",
+							"label": "Padding bottom (default = built-in spacing)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"none",
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "background_image",
+							"label": "Background image (optional, shown behind the section)",
+							"type": "image"
+						},
+						{
+							"slug": "image_overlay",
+							"label": "Image overlay (dark = light text, light = dark text; none can make text hard to read)",
+							"type": "select",
+							"defaultValue": "dark",
+							"validation": {
+								"options": [
+									"dark",
+									"light",
+									"none"
+								]
+							}
+						},
+						{
+							"slug": "image_position",
+							"label": "Image position",
+							"type": "select",
+							"defaultValue": "center",
+							"validation": {
+								"options": [
+									"center",
+									"top",
+									"bottom"
+								]
+							}
+						},
+						{
+							"slug": "text_color",
+							"label": "Text colour (default = automatic; override if a background image makes text hard to read)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"light",
+									"dark"
 								]
 							}
 						}
@@ -429,6 +750,19 @@
 									"bottom"
 								]
 							}
+						},
+						{
+							"slug": "text_color",
+							"label": "Text colour (default = automatic; override if a background image makes text hard to read)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"light",
+									"dark"
+								]
+							}
 						}
 					]
 				}
@@ -575,6 +909,19 @@
 									"bottom"
 								]
 							}
+						},
+						{
+							"slug": "text_color",
+							"label": "Text colour (default = automatic; override if a background image makes text hard to read)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"light",
+									"dark"
+								]
+							}
 						}
 					]
 				}
@@ -694,6 +1041,19 @@
 									"center",
 									"top",
 									"bottom"
+								]
+							}
+						},
+						{
+							"slug": "text_color",
+							"label": "Text colour (default = automatic; override if a background image makes text hard to read)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"light",
+									"dark"
 								]
 							}
 						}
@@ -823,6 +1183,19 @@
 									"bottom"
 								]
 							}
+						},
+						{
+							"slug": "text_color",
+							"label": "Text colour (default = automatic; override if a background image makes text hard to read)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"light",
+									"dark"
+								]
+							}
 						}
 					]
 				}
@@ -925,6 +1298,19 @@
 									"center",
 									"top",
 									"bottom"
+								]
+							}
+						},
+						{
+							"slug": "text_color",
+							"label": "Text colour (default = automatic; override if a background image makes text hard to read)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"light",
+									"dark"
 								]
 							}
 						}
@@ -1096,7 +1482,8 @@
 							"testimonials_section",
 							"faq_section",
 							"latest_writing",
-							"rich_text"
+							"rich_text",
+							"text_image"
 						],
 						"maxItems": 30
 					}

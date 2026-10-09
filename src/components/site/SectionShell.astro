@@ -26,9 +26,12 @@ interface Props {
 	image?: ImageValue | null;
 	overlay?: string | null;
 	imagePosition?: string | null;
+	/** Editor override: "light" or "dark" text regardless of background. */
+	textColor?: string | null;
 }
 
-const { background, paddingTop, paddingBottom, pinned = false, image, overlay, imagePosition } = Astro.props;
+const { background, paddingTop, paddingBottom, pinned = false, image, overlay, imagePosition, textColor } = Astro.props;
+const text = textColor === "light" || textColor === "dark" ? textColor : undefined;
 
 const PADDING: Record<string, string> = { none: "0rem", small: "2rem", medium: "4rem", large: "8rem" };
 const THEMES = ["white", "soft", "dark", "accent"];
@@ -53,6 +56,7 @@ if (paddingBottom && PADDING[paddingBottom]) vars.push(`--pad-bottom:${PADDING[p
 	data-bg={theme}
 	data-image={hasImage ? "" : undefined}
 	data-pinned={pinned ? "" : undefined}
+	data-text={text}
 	style={vars.join(";") || undefined}
 >
 	{
@@ -136,6 +140,27 @@ if (paddingBottom && PADDING[paddingBottom]) vars.push(`--pad-bottom:${PADDING[p
 		--color-paper-soft: var(--color-ink-raised);
 		background: var(--section-bg);
 		color: var(--color-text-on-ink);
+	}
+
+	/* Text colour override: only text tokens change, never the background. */
+	.section-shell[data-text="light"] {
+		--section-fg: var(--color-text-on-ink);
+		--section-fg-muted: var(--color-text-on-ink-muted);
+		--section-line: var(--color-line-on-ink);
+		--color-text: var(--color-text-on-ink);
+		--color-text-muted: var(--color-text-on-ink-muted);
+		--color-line: var(--color-line-on-ink);
+		color: var(--color-text-on-ink);
+	}
+
+	.section-shell[data-text="dark"] {
+		--section-fg: #14161a;
+		--section-fg-muted: #5a5d66;
+		--section-line: #e4e2dd;
+		--color-text: #14161a;
+		--color-text-muted: #5a5d66;
+		--color-line: #e4e2dd;
+		color: #14161a;
 	}
 
 	/* With a photo, the sections' own solid backgrounds step aside. */

@@ -14,8 +14,8 @@ type Props = BlockComponentProps<RichTextBlockValue>;
 const { value } = Astro.props;
 ---
 
-<SectionShell background={value.background} paddingTop={value.padding_top} paddingBottom={value.padding_bottom} image={value.background_image} overlay={value.image_overlay} imagePosition={value.image_position}>
-	<div class="rich-text-block">
+<SectionShell background={value.background} paddingTop={value.padding_top} paddingBottom={value.padding_bottom} image={value.background_image} overlay={value.image_overlay} imagePosition={value.image_position} textColor={value.text_color}>
+	<div class="rich-text-block prose">
 		<PortableText value={value.content} />
 	</div>
 </SectionShell>
@@ -25,19 +25,6 @@ const { value } = Astro.props;
 		max-width: 42rem;
 		margin: 0 auto;
 		padding: var(--pad-top, var(--section-pad-y)) var(--gutter) var(--pad-bottom, var(--section-pad-y));
-		font-size: var(--text-body);
-		line-height: var(--leading-normal);
 		color: var(--color-text);
-	}
-
-	.rich-text-block :global(h2) {
-		font-family: var(--font-display);
-		font-weight: 600;
-		font-size: var(--text-h2);
-		margin: 2rem 0 1rem;
-	}
-
-	.rich-text-block :global(p) {
-		margin: 0 0 1.25rem;
 	}
 </style>
