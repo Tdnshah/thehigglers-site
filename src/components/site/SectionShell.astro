@@ -144,7 +144,10 @@ if (paddingBottom && PADDING[paddingBottom]) vars.push(`--pad-bottom:${PADDING[p
 		background: transparent;
 	}
 
+	/* Pinned sections are dark by default; paint the padding band the same
+	   colour (otherwise it shows the white page behind the section). */
 	.section-shell[data-pinned] {
+		background: var(--section-bg, var(--color-ink));
 		padding-top: var(--pad-top, 0);
 		padding-bottom: var(--pad-bottom, 0);
 	}

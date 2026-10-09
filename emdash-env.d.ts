@@ -39,7 +39,9 @@ export interface PageLayoutGoalsSectionV1Block {
   _type: "goals_section";
   _version: 1;
   _key: string;
+  "eyebrow"?: string | null;
   "heading"?: string | null;
+  "description"?: string | null;
   "cta_label"?: string | null;
   "cta_href"?: string | null;
   "steps"?: { "icon"?: "discover" | "define" | "design" | "architect" | "develop" | "build" | "test" | "uat" | "preprod" | "deploy" | "launch" | "evolve" | "support" | "security" | "cloud" | "data" | "integrate" | null; "icon_image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null; "title": string; "description": string }[] | null;
