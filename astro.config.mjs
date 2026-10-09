@@ -4,6 +4,7 @@ import { defineConfig, fontProviders, sessionDrivers } from "astro/config";
 import emdash, { local } from "emdash/astro";
 import { postgres, sqlite } from "emdash/db";
 import { emdashSmtp } from "emdash-smtp";
+import { formsPlugin } from "@emdash-cms/plugin-forms";
 
 // Local dev uses the SQLite file (no DATABASE_URL set). Production Docker
 // builds pass a Postgres connection string as a build-time env var (see
@@ -71,7 +72,7 @@ export default defineConfig({
           // Enables the email pipeline (magic links, invites, recovery).
           // Actual SMTP/provider credentials are entered in the admin under
           // Settings -> Email after deploying, not here.
-          plugins: [emdashSmtp()],
+          plugins: [emdashSmtp(), formsPlugin()],
       }),
 	],
 

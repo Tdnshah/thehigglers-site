@@ -189,7 +189,27 @@ export interface PageLayoutTextImageV1Block {
 
 export type PageLayoutTextImageBlock = PageLayoutTextImageV1Block;
 
-export type PageLayoutBlock = PageLayoutHeroSectionBlock | PageLayoutLogoWallBlock | PageLayoutGoalsSectionBlock | PageLayoutWorkSectionBlock | PageLayoutTestimonialsSectionBlock | PageLayoutFaqSectionBlock | PageLayoutLatestWritingBlock | PageLayoutRichTextBlock | PageLayoutTextImageBlock;
+export interface PageLayoutFormSectionV1Block {
+  _type: "form_section";
+  _version: 1;
+  _key: string;
+  "eyebrow"?: string | null;
+  "heading"?: string | null;
+  "description"?: string | null;
+  "form"?: string | null;
+  "success_heading"?: string | null;
+  "background"?: "default" | "white" | "soft" | "dark" | "accent" | null;
+  "padding_top"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "padding_bottom"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "background_image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null;
+  "image_overlay"?: "dark" | "light" | "none" | null;
+  "image_position"?: "center" | "top" | "bottom" | null;
+  "text_color"?: "default" | "light" | "dark" | null;
+}
+
+export type PageLayoutFormSectionBlock = PageLayoutFormSectionV1Block;
+
+export type PageLayoutBlock = PageLayoutHeroSectionBlock | PageLayoutLogoWallBlock | PageLayoutGoalsSectionBlock | PageLayoutWorkSectionBlock | PageLayoutTestimonialsSectionBlock | PageLayoutFaqSectionBlock | PageLayoutLatestWritingBlock | PageLayoutRichTextBlock | PageLayoutTextImageBlock | PageLayoutFormSectionBlock;
 
 export interface Page {
   id: string;
