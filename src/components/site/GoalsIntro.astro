@@ -7,6 +7,7 @@
 import { Image } from "emdash/ui";
 import type { ImageValue } from "emdash";
 import Button from "./Button.astro";
+import Eyebrow from "./Eyebrow.astro";
 import { STEP_ICONS, isStepIcon } from "../../utils/step-icons";
 
 interface Pillar {
@@ -19,13 +20,15 @@ interface Pillar {
 }
 
 interface Props {
+	eyebrow?: string | null;
 	heading: string;
+	description?: string | null;
 	ctaLabel?: string | null;
 	ctaHref?: string | null;
 	items: Pillar[];
 }
 
-const { heading, ctaLabel, ctaHref, items } = Astro.props;
+const { eyebrow, heading, description, ctaLabel, ctaHref, items } = Astro.props;
 const corners = ["top-left", "top-right", "bottom-right", "bottom-left"];
 ---
 
@@ -33,14 +36,16 @@ const corners = ["top-left", "top-right", "bottom-right", "bottom-left"];
 	<div class="goals-intro__track" style={`height:${Math.max(items.length * 60, 220)}vh`}>
 		<div class="goals-intro__viewport" data-viewport>
 			<div class="goals-intro__head">
+				{eyebrow && <Eyebrow tone="accent" class="goals-intro__eyebrow">{eyebrow}</Eyebrow>}
 				<h2>{heading}</h2>
+				{description && <p class="goals-intro__description">{description}</p>}
 				{ctaLabel && ctaHref && <Button href={ctaHref} variant="primary">{ctaLabel}</Button>}
 			</div>
 
 			<ul class="goals-intro__row" data-row>
 				{
 					items.map((item, i) => (
-						<li class="goals-intro__col">
+						<li class="goals-intro__col" data-col>
 							{item.iconImage?.src || item.iconImage?.id ? (
 								<span class="goals-intro__icon" aria-hidden="true">
 									<Image image={{ ...item.iconImage, alt: "" }} width={44} height={44} />
@@ -73,6 +78,18 @@ const corners = ["top-left", "top-right", "bottom-right", "bottom-left"];
 					))
 				}
 			</ul>
+
+			<div class="goals-intro__rail" aria-hidden="true">
+				<div class="goals-intro__rail-line">
+					<span class="goals-intro__rail-fill" data-fill />
+					{items.map((_, i) => (
+						<span class="goals-intro__rail-dot" data-dot style={`left:${items.length > 1 ? (i / (items.length - 1)) * 100 : 0}%`} />
+					))}
+				</div>
+				<span class="goals-intro__rail-count">
+					<span data-step>01</span> / {String(items.length).padStart(2, "0")}
+				</span>
+			</div>
 		</div>
 	</div>
 </section>
@@ -87,6 +104,25 @@ const corners = ["top-left", "top-right", "bottom-right", "bottom-left"];
 			const viewport = section.querySelector<HTMLElement>("[data-viewport]");
 			const row = section.querySelector<HTMLElement>("[data-row]");
 			if (!track || !viewport || !row) return;
+			const cols = Array.from(row.querySelectorAll<HTMLElement>("[data-col]"));
+			const dots = Array.from(section.querySelectorAll<HTMLElement>("[data-dot]"));
+			const fill = section.querySelector<HTMLElement>("[data-fill]");
+			const stepLabel = section.querySelector<HTMLElement>("[data-step]");
+			let lastActive = -1;
+
+			const setActive = (active: number) => {
+				if (active === lastActive) return;
+				lastActive = active;
+				cols.forEach((col, i) => {
+					col.classList.toggle("is-active", i === active);
+					col.classList.toggle("is-passed", i < active);
+				});
+				dots.forEach((dot, i) => {
+					dot.classList.toggle("is-reached", i <= active);
+					dot.classList.toggle("is-current", i === active);
+				});
+				if (stepLabel) stepLabel.textContent = String(active + 1).padStart(2, "0");
+			};
 
 			const isNarrow = () => window.matchMedia("(max-width: 780px)").matches;
 			let ticking = false;
@@ -95,16 +131,20 @@ const corners = ["top-left", "top-right", "bottom-right", "bottom-left"];
 				ticking = false;
 				if (isNarrow()) {
 					row.style.transform = "";
+					section.classList.remove("is-scrubbing");
 					return;
 				}
 
 				const rect = track.getBoundingClientRect();
-				const vh = window.innerHeight;
-				const dwell = Math.max(rect.height - vh, 1);
+				const dwell = Math.max(rect.height - viewport.offsetHeight, 1);
 				const scrolled = Math.min(Math.max(-rect.top, 0), dwell);
 				const progress = scrolled / dwell;
 				const maxScroll = Math.max(row.scrollWidth - viewport.clientWidth, 0);
 				row.style.transform = `translateX(${-progress * maxScroll}px)`;
+
+				section.classList.add("is-scrubbing");
+				if (fill) fill.style.transform = `scaleX(${progress})`;
+				setActive(cols.length > 1 ? Math.round(progress * (cols.length - 1)) : 0);
 			};
 
 			const onScroll = () => {
@@ -134,7 +174,7 @@ const corners = ["top-left", "top-right", "bottom-right", "bottom-left"];
 		flex-shrink: 0;
 		max-width: var(--content-max);
 		margin: 0 auto;
-		padding: 2.5rem var(--gutter) 2rem;
+		padding: 0 var(--gutter) 2rem;
 		width: 100%;
 	}
 
@@ -147,6 +187,130 @@ const corners = ["top-left", "top-right", "bottom-right", "bottom-left"];
 		margin: 0 0 1.5rem;
 	}
 
+	.goals-intro__head :global(.goals-intro__eyebrow) {
+		display: block;
+		margin-bottom: 1rem;
+	}
+
+	.goals-intro__head .goals-intro__description {
+		max-width: 40rem;
+		margin: -0.5rem 0 1.5rem;
+		font-size: var(--text-body, 1rem);
+		line-height: var(--leading-normal);
+		color: var(--section-fg-muted, var(--color-text-on-ink-muted));
+	}
+
+	/* Milestone rail: fills with scroll, one dot per step. Desktop only. */
+	.goals-intro__rail {
+		display: none;
+		align-items: center;
+		gap: 1.5rem;
+		max-width: var(--content-max);
+		width: 100%;
+		margin: 2.5rem auto 0;
+		padding: 0 var(--gutter);
+	}
+
+	.is-scrubbing .goals-intro__rail {
+		display: flex;
+	}
+
+	.goals-intro__rail-line {
+		position: relative;
+		flex: 1;
+		height: 1px;
+		background: var(--section-line, var(--color-line-on-ink));
+	}
+
+	.goals-intro__rail-fill {
+		position: absolute;
+		inset: 0;
+		background: var(--color-accent);
+		transform: scaleX(0);
+		transform-origin: left;
+	}
+
+	.goals-intro__rail-dot {
+		position: absolute;
+		top: 50%;
+		width: 0.7rem;
+		height: 0.7rem;
+		border-radius: 50%;
+		background: var(--section-bg, var(--color-ink));
+		border: 1px solid var(--section-line, var(--color-line-on-ink));
+		transform: translate(-50%, -50%);
+		transition:
+			background 0.3s ease,
+			border-color 0.3s ease,
+			transform 0.3s ease;
+	}
+
+	.goals-intro__rail-dot.is-reached {
+		background: var(--color-accent);
+		border-color: var(--color-accent);
+	}
+
+	/* Current step: an offset ring around the filled dot. */
+	.goals-intro__rail-dot::after {
+		content: "";
+		position: absolute;
+		inset: -0.4rem;
+		border: 1px solid var(--color-accent);
+		border-radius: 50%;
+		opacity: 0;
+		transform: scale(0.6);
+		transition:
+			opacity 0.3s ease,
+			transform 0.3s ease;
+	}
+
+	.goals-intro__rail-dot.is-current::after {
+		opacity: 1;
+		transform: scale(1);
+	}
+
+	.goals-intro__rail-count {
+		font-family: var(--font-mono);
+		font-size: var(--text-label);
+		letter-spacing: var(--tracking-label);
+		color: var(--section-fg-muted, var(--color-text-on-ink-muted));
+	}
+
+	.goals-intro__rail-count [data-step] {
+		color: var(--color-accent);
+	}
+
+	/* Step highlight: upcoming steps dim, current lights up, passed stay lit. */
+	.is-scrubbing .goals-intro__col {
+		opacity: 0.4;
+		transition:
+			opacity 0.35s ease,
+			border-color 0.35s ease;
+	}
+
+	.is-scrubbing .goals-intro__col.is-passed {
+		opacity: 0.7;
+	}
+
+	.is-scrubbing .goals-intro__col.is-active {
+		opacity: 1;
+		border-bottom-color: var(--color-accent);
+	}
+
+	.is-scrubbing .goals-intro__col.is-active .goals-intro__icon,
+	.is-scrubbing .goals-intro__col.is-passed .goals-intro__icon {
+		border-color: var(--color-accent);
+		color: var(--color-accent);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.goals-intro__col,
+		.goals-intro__rail-dot,
+		.goals-intro__rail-dot::after {
+			transition: none;
+		}
+	}
+
 	.goals-intro__track {
 		position: relative;
 	}
@@ -154,11 +318,12 @@ const corners = ["top-left", "top-right", "bottom-right", "bottom-left"];
 	.goals-intro__viewport {
 		position: sticky;
 		top: 0;
-		height: 100vh;
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
+		/* Spacing comes from the block's padding settings (set by SectionShell). */
+		padding-top: var(--pad-top, 4rem);
+		padding-bottom: var(--pad-bottom, 4rem);
 	}
 
 	.goals-intro__row {
@@ -269,7 +434,6 @@ const corners = ["top-left", "top-right", "bottom-right", "bottom-left"];
 			overflow-x: auto;
 			overscroll-behavior-x: contain;
 			scroll-snap-type: x mandatory;
-			padding: 1rem 0;
 		}
 
 		.goals-intro__row {

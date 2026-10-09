@@ -278,9 +278,19 @@
 					"version": 1,
 					"fields": [
 						{
+							"slug": "eyebrow",
+							"label": "Eyebrow",
+							"type": "string"
+						},
+						{
 							"slug": "heading",
 							"label": "Section Heading",
 							"type": "string"
+						},
+						{
+							"slug": "description",
+							"label": "Section Description",
+							"type": "text"
 						},
 						{
 							"slug": "cta_label",
