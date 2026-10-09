@@ -590,6 +590,135 @@
 			]
 		},
 		{
+			"slug": "form_section",
+			"label": "Form",
+			"category": "Marketing",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "eyebrow",
+							"label": "Eyebrow",
+							"type": "string"
+						},
+						{
+							"slug": "heading",
+							"label": "Section Heading",
+							"type": "string"
+						},
+						{
+							"slug": "description",
+							"label": "Section Description",
+							"type": "text"
+						},
+						{
+							"slug": "form",
+							"label": "Form (slug of a form built under Forms in the admin)",
+							"type": "string",
+							"defaultValue": "contact-form"
+						},
+						{
+							"slug": "success_heading",
+							"label": "Thank-you heading ({name} = the visitor's first name)",
+							"type": "string",
+							"defaultValue": "Thank you, {name}."
+						},
+						{
+							"slug": "background",
+							"label": "Background colour (default = the section's own look)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"white",
+									"soft",
+									"dark",
+									"accent"
+								]
+							}
+						},
+						{
+							"slug": "padding_top",
+							"label": "Padding top (default = built-in spacing)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"none",
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "padding_bottom",
+							"label": "Padding bottom (default = built-in spacing)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"none",
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "background_image",
+							"label": "Background image (optional, shown behind the section)",
+							"type": "image"
+						},
+						{
+							"slug": "image_overlay",
+							"label": "Image overlay (dark = light text, light = dark text; none can make text hard to read)",
+							"type": "select",
+							"defaultValue": "dark",
+							"validation": {
+								"options": [
+									"dark",
+									"light",
+									"none"
+								]
+							}
+						},
+						{
+							"slug": "image_position",
+							"label": "Image position",
+							"type": "select",
+							"defaultValue": "center",
+							"validation": {
+								"options": [
+									"center",
+									"top",
+									"bottom"
+								]
+							}
+						},
+						{
+							"slug": "text_color",
+							"label": "Text colour (default = automatic; override if a background image makes text hard to read)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"light",
+									"dark"
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
 			"slug": "goals_section",
 			"label": "Goals Section",
 			"category": "Marketing",
@@ -1483,7 +1612,8 @@
 							"faq_section",
 							"latest_writing",
 							"rich_text",
-							"text_image"
+							"text_image",
+							"form_section"
 						],
 						"maxItems": 30
 					}

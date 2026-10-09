@@ -1,0 +1,370 @@
+---
+// "Form" page-layout block: optional heading, then a form built in the
+// admin under Forms (@emdash-cms/plugin-forms), themed to the site. Fields,
+// notification emails, spam protection and the confirmation message live on the
+// form itself; submissions are managed under Forms > Submissions. After a
+// successful send the form is replaced by a thank-you panel.
+import { Form } from "@emdash-cms/plugin-forms/ui";
+import "@emdash-cms/plugin-forms/styles";
+import type { BlockComponentProps } from "emdash/ui";
+import type { PageLayoutBlock } from "../../../emdash-env";
+import Eyebrow from "../site/Eyebrow.astro";
+import SectionShell from "../site/SectionShell.astro";
+
+type ContactFormValue = Extract<PageLayoutBlock, { _type: "form_section" }>;
+type Props = BlockComponentProps<ContactFormValue>;
+
+const { value } = Astro.props;
+const formId = value.form || "contact-form";
+const successHeading = value.success_heading || "Thank you, {name}.";
+---
+
+<SectionShell background={value.background} paddingTop={value.padding_top} paddingBottom={value.padding_bottom} image={value.background_image} overlay={value.image_overlay} imagePosition={value.image_position} textColor={value.text_color}>
+	<div class="contact-form" id="contact-form" data-contact-form data-heading={successHeading}>
+		{
+			(value.eyebrow || value.heading || value.description) && (
+				<header class="contact-form__head">
+					{value.eyebrow && <Eyebrow tone="accent" class="contact-form__eyebrow">{value.eyebrow}</Eyebrow>}
+					{value.heading && <h2>{value.heading}</h2>}
+					{value.description && <p>{value.description}</p>}
+				</header>
+			)
+		}
+
+		<div class="contact-form__stage" data-stage>
+			<div class="contact-form__formwrap" data-formwrap>
+				<Form id={formId} />
+			</div>
+
+			<div class="contact-form__done" data-done tabindex="-1" role="status" hidden>
+				<span class="contact-form__check" aria-hidden="true">
+					<svg viewBox="0 0 48 48" fill="none" width="56" height="56">
+						<circle cx="24" cy="24" r="22" class="contact-form__check-ring" />
+						<path d="M14 25.5l7 7L34.5 17" class="contact-form__check-tick" />
+					</svg>
+				</span>
+				<Eyebrow tone="accent">Message sent</Eyebrow>
+				<h3 data-done-heading></h3>
+				<p data-done-message></p>
+				<button type="button" class="contact-form__again" data-again>Send another message</button>
+			</div>
+		</div>
+	</div>
+</SectionShell>
+
+<script>
+	const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+	function initContactForms() {
+		document.querySelectorAll<HTMLElement>("[data-contact-form]").forEach((root) => {
+			if (root.dataset.bound) return;
+			root.dataset.bound = "1";
+			const stage = root.querySelector<HTMLElement>("[data-stage]")!;
+			const wrap = root.querySelector<HTMLElement>("[data-formwrap]")!;
+			const done = root.querySelector<HTMLElement>("[data-done]")!;
+			const doneHeading = root.querySelector<HTMLElement>("[data-done-heading]")!;
+			const doneMessage = root.querySelector<HTMLElement>("[data-done-message]")!;
+			const form = wrap.querySelector<HTMLFormElement>("form");
+			const status = wrap.querySelector<HTMLElement>("[data-form-status]");
+			if (!form || !status) return;
+			const headingTemplate = root.dataset.heading ?? "Thank you.";
+
+			// The plugin resets the form on success, so remember the first name first.
+			let firstName = "";
+			form.addEventListener(
+				"submit",
+				() => {
+					const el = form.querySelector<HTMLInputElement>('[name="first_name"], [name="firstName"], [name="name"]');
+					firstName = (el?.value ?? "").trim().split(/\s+/)[0] ?? "";
+				},
+				true,
+			);
+
+			// Animate the stage height between two panels so nothing jumps.
+			const swap = (from: HTMLElement, to: HTMLElement, after: () => void) => {
+				const animate = !reduced();
+				if (animate) stage.style.height = `${stage.offsetHeight}px`;
+				from.classList.add("is-leaving");
+				window.setTimeout(
+					() => {
+						from.hidden = true;
+						from.classList.remove("is-leaving");
+						to.hidden = false;
+						to.classList.add("is-entering");
+						if (animate) {
+							const endH = to.offsetHeight;
+							void stage.offsetHeight;
+							stage.style.height = `${endH}px`;
+							window.setTimeout(() => {
+								stage.style.height = "";
+							}, 450);
+						}
+						requestAnimationFrame(() => to.classList.remove("is-entering"));
+						after();
+					},
+					animate ? 280 : 0,
+				);
+			};
+
+			// Show the panel when the plugin reports success.
+			new MutationObserver(() => {
+				if (!status.classList.contains("ec-form-status--success") || !status.textContent?.trim()) return;
+				doneMessage.textContent = status.textContent.trim();
+				doneHeading.textContent = headingTemplate
+					.replace(/\s*\{name\}/g, firstName ? ` ${firstName}` : "")
+					.replace(/\s+([.,!])/g, "$1");
+				status.textContent = "";
+				status.className = "ec-form-status";
+				swap(wrap, done, () => {
+					done.focus({ preventScroll: true });
+					done.scrollIntoView({ block: "nearest", behavior: reduced() ? "auto" : "smooth" });
+				});
+			}).observe(status, { childList: true, characterData: true, subtree: true, attributes: true, attributeFilter: ["class"] });
+
+			root.querySelector("[data-again]")?.addEventListener("click", () => {
+				swap(done, wrap, () => form.querySelector<HTMLElement>("input, textarea, select")?.focus({ preventScroll: true }));
+			});
+		});
+	}
+	initContactForms();
+	document.addEventListener("astro:page-load", initContactForms);
+</script>
+
+<style>
+	.contact-form {
+		max-width: 44rem;
+		margin: 0 auto;
+		padding: var(--pad-top, var(--section-pad-y)) var(--gutter) var(--pad-bottom, var(--section-pad-y));
+		color: var(--color-text);
+	}
+
+	.contact-form__head {
+		margin-bottom: 2.5rem;
+	}
+
+	.contact-form__head :global(.contact-form__eyebrow) {
+		display: block;
+		margin-bottom: 1rem;
+	}
+
+	.contact-form__head h2 {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h2);
+		line-height: var(--leading-tight);
+		margin: 0;
+	}
+
+	.contact-form__head p {
+		margin: 1rem 0 0;
+		font-size: var(--text-body);
+		line-height: var(--leading-normal);
+		color: var(--section-fg-muted, var(--color-text-muted));
+	}
+
+	/* Our display rules would otherwise beat the browser's [hidden] default. */
+	.contact-form__formwrap[hidden],
+	.contact-form__done[hidden] {
+		display: none;
+	}
+
+	/* Form <-> thank-you swap: height animates between the two panels. */
+	.contact-form__stage {
+		overflow: hidden;
+		transition: height 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.contact-form__formwrap,
+	.contact-form__done {
+		transition:
+			opacity 0.28s ease,
+			transform 0.28s ease;
+	}
+
+	.contact-form__formwrap {
+		/* Room for the focus ring so overflow:hidden does not clip it. */
+		padding: 4px;
+		margin: -4px;
+	}
+
+	.is-leaving {
+		opacity: 0;
+		transform: translateY(-8px);
+	}
+
+	.is-entering {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+
+	/* ---- Theme the plugin's form (.ec-form) to the site ---- */
+	.contact-form :global(.ec-form) {
+		--ec-form-gap: 1.25rem;
+		--ec-form-field-border: 1px solid var(--section-line, var(--color-line));
+		--ec-form-field-radius: 0.5rem;
+		--ec-form-field-padding: 0.8rem 1rem;
+		--ec-form-field-bg: transparent;
+		--ec-form-error-color: #b3261e;
+		--ec-form-required-color: #b3261e;
+		--ec-form-help-color: var(--section-fg-muted, var(--color-text-muted));
+		--ec-form-submit-bg: var(--color-accent);
+		--ec-form-submit-color: var(--color-accent-ink);
+		--ec-form-submit-radius: 999px;
+		--ec-form-submit-padding: 0.65rem 1.25rem;
+		color: inherit;
+	}
+
+	.contact-form :global(.ec-form-label) {
+		font-family: var(--font-mono);
+		font-size: var(--text-label);
+		font-weight: 400;
+		letter-spacing: var(--tracking-label);
+		text-transform: uppercase;
+	}
+
+	.contact-form :global(:is(.ec-form-input, .ec-form select, .ec-form textarea)) {
+		color: inherit;
+		transition:
+			border-color 0.15s ease,
+			box-shadow 0.15s ease;
+	}
+
+	.contact-form :global(:is(.ec-form-input, .ec-form select, .ec-form textarea):hover) {
+		border-color: var(--section-fg-muted, var(--color-text-muted));
+	}
+
+	.contact-form :global(:is(.ec-form-input, .ec-form select, .ec-form textarea):focus) {
+		outline: none;
+		border-color: var(--color-accent);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 55%, transparent);
+	}
+
+	.contact-form :global(.ec-form textarea) {
+		min-height: 9rem;
+	}
+
+	.contact-form :global(:is(.ec-form-submit, .ec-form-next, .ec-form-prev)) {
+		font-family: var(--font-mono);
+		font-size: var(--text-label);
+		font-weight: 400;
+		letter-spacing: var(--tracking-label);
+		text-transform: uppercase;
+	}
+
+	.contact-form :global(.ec-form-prev) {
+		color: inherit;
+	}
+
+	.contact-form :global(.ec-form-submit:disabled) {
+		cursor: progress;
+	}
+
+	/* Errors only; success is shown by the thank-you panel. */
+	.contact-form :global(.ec-form-status--error) {
+		background: color-mix(in srgb, #b3261e 8%, transparent);
+		color: #b3261e;
+		border: 0;
+		border-left: 3px solid #b3261e;
+		border-radius: 0 0.4rem 0.4rem 0;
+	}
+
+	/* ---- Thank-you panel ---- */
+	.contact-form__done {
+		display: grid;
+		justify-items: start;
+		gap: 0.9rem;
+		padding: clamp(1.75rem, 4vw, 3rem);
+		border: 1px solid var(--section-line, var(--color-line));
+		border-radius: 0.75rem;
+		outline: none;
+	}
+
+	.contact-form__done h3 {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h2);
+		line-height: var(--leading-tight);
+		margin: 0;
+	}
+
+	.contact-form__done p {
+		margin: 0;
+		max-width: 34rem;
+		font-size: var(--text-body);
+		line-height: var(--leading-normal);
+		color: var(--section-fg-muted, var(--color-text-muted));
+	}
+
+	.contact-form__check {
+		display: grid;
+		place-items: center;
+		margin-bottom: 0.5rem;
+	}
+
+	.contact-form__check-ring {
+		fill: var(--color-accent);
+		stroke: none;
+		transform-origin: center;
+		animation: cf-pop 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+	}
+
+	.contact-form__check-tick {
+		stroke: var(--color-accent-ink);
+		stroke-width: 3;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-dasharray: 34;
+		stroke-dashoffset: 34;
+		animation: cf-draw 0.45s 0.25s ease-out forwards;
+	}
+
+	.contact-form__again {
+		margin-top: 0.5rem;
+		padding: 0;
+		font-family: var(--font-mono);
+		font-size: var(--text-label);
+		letter-spacing: var(--tracking-label);
+		text-transform: uppercase;
+		color: inherit;
+		background: none;
+		border: 0;
+		border-bottom: 1px solid currentColor;
+		cursor: pointer;
+	}
+
+	.contact-form__again:hover {
+		color: var(--color-brand);
+	}
+
+	@keyframes cf-pop {
+		from {
+			opacity: 0;
+			transform: scale(0.6);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
+	@keyframes cf-draw {
+		to {
+			stroke-dashoffset: 0;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.contact-form__stage,
+		.contact-form__formwrap,
+		.contact-form__done {
+			transition: none;
+		}
+
+		.contact-form__check-ring,
+		.contact-form__check-tick {
+			animation: none;
+			opacity: 1;
+			stroke-dashoffset: 0;
+		}
+	}
+</style>
