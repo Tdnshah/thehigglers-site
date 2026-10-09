@@ -14,7 +14,7 @@ const logos = (value.logos ?? []).filter((logo) => logo.image);
 
 {
 	logos.length > 0 && (
-		<SectionShell background={value.background} paddingTop={value.padding_top} paddingBottom={value.padding_bottom} image={value.background_image} overlay={value.image_overlay} imagePosition={value.image_position}>
+		<SectionShell background={value.background} paddingTop={value.padding_top} paddingBottom={value.padding_bottom} image={value.background_image} overlay={value.image_overlay} imagePosition={value.image_position} textColor={value.text_color}>
 		<LogoWall
 			label={value.label}
 			logos={logos.map((logo) => ({

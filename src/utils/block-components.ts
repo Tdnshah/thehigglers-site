@@ -6,6 +6,7 @@ import HeroSectionBlock from "../components/blocks/HeroSectionBlock.astro";
 import LatestWritingBlock from "../components/blocks/LatestWritingBlock.astro";
 import LogoWallBlock from "../components/blocks/LogoWallBlock.astro";
 import RichTextBlock from "../components/blocks/RichTextBlock.astro";
+import TextImageBlock from "../components/blocks/TextImageBlock.astro";
 import TestimonialsSection from "../components/blocks/TestimonialsSection.astro";
 import WorkSectionBlock from "../components/blocks/WorkSectionBlock.astro";
 
@@ -19,6 +20,7 @@ export const blockComponents = defineBlockComponents<PageLayoutBlock>({
 	faq_section: FaqSectionBlock,
 	latest_writing: LatestWritingBlock,
 	rich_text: RichTextBlock,
+	text_image: TextImageBlock,
 });
 
 /** A page whose first block is a hero gets the full-bleed hero + overlay header. */

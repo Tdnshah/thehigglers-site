@@ -1,0 +1,273 @@
+---
+// "Text & Image" page-layout block: optional section heading (eyebrow,
+// heading, description) above two columns, a rich-text column with up to two
+// CTAs, and an image column (optional link, caption and decorative frame).
+import { Image, PortableText } from "emdash/ui";
+import type { BlockComponentProps } from "emdash/ui";
+import type { PageLayoutBlock } from "../../../emdash-env";
+import Button from "../site/Button.astro";
+import Eyebrow from "../site/Eyebrow.astro";
+import SectionShell from "../site/SectionShell.astro";
+
+type TextImageValue = Extract<PageLayoutBlock, { _type: "text_image" }>;
+type Props = BlockComponentProps<TextImageValue>;
+
+const { value } = Astro.props;
+
+const pick = <T extends string>(v: string | null | undefined, allowed: readonly T[], fallback: T): T =>
+	allowed.includes(v as T) ? (v as T) : fallback;
+
+const showHeading = value.show_heading !== false && Boolean(value.heading || value.eyebrow || value.description);
+const headingAlign = pick(value.heading_align, ["left", "center", "right"], "left");
+const side = pick(value.image_side, ["left", "right"], "right");
+const frame = pick(value.image_frame, ["none", "offset", "panel"], "offset");
+const ratio = pick(value.image_ratio, ["original", "4:3", "1:1", "16:9"], "original");
+const width = pick(value.image_width, ["40", "50", "60"], "50");
+const valign = pick(value.vertical_align, ["top", "center", "bottom"], "center");
+const mobile = pick(value.mobile_order, ["text_first", "image_first"], "text_first");
+
+const hasImage = Boolean(value.image && (value.image.src || value.image.id));
+const hasText = Boolean(value.content && value.content.length > 0) || Boolean(value.cta_label && value.cta_href);
+const ctas = [
+	{ label: value.cta_label, href: value.cta_href, style: value.cta_style ?? "primary", newTab: value.cta_new_tab },
+	{ label: value.cta2_label, href: value.cta2_href, style: value.cta2_style ?? "ghost", newTab: value.cta2_new_tab },
+].filter((c) => c.label && c.href);
+const imageHref = value.image_href || null;
+const aspect = ratio === "original" ? undefined : ratio.replace(":", " / ");
+const columns = `${100 - Number(width)}fr ${width}fr`;
+const columnsFlipped = `${width}fr ${100 - Number(width)}fr`;
+---
+
+<SectionShell background={value.background} paddingTop={value.padding_top} paddingBottom={value.padding_bottom} image={value.background_image} overlay={value.image_overlay} imagePosition={value.image_position} textColor={value.text_color}>
+	<div class="text-image">
+		{
+			showHeading && (
+				<header class={`text-image__head text-image__head--${headingAlign}`}>
+					{value.eyebrow && <Eyebrow tone="accent" class="text-image__eyebrow">{value.eyebrow}</Eyebrow>}
+					{value.heading && <h2>{value.heading}</h2>}
+					{value.description && <p>{value.description}</p>}
+				</header>
+			)
+		}
+
+		{
+			(hasText || hasImage) && (
+				<div
+					class="text-image__grid"
+					data-side={side}
+					data-valign={valign}
+					data-mobile={mobile}
+					data-single={hasText && hasImage ? undefined : ""}
+					style={`--cols:${side === "left" ? columnsFlipped : columns}`}
+				>
+					{hasText && (
+						<div class="text-image__text">
+							{value.content && value.content.length > 0 && (
+								<div class="text-image__body prose">
+									<PortableText value={value.content} />
+								</div>
+							)}
+							{ctas.length > 0 && (
+								<div class="text-image__ctas">
+									{ctas.map((c) => (
+										<Button href={c.href ?? undefined} variant={c.style === "ghost" ? "ghost" : "primary"} target={c.newTab ? "_blank" : undefined}>
+											{c.label}
+										</Button>
+									))}
+								</div>
+							)}
+						</div>
+					)}
+
+					{hasImage && value.image && (
+						<figure class="text-image__media">
+							<div class={`text-image__frame text-image__frame--${frame}`}>
+								{imageHref ? (
+									<a href={imageHref} target={value.image_new_tab ? "_blank" : undefined} rel={value.image_new_tab ? "noopener noreferrer" : undefined} class="text-image__img" style={aspect ? `aspect-ratio:${aspect}` : undefined}>
+										<Image image={value.image} />
+									</a>
+								) : (
+									<div class="text-image__img" style={aspect ? `aspect-ratio:${aspect}` : undefined}>
+										<Image image={value.image} />
+									</div>
+								)}
+							</div>
+							{value.image_caption && <figcaption>{value.image_caption}</figcaption>}
+						</figure>
+					)}
+				</div>
+			)
+		}
+	</div>
+</SectionShell>
+
+<style>
+	.text-image {
+		max-width: var(--content-max);
+		margin: 0 auto;
+		padding: var(--pad-top, var(--section-pad-y)) var(--gutter) var(--pad-bottom, var(--section-pad-y));
+		color: var(--color-text);
+	}
+
+	/* Section heading */
+	.text-image__head {
+		max-width: 44rem;
+		margin: 0 0 3rem;
+	}
+
+	.text-image__head--center {
+		margin-inline: auto;
+		text-align: center;
+	}
+
+	.text-image__head--right {
+		margin-left: auto;
+		text-align: right;
+	}
+
+	.text-image__head :global(.text-image__eyebrow) {
+		display: block;
+		margin-bottom: 1rem;
+	}
+
+	.text-image__head h2 {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h2);
+		line-height: var(--leading-tight);
+		margin: 0;
+	}
+
+	.text-image__head p {
+		margin: 1rem 0 0;
+		font-size: var(--text-body);
+		line-height: var(--leading-normal);
+		color: var(--section-fg-muted, var(--color-text-muted));
+	}
+
+	/* Columns */
+	.text-image__grid {
+		display: grid;
+		grid-template-columns: var(--cols);
+		gap: clamp(2rem, 5vw, 5rem);
+		align-items: center;
+	}
+
+	.text-image__grid[data-valign="top"] {
+		align-items: start;
+	}
+
+	.text-image__grid[data-valign="bottom"] {
+		align-items: end;
+	}
+
+	.text-image__grid[data-side="left"] .text-image__media {
+		order: -1;
+	}
+
+	.text-image__grid[data-single] {
+		grid-template-columns: minmax(0, 44rem);
+		justify-content: center;
+	}
+
+	.text-image__text,
+	.text-image__media {
+		min-width: 0;
+	}
+
+	.text-image__ctas {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-top: 2rem;
+	}
+
+	/* Image + frame */
+	.text-image__media {
+		margin: 0;
+	}
+
+	.text-image__frame {
+		position: relative;
+		isolation: isolate;
+	}
+
+	.text-image__img {
+		display: block;
+		overflow: hidden;
+		border-radius: 0.5rem;
+	}
+
+	/* Never crop: the whole image is always shown. "original" follows the
+	   image's own proportions; a fixed ratio letterboxes instead of cutting. */
+	.text-image__img :global(img) {
+		display: block;
+		width: 100%;
+		height: auto;
+		object-fit: contain;
+	}
+
+	.text-image__img[style*="aspect-ratio"] :global(img) {
+		height: 100%;
+	}
+
+	/* Thin outline sitting behind the image, offset to the outer-bottom corner. */
+	.text-image__frame--offset::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		border: 1px solid var(--color-accent);
+		border-radius: 0.5rem;
+		transform: translate(1rem, 1rem);
+	}
+
+	.text-image__grid[data-side="left"] .text-image__frame--offset::before {
+		transform: translate(-1rem, 1rem);
+	}
+
+	/* Soft tinted panel peeking out around the image. */
+	.text-image__frame--panel::before {
+		content: "";
+		position: absolute;
+		inset: -1rem;
+		z-index: -1;
+		border-radius: 0.9rem;
+		background: var(--color-accent-soft);
+	}
+
+	.text-image__media figcaption {
+		margin-top: 1.5rem;
+		font-size: var(--text-small);
+		color: var(--section-fg-muted, var(--color-text-muted));
+	}
+
+	@media (max-width: 780px) {
+		.text-image__grid {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 2.5rem;
+		}
+
+		.text-image__grid[data-side="left"] .text-image__media {
+			order: 0;
+		}
+
+		.text-image__grid[data-mobile="image_first"] .text-image__media {
+			order: -1;
+		}
+
+		/* Keep the offset inside the gutter on narrow screens. */
+		.text-image__frame--offset::before,
+		.text-image__grid[data-side="left"] .text-image__frame--offset::before {
+			transform: translate(0.5rem, 0.5rem);
+		}
+
+		.text-image__frame--panel::before {
+			inset: -0.5rem;
+		}
+
+		.text-image__grid[data-single] {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+</style>

@@ -37,7 +37,7 @@ const items = [...pool].sort(byOrder).slice(0, limit);
 
 {
 	items.length > 0 && (
-		<SectionShell background={value.background} paddingTop={value.padding_top} paddingBottom={value.padding_bottom} image={value.background_image} overlay={value.image_overlay} imagePosition={value.image_position}>
+		<SectionShell background={value.background} paddingTop={value.padding_top} paddingBottom={value.padding_bottom} image={value.background_image} overlay={value.image_overlay} imagePosition={value.image_position} textColor={value.text_color}>
 			<ClientFeedback
 				items={items}
 				heading={value.heading}
