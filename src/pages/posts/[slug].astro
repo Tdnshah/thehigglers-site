@@ -3,6 +3,7 @@ import { getEmDashEntry, getEmDashCollection, getSeoMeta, decodeSlug, getSiteSet
 import { Image, PortableText } from "emdash/ui";
 import Base from "../../layouts/Base.astro";
 import Eyebrow from "../../components/site/Eyebrow.astro";
+import PageTitle from "../../components/site/PageTitle.astro";
 import PostCardGrid from "../../components/site/PostCardGrid.astro";
 import { resolveStarterSiteIdentity } from "../../utils/site-identity";
 import { estimateReadingMinutes } from "../../utils/reading-time";
@@ -70,11 +71,11 @@ const related = recent
 	image={seo.ogImage}
 	content={{ collection: "posts", id: post.data.id, slug }}
 >
-	<article class="post">
-		<div class="post__header">
-			{categories.length > 0 && <Eyebrow tone="accent">{categories[0].label}</Eyebrow>}
-			<h1 {...post.edit.title}>{post.data.title}</h1>
-		</div>
+	<PageTitle title={post.data.title} edit={post.edit.title} settings={post.data}>
+		{post.data.show_title !== false && categories.length > 0 && <Eyebrow tone="accent">{categories[0].label}</Eyebrow>}
+	</PageTitle>
+
+	<article class:list={["post", post.data.show_title !== false && "post--titled"]}>
 
 		{
 			post.data.featured_image && (
@@ -126,12 +127,9 @@ const related = recent
 		padding: var(--section-pad-y) var(--gutter) 3rem;
 	}
 
-	.post__header h1 {
-		font-family: var(--font-display);
-		font-weight: 600;
-		font-size: var(--text-h1);
-		line-height: var(--leading-tight);
-		margin: 0.75rem 0 0;
+	/* The title area above provides the top spacing. */
+	.post--titled {
+		padding-top: 2rem;
 	}
 
 	.post__image {

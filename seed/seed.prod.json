@@ -1577,6 +1577,126 @@
 					"slug": "excerpt",
 					"label": "Excerpt",
 					"type": "text"
+				},
+				{
+					"slug": "show_title",
+					"label": "Title: show the page title",
+					"type": "boolean",
+					"defaultValue": true
+				},
+				{
+					"slug": "title_align",
+					"label": "Title: text alignment",
+					"type": "select",
+					"defaultValue": "left",
+					"validation": {
+						"options": [
+							"left",
+							"center",
+							"right"
+						]
+					}
+				},
+				{
+					"slug": "title_width",
+					"label": "Title: width (contained = narrow, wide = site container, full = edge to edge)",
+					"type": "select",
+					"defaultValue": "contained",
+					"validation": {
+						"options": [
+							"contained",
+							"wide",
+							"full"
+						]
+					}
+				},
+				{
+					"slug": "title_size",
+					"label": "Title: size",
+					"type": "select",
+					"defaultValue": "normal",
+					"validation": {
+						"options": [
+							"normal",
+							"large"
+						]
+					}
+				},
+				{
+					"slug": "title_background",
+					"label": "Title: background colour (default = none)",
+					"type": "select",
+					"defaultValue": "default",
+					"validation": {
+						"options": [
+							"default",
+							"white",
+							"soft",
+							"dark",
+							"accent"
+						]
+					}
+				},
+				{
+					"slug": "title_background_image",
+					"label": "Title: background image (optional)",
+					"type": "image"
+				},
+				{
+					"slug": "title_image_overlay",
+					"label": "Title: image overlay (dark = light text, light = dark text)",
+					"type": "select",
+					"defaultValue": "dark",
+					"validation": {
+						"options": [
+							"dark",
+							"light",
+							"none"
+						]
+					}
+				},
+				{
+					"slug": "title_text_color",
+					"label": "Title: text colour (default = automatic)",
+					"type": "select",
+					"defaultValue": "default",
+					"validation": {
+						"options": [
+							"default",
+							"light",
+							"dark"
+						]
+					}
+				},
+				{
+					"slug": "title_padding_top",
+					"label": "Title: padding top (default = built-in spacing)",
+					"type": "select",
+					"defaultValue": "default",
+					"validation": {
+						"options": [
+							"default",
+							"none",
+							"small",
+							"medium",
+							"large"
+						]
+					}
+				},
+				{
+					"slug": "title_padding_bottom",
+					"label": "Title: padding bottom (default = built-in spacing)",
+					"type": "select",
+					"defaultValue": "default",
+					"validation": {
+						"options": [
+							"default",
+							"none",
+							"small",
+							"medium",
+							"large"
+						]
+					}
 				}
 			]
 		},
@@ -1616,6 +1736,126 @@
 							"form_section"
 						],
 						"maxItems": 30
+					}
+				},
+				{
+					"slug": "show_title",
+					"label": "Title: show the page title",
+					"type": "boolean",
+					"defaultValue": true
+				},
+				{
+					"slug": "title_align",
+					"label": "Title: text alignment",
+					"type": "select",
+					"defaultValue": "left",
+					"validation": {
+						"options": [
+							"left",
+							"center",
+							"right"
+						]
+					}
+				},
+				{
+					"slug": "title_width",
+					"label": "Title: width (contained = narrow, wide = site container, full = edge to edge)",
+					"type": "select",
+					"defaultValue": "contained",
+					"validation": {
+						"options": [
+							"contained",
+							"wide",
+							"full"
+						]
+					}
+				},
+				{
+					"slug": "title_size",
+					"label": "Title: size",
+					"type": "select",
+					"defaultValue": "normal",
+					"validation": {
+						"options": [
+							"normal",
+							"large"
+						]
+					}
+				},
+				{
+					"slug": "title_background",
+					"label": "Title: background colour (default = none)",
+					"type": "select",
+					"defaultValue": "default",
+					"validation": {
+						"options": [
+							"default",
+							"white",
+							"soft",
+							"dark",
+							"accent"
+						]
+					}
+				},
+				{
+					"slug": "title_background_image",
+					"label": "Title: background image (optional)",
+					"type": "image"
+				},
+				{
+					"slug": "title_image_overlay",
+					"label": "Title: image overlay (dark = light text, light = dark text)",
+					"type": "select",
+					"defaultValue": "dark",
+					"validation": {
+						"options": [
+							"dark",
+							"light",
+							"none"
+						]
+					}
+				},
+				{
+					"slug": "title_text_color",
+					"label": "Title: text colour (default = automatic)",
+					"type": "select",
+					"defaultValue": "default",
+					"validation": {
+						"options": [
+							"default",
+							"light",
+							"dark"
+						]
+					}
+				},
+				{
+					"slug": "title_padding_top",
+					"label": "Title: padding top (default = built-in spacing)",
+					"type": "select",
+					"defaultValue": "default",
+					"validation": {
+						"options": [
+							"default",
+							"none",
+							"small",
+							"medium",
+							"large"
+						]
+					}
+				},
+				{
+					"slug": "title_padding_bottom",
+					"label": "Title: padding bottom (default = built-in spacing)",
+					"type": "select",
+					"defaultValue": "default",
+					"validation": {
+						"options": [
+							"default",
+							"none",
+							"small",
+							"medium",
+							"large"
+						]
 					}
 				}
 			]
