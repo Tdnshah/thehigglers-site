@@ -8,9 +8,11 @@
  *
  * It handles:
  *   1. collection fields that exist in the seed but not on the site (adds them)
- *   2. block types whose fields differ from the seed (amends the active version)
- *   3. the `pages.layout` blocks field allowed types
- * It reports (never creates) block types missing from the site.
+ *   2. block types missing from the site (creates them at version 1)
+ *   3. block types whose fields differ from the seed (amends the active version)
+ *   4. the `pages.layout` blocks field allowed types
+ * Steps run in that order, so a layout never allows a block type that does not
+ * exist yet. Block types cannot be deleted in EmDash, so review the dry run.
  *
  * DRY RUN by default. Nothing is written unless you pass --apply.
  *
@@ -82,26 +84,59 @@ const same = (a, b) => JSON.stringify(canon(a)) === JSON.stringify(canon(b));
 const FIELD_KEYS = ["slug", "label", "type", "required", "unique", "searchable", "indexed", "translatable", "defaultValue", "validation", "options", "widget"];
 const pickField = (f) => Object.fromEntries(FIELD_KEYS.filter((k) => f[k] !== undefined).map((k) => [k, f[k]]));
 
+// ---- preflight: fail clearly on auth/scope problems instead of guessing -----------
+// Block types need a broader token scope than collections, so probe both. A 401/403
+// must never be reported as "missing".
+const describe = (res) => `HTTP ${res.status}${res.json?.error?.code ? ` ${res.json.error.code}` : ""}`;
+for (const [label, path, hint] of [
+	["collections", "/schema/collections", "needs schema:read"],
+	["block types", "/schema/block-types", 'needs the "admin" scope (and an admin user)'],
+]) {
+	const res = await call("GET", path);
+	if (res.status === 401 || res.status === 403) {
+		console.error(`Cannot read ${label} (${describe(res)}): the token is invalid, expired, or lacks permission (${hint}).`);
+		console.error("Create a new token in Settings -> API Tokens with the right scopes, then re-run.");
+		process.exit(1);
+	}
+	if (!res.ok) {
+		console.error(`Cannot read ${label} (${describe(res)}). Check --url and that the site is up.`);
+		process.exit(1);
+	}
+}
+
 // ---- build the plan ----------------------------------------------------------
 const plan = [];
 const notes = [];
 
 for (const collection of seed.collections ?? []) {
 	const res = await call("GET", `/schema/collections/${collection.slug}/fields`);
+	if (res.status === 404) {
+		notes.push(`collection "${collection.slug}": not found on site; create it in the admin first`);
+		continue;
+	}
 	if (!res.ok) {
-		notes.push(`collection "${collection.slug}": not found on site (status ${res.status}); create it in the admin first`);
+		notes.push(`collection "${collection.slug}": could not read (${describe(res)}); skipped`);
 		continue;
 	}
 	const existing = new Map((res.json?.data?.items ?? []).map((f) => [f.slug, f]));
+	// Report (never remove) fields that exist on the site but not in the seed.
+	const seedSlugs = new Set(collection.fields.map((f) => f.slug));
+	for (const slug of existing.keys()) {
+		if (!seedSlugs.has(slug)) {
+			notes.push(`field ${collection.slug}.${slug} exists on the site but not in the seed (left alone; removing a field deletes its data, so check it first)`);
+		}
+	}
 	for (const field of collection.fields) {
 		const live = existing.get(field.slug);
 		if (!live) {
 			plan.push({
+				phase: 1,
 				label: `add field ${collection.slug}.${field.slug} (${field.type})`,
 				run: () => call("POST", `/schema/collections/${collection.slug}/fields`, pickField(field)),
 			});
 		} else if (field.type === "blocks" && !same(field.validation?.allowedTypes, live.validation?.allowedTypes)) {
 			plan.push({
+				phase: 4,
 				label: `set ${collection.slug}.${field.slug} allowed types -> ${field.validation.allowedTypes.join(", ")}`,
 				run: () =>
 					call("PUT", `/schema/collections/${collection.slug}/fields/${field.slug}`, {
@@ -118,9 +153,29 @@ for (const collection of seed.collections ?? []) {
 
 for (const block of seed.blockTypes ?? []) {
 	const res = await call("GET", `/schema/block-types/${block.slug}`);
+	if (res.status === 404) {
+		const fields = (block.versions.find((v) => v.version === block.currentVersion) ?? block.versions[0]).fields;
+		if (block.currentVersion !== 1 || block.versions.length !== 1) {
+			notes.push(`block type "${block.slug}": missing on site and the seed has several versions; create it deliberately in the admin or via the API`);
+			continue;
+		}
+		plan.push({
+			phase: 2,
+			label: `create block type ${block.slug} (${fields.length} fields)`,
+			run: () =>
+				call("POST", "/schema/block-types", {
+					slug: block.slug,
+					label: block.label,
+					...(block.category ? { category: block.category } : {}),
+					...(block.icon ? { icon: block.icon } : {}),
+					fields,
+				}),
+		});
+		continue;
+	}
 	const live = res.json?.data?.item;
 	if (!res.ok || !live) {
-		notes.push(`block type "${block.slug}": missing on site (restart the app once after deploy, or create it in the admin)`);
+		notes.push(`block type "${block.slug}": could not read (${describe(res)}); skipped`);
 		continue;
 	}
 	const seedVersion = block.versions.find((v) => v.version === block.currentVersion) ?? block.versions.at(-1);
@@ -131,6 +186,7 @@ for (const block of seed.blockTypes ?? []) {
 	}
 	if (!same(seedVersion.fields, liveVersion.fields)) {
 		plan.push({
+			phase: 3,
 			label: `amend block type ${block.slug} v${live.currentVersion} (fields differ from seed)`,
 			run: () =>
 				call("PUT", `/schema/block-types/${block.slug}`, {
@@ -140,6 +196,8 @@ for (const block of seed.blockTypes ?? []) {
 		});
 	}
 }
+
+plan.sort((a, b) => a.phase - b.phase);
 
 // ---- report / apply ----------------------------------------------------------
 console.log(`Site: ${base}\nSeed: ${args.seed}\nMode: ${args.apply ? "APPLY" : "dry run (add --apply to write)"}\n`);
@@ -160,6 +218,11 @@ let failed = 0;
 for (const step of plan) {
 	const res = await step.run();
 	console.log(`${res.ok ? "ok  " : "FAIL"} ${step.label}${res.ok ? "" : ` -> ${res.status} ${JSON.stringify(res.json?.error ?? res.json).slice(0, 200)}`}`);
-	if (!res.ok) failed++;
+	if (!res.ok) {
+		failed++;
+		// Later steps may depend on this one (e.g. the layout needs the block types).
+		console.log("Stopping at the first failure. Fix it and re-run; finished steps are skipped automatically.");
+		break;
+	}
 }
 process.exit(failed ? 1 : 0);
