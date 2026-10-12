@@ -1,0 +1,125 @@
+---
+// Title area for pages and posts, driven by the "Title: ..." fields on the
+// entry (show/hide, alignment, width, size, background, text colour, padding).
+// Uses SectionShell so it supports the same background and text colour presets
+// as the content sections. A hidden title still renders for screen readers and
+// SEO (visually hidden h1).
+import type { ImageValue } from "emdash";
+import SectionShell from "./SectionShell.astro";
+
+interface Settings {
+	show_title?: boolean | null;
+	title_align?: string | null;
+	title_width?: string | null;
+	title_size?: string | null;
+	title_background?: string | null;
+	title_background_image?: ImageValue | null;
+	title_image_overlay?: string | null;
+	title_text_color?: string | null;
+	title_padding_top?: string | null;
+	title_padding_bottom?: string | null;
+}
+
+interface Props {
+	title: string;
+	/** Visual-editing attributes for the title, e.g. `entry.edit.title`. */
+	edit?: Record<string, unknown>;
+	settings?: Settings;
+}
+
+const { title, edit = {}, settings = {} } = Astro.props;
+
+const pick = (v: string | null | undefined, allowed: readonly string[], fallback: string) => (allowed.includes(v ?? "") ? (v as string) : fallback);
+const show = settings.show_title !== false;
+const align = pick(settings.title_align, ["left", "center", "right"], "left");
+const width = pick(settings.title_width, ["contained", "wide", "full"], "contained");
+const size = pick(settings.title_size, ["normal", "large"], "normal");
+const hasImage = Boolean(settings.title_background_image && (settings.title_background_image.src || settings.title_background_image.id));
+const hasBackground = hasImage || (settings.title_background ?? "default") !== "default";
+---
+
+{
+	show ? (
+		<SectionShell
+			background={settings.title_background}
+			paddingTop={settings.title_padding_top}
+			paddingBottom={settings.title_padding_bottom}
+			image={settings.title_background_image}
+			overlay={settings.title_image_overlay}
+			textColor={settings.title_text_color}
+		>
+			<header class={`page-title page-title--${width} page-title--${align} page-title--${size}`} data-banded={hasBackground ? "" : undefined}>
+				<slot />
+				<h1 {...edit}>{title}</h1>
+			</header>
+		</SectionShell>
+	) : (
+		<h1 class="page-title__sr" {...edit}>{title}</h1>
+	)
+}
+
+<style>
+	.page-title {
+		margin: 0 auto;
+		padding: var(--pad-top, var(--section-pad-y)) var(--gutter) var(--pad-bottom, 0);
+		color: var(--color-text);
+	}
+
+	/* A coloured band needs breathing room below the title by default. */
+	.page-title[data-banded] {
+		padding-bottom: var(--pad-bottom, 2.5rem);
+	}
+
+	.page-title--contained {
+		max-width: 42rem;
+	}
+
+	.page-title--wide {
+		max-width: var(--content-max);
+	}
+
+	.page-title--full {
+		max-width: none;
+	}
+
+	.page-title--left {
+		text-align: left;
+	}
+
+	.page-title--center {
+		text-align: center;
+	}
+
+	.page-title--right {
+		text-align: right;
+	}
+
+	.page-title h1 {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h1);
+		line-height: var(--leading-tight);
+		margin: 0;
+	}
+
+	.page-title :global(.eyebrow) {
+		display: inline-block;
+		margin-bottom: 0.75rem;
+	}
+
+	.page-title--large h1 {
+		font-size: var(--text-display);
+	}
+
+	.page-title__sr {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+</style>

@@ -2,6 +2,7 @@
 import { getEmDashEntry, getSeoMeta, decodeSlug, getSiteSettings } from "emdash";
 import { Blocks } from "emdash/ui";
 import Base from "../layouts/Base.astro";
+import PageTitle from "../components/site/PageTitle.astro";
 import { blockComponents, startsWithHero } from "../utils/block-components";
 import { resolveStarterSiteIdentity } from "../utils/site-identity";
 
@@ -36,29 +37,7 @@ const seo = getSeoMeta(page, {
 	content={{ collection: "pages", id: page.data.id, slug }}
 	overlayHeader={heroFirst}
 >
-	{
-		!heroFirst && (
-			<header class="page-header">
-				<h1 {...page.edit.title}>{page.data.title}</h1>
-			</header>
-		)
-	}
+	{!heroFirst && <PageTitle title={page.data.title} edit={page.edit.title} settings={page.data} />}
 
 	<Blocks value={page.data.layout} components={blockComponents} />
 </Base>
-
-<style>
-	.page-header {
-		max-width: 42rem;
-		margin: 0 auto;
-		padding: var(--section-pad-y) var(--gutter) 0;
-	}
-
-	.page-header h1 {
-		font-family: var(--font-display);
-		font-weight: 600;
-		font-size: var(--text-h1);
-		line-height: var(--leading-tight);
-		margin: 0;
-	}
-</style>
