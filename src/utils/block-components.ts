@@ -1,6 +1,7 @@
 import { defineBlockComponents } from "emdash/ui";
 import type { PageLayoutBlock } from "../../emdash-env";
 import FormSectionBlock from "../components/blocks/FormSectionBlock.astro";
+import CardGridBlock from "../components/blocks/CardGridBlock.astro";
 import FaqSectionBlock from "../components/blocks/FaqSectionBlock.astro";
 import GoalsSectionBlock from "../components/blocks/GoalsSectionBlock.astro";
 import HeroSectionBlock from "../components/blocks/HeroSectionBlock.astro";
@@ -23,6 +24,7 @@ export const blockComponents = defineBlockComponents<PageLayoutBlock>({
 	rich_text: RichTextBlock,
 	text_image: TextImageBlock,
 	form_section: FormSectionBlock,
+	card_grid: CardGridBlock,
 });
 
 /** A page whose first block is a hero gets the full-bleed hero + overlay header. */

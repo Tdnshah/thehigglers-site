@@ -1,0 +1,112 @@
+---
+// "Card Grid" page-layout block: optional heading, then a responsive grid of
+// cards (a repeater). Cards can use any of the Card layouts, mixed freely;
+// every part of a card except the title is optional.
+import type { BlockComponentProps } from "emdash/ui";
+import type { PageLayoutBlock } from "../../../emdash-env";
+import Eyebrow from "../site/Eyebrow.astro";
+import CardGrid from "../site/CardGrid.astro";
+import SectionShell from "../site/SectionShell.astro";
+import { isStepIcon } from "../../utils/step-icons";
+
+type CardGridValue = Extract<PageLayoutBlock, { _type: "card_grid" }>;
+type Props = BlockComponentProps<CardGridValue>;
+
+const { value } = Astro.props;
+
+const VARIANTS = ["image-top", "image-left", "icon", "text", "highlight", "numbered", "link-row", "editorial"] as const;
+type Variant = (typeof VARIANTS)[number];
+const asVariant = (v: string | null | undefined, fallback: Variant): Variant => (VARIANTS.includes(v as Variant) ? (v as Variant) : fallback);
+
+const pick = <T extends string>(v: string | null | undefined, allowed: readonly T[], fallback: T): T => (allowed.includes(v as T) ? (v as T) : fallback);
+
+const defaultVariant = asVariant(value.variant, "image-top");
+const columns = Number(pick(value.columns, ["1", "2", "3", "4"], "3")) as 1 | 2 | 3 | 4;
+const gap = pick(value.gap, ["small", "medium", "large"], "medium");
+const hover = pick(value.hover, ["lift", "glow", "none"], "lift");
+const imageFit = pick(value.image_fit, ["contain", "cover"], "contain");
+const align = pick(value.heading_align, ["left", "center", "right"], "left");
+
+const cards = (value.cards ?? []).filter((c) => c.title);
+const items = cards.map((c, i) => ({
+	variant: asVariant(c.variant === "inherit" ? null : c.variant, defaultVariant),
+	title: c.title,
+	description: c.description,
+	eyebrow: c.eyebrow,
+	tags: (c.tags ?? "")
+		.split(",")
+		.map((t) => t.trim())
+		.filter(Boolean),
+	meta: c.meta,
+	image: c.image,
+	icon: isStepIcon(c.icon) ? c.icon : null,
+	iconImage: c.icon_image,
+	href: c.href,
+	ctaLabel: c.cta_label,
+	newTab: c.new_tab,
+	number: String(i + 1).padStart(2, "0"),
+	tone: c.card_background && c.card_background !== "default" ? c.card_background : null,
+}));
+const hasHeading = Boolean(value.eyebrow || value.heading || value.description);
+---
+
+{
+	items.length > 0 && (
+		<SectionShell background={value.background} paddingTop={value.padding_top} paddingBottom={value.padding_bottom} image={value.background_image} overlay={value.image_overlay} imagePosition={value.image_position} textColor={value.text_color}>
+			<div class="card-grid-block">
+				{hasHeading && (
+					<header class={`card-grid-block__head card-grid-block__head--${align}`}>
+						{value.eyebrow && <Eyebrow tone="accent" class="card-grid-block__eyebrow">{value.eyebrow}</Eyebrow>}
+						{value.heading && <h2>{value.heading}</h2>}
+						{value.description && <p>{value.description}</p>}
+					</header>
+				)}
+				<CardGrid items={items} columns={columns} gap={gap} hover={hover} reveal={value.reveal !== "none"} imageFit={imageFit} headingLevel={hasHeading ? "h3" : "h2"} />
+			</div>
+		</SectionShell>
+	)
+}
+
+<style>
+	.card-grid-block {
+		max-width: var(--content-max);
+		margin: 0 auto;
+		padding: var(--pad-top, var(--section-pad-y)) var(--gutter) var(--pad-bottom, var(--section-pad-y));
+		color: var(--color-text);
+	}
+
+	.card-grid-block__head {
+		max-width: 44rem;
+		margin: 0 0 3rem;
+	}
+
+	.card-grid-block__head--center {
+		margin-inline: auto;
+		text-align: center;
+	}
+
+	.card-grid-block__head--right {
+		margin-left: auto;
+		text-align: right;
+	}
+
+	.card-grid-block__head :global(.card-grid-block__eyebrow) {
+		display: block;
+		margin-bottom: 1rem;
+	}
+
+	.card-grid-block__head h2 {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h2);
+		line-height: var(--leading-tight);
+		margin: 0;
+	}
+
+	.card-grid-block__head p {
+		margin: 1rem 0 0;
+		font-size: var(--text-body);
+		line-height: var(--leading-normal);
+		color: var(--section-fg-muted, var(--color-text-muted));
+	}
+</style>

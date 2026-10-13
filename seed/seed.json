@@ -719,6 +719,332 @@
 			]
 		},
 		{
+			"slug": "card_grid",
+			"label": "Card Grid",
+			"category": "Marketing",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "eyebrow",
+							"label": "Eyebrow",
+							"type": "string"
+						},
+						{
+							"slug": "heading",
+							"label": "Section Heading",
+							"type": "string"
+						},
+						{
+							"slug": "description",
+							"label": "Section Description",
+							"type": "text"
+						},
+						{
+							"slug": "heading_align",
+							"label": "Heading alignment",
+							"type": "select",
+							"defaultValue": "left",
+							"validation": {
+								"options": [
+									"left",
+									"center",
+									"right"
+								]
+							}
+						},
+						{
+							"slug": "cards",
+							"label": "Cards",
+							"type": "repeater",
+							"validation": {
+								"minItems": 1,
+								"maxItems": 24,
+								"subFields": [
+									{
+										"slug": "variant",
+										"label": "Layout for this card (inherit = the grid's default)",
+										"type": "select",
+										"options": [
+											"inherit",
+											"image-top",
+											"image-left",
+											"icon",
+											"text",
+											"highlight",
+											"numbered",
+											"link-row",
+											"editorial"
+										]
+									},
+									{
+										"slug": "title",
+										"label": "Title",
+										"type": "string",
+										"required": true
+									},
+									{
+										"slug": "description",
+										"label": "Description (optional)",
+										"type": "text"
+									},
+									{
+										"slug": "eyebrow",
+										"label": "Eyebrow label (optional)",
+										"type": "string"
+									},
+									{
+										"slug": "tags",
+										"label": "Tags (optional, comma separated, e.g. Drupal, Open source)",
+										"type": "string"
+									},
+									{
+										"slug": "meta",
+										"label": "Meta line (optional, e.g. a date, duration or price)",
+										"type": "string"
+									},
+									{
+										"slug": "image",
+										"label": "Image (image layouts)",
+										"type": "image"
+									},
+									{
+										"slug": "icon",
+										"label": "Icon (icon layout)",
+										"type": "select",
+										"options": [
+											"discover",
+											"define",
+											"design",
+											"architect",
+											"develop",
+											"build",
+											"test",
+											"uat",
+											"preprod",
+											"deploy",
+											"launch",
+											"evolve",
+											"support",
+											"security",
+											"cloud",
+											"data",
+											"integrate"
+										]
+									},
+									{
+										"slug": "icon_image",
+										"label": "Custom icon (PNG or WebP, optional, overrides Icon)",
+										"type": "image"
+									},
+									{
+										"slug": "href",
+										"label": "Link (makes the whole card clickable)",
+										"type": "url"
+									},
+									{
+										"slug": "cta_label",
+										"label": "Link label (optional, e.g. Learn more)",
+										"type": "string"
+									},
+									{
+										"slug": "new_tab",
+										"label": "Open link in a new tab",
+										"type": "boolean"
+									},
+									{
+										"slug": "card_background",
+										"label": "Card colour (default = the layout's own look)",
+										"type": "select",
+										"options": [
+											"default",
+											"white",
+											"soft",
+											"dark",
+											"accent"
+										]
+									}
+								]
+							}
+						},
+						{
+							"slug": "columns",
+							"label": "Columns (cards per row on desktop)",
+							"type": "select",
+							"defaultValue": "3",
+							"validation": {
+								"options": [
+									"1",
+									"2",
+									"3",
+									"4"
+								]
+							}
+						},
+						{
+							"slug": "variant",
+							"label": "Default card layout",
+							"type": "select",
+							"defaultValue": "image-top",
+							"validation": {
+								"options": [
+									"image-top",
+									"image-left",
+									"icon",
+									"text",
+									"highlight",
+									"numbered",
+									"link-row",
+									"editorial"
+								]
+							}
+						},
+						{
+							"slug": "gap",
+							"label": "Gap between cards",
+							"type": "select",
+							"defaultValue": "medium",
+							"validation": {
+								"options": [
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "hover",
+							"label": "Hover effect (lift = raise, glow = light follows the pointer)",
+							"type": "select",
+							"defaultValue": "lift",
+							"validation": {
+								"options": [
+									"lift",
+									"glow",
+									"none"
+								]
+							}
+						},
+						{
+							"slug": "image_fit",
+							"label": "Image fit (contain = whole image visible, cover = fills the frame and may crop edges)",
+							"type": "select",
+							"defaultValue": "contain",
+							"validation": {
+								"options": [
+									"contain",
+									"cover"
+								]
+							}
+						},
+						{
+							"slug": "reveal",
+							"label": "Entrance animation",
+							"type": "select",
+							"defaultValue": "fade-up",
+							"validation": {
+								"options": [
+									"fade-up",
+									"none"
+								]
+							}
+						},
+						{
+							"slug": "background",
+							"label": "Background colour (default = the section's own look)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"white",
+									"soft",
+									"dark",
+									"accent"
+								]
+							}
+						},
+						{
+							"slug": "padding_top",
+							"label": "Padding top (default = built-in spacing)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"none",
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "padding_bottom",
+							"label": "Padding bottom (default = built-in spacing)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"none",
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "background_image",
+							"label": "Background image (optional, shown behind the section)",
+							"type": "image"
+						},
+						{
+							"slug": "image_overlay",
+							"label": "Image overlay (dark = light text, light = dark text; none can make text hard to read)",
+							"type": "select",
+							"defaultValue": "dark",
+							"validation": {
+								"options": [
+									"dark",
+									"light",
+									"none"
+								]
+							}
+						},
+						{
+							"slug": "image_position",
+							"label": "Image position",
+							"type": "select",
+							"defaultValue": "center",
+							"validation": {
+								"options": [
+									"center",
+									"top",
+									"bottom"
+								]
+							}
+						},
+						{
+							"slug": "text_color",
+							"label": "Text colour (default = automatic; override if a background image makes text hard to read)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"light",
+									"dark"
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
 			"slug": "goals_section",
 			"label": "Goals Section",
 			"category": "Marketing",
@@ -1734,7 +2060,8 @@
 							"latest_writing",
 							"rich_text",
 							"text_image",
-							"form_section"
+							"form_section",
+							"card_grid"
 						],
 						"maxItems": 30
 					}
