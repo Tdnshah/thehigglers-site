@@ -12,6 +12,11 @@ if (!slug) {
 	return Astro.redirect("/404");
 }
 
+// The CMS home page is served at "/"; keep one canonical URL.
+if (slug === "home") {
+	return Astro.redirect("/", 301);
+}
+
 const { entry: page, cacheHint } = await getEmDashEntry("pages", slug);
 
 if (!page) {
