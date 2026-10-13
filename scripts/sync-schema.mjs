@@ -7,7 +7,8 @@
  * site by themselves. This script closes that gap.
  *
  * It handles:
- *   1. collection fields that exist in the seed but not on the site (adds them)
+ *   1. collection fields that exist in the seed but not on the site (adds them),
+ *      and collection features (e.g. seo) the seed lists but the site lacks (adds them)
  *   2. block types missing from the site (creates them at version 1)
  *   3. block types whose fields differ from the seed (amends the active version)
  *   4. the `pages.layout` blocks field allowed types
@@ -117,6 +118,19 @@ for (const collection of seed.collections ?? []) {
 	if (!res.ok) {
 		notes.push(`collection "${collection.slug}": could not read (${describe(res)}); skipped`);
 		continue;
+	}
+	// Collection features (drafts, revisions, search, seo): only ever ADDS ones the seed
+	// lists that the site lacks; never removes a feature.
+	const liveInfo = (await call("GET", `/schema/collections/${collection.slug}`)).json?.data?.item;
+	if (liveInfo && Array.isArray(collection.supports)) {
+		const missing = collection.supports.filter((v) => !(liveInfo.supports ?? []).includes(v));
+		if (missing.length > 0) {
+			plan.push({
+				phase: 1,
+				label: `enable ${missing.join(", ")} on collection ${collection.slug}`,
+				run: () => call("PUT", `/schema/collections/${collection.slug}`, { supports: [...(liveInfo.supports ?? []), ...missing] }),
+			});
+		}
 	}
 	const existing = new Map((res.json?.data?.items ?? []).map((f) => [f.slug, f]));
 	// Report (never remove) fields that exist on the site but not in the seed.

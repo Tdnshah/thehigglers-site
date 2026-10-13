@@ -1708,7 +1708,8 @@
 			"supports": [
 				"drafts",
 				"revisions",
-				"search"
+				"search",
+				"seo"
 			],
 			"fields": [
 				{
