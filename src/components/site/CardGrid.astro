@@ -1,0 +1,141 @@
+---
+// Responsive grid of <Card>s. Used by the Card Grid page block and (through
+// PostCardGrid) the blog listings. Columns collapse 4 -> 2 -> 1 and 3 -> 2 -> 1.
+import Card from "./Card.astro";
+import type { CardVariant } from "./Card.astro";
+import type { ImageValue } from "emdash";
+
+export interface CardItem {
+	variant?: CardVariant;
+	title: string;
+	description?: string | null;
+	href?: string | null;
+	ctaLabel?: string | null;
+	newTab?: boolean | null;
+	image?: ImageValue | null;
+	icon?: string | null;
+	iconImage?: ImageValue | null;
+	eyebrow?: string | null;
+	tags?: string[];
+	meta?: string | null;
+	metaAfter?: string | null;
+	number?: string | null;
+	tone?: string | null;
+}
+
+interface Props {
+	items: CardItem[];
+	columns?: 1 | 2 | 3 | 4;
+	gap?: "small" | "medium" | "large";
+	hover?: "lift" | "glow" | "none";
+	reveal?: boolean;
+	imageFit?: "contain" | "cover";
+	/** First card wider than the rest (blog teaser row). */
+	featureFirst?: boolean;
+	emptyLabel?: string;
+	headingLevel?: "h2" | "h3" | "h4";
+}
+
+const { items, columns = 3, gap = "medium", hover = "lift", reveal = true, imageFit = "contain", featureFirst = false, emptyLabel, headingLevel = "h3" } = Astro.props;
+const GAPS = { small: "1rem", medium: "2rem", large: "3rem" };
+---
+
+{
+	items.length === 0 ? (
+		emptyLabel ? <p class="card-grid__empty">{emptyLabel}</p> : null
+	) : (
+		<ul class:list={["card-grid", featureFirst && "card-grid--feature-first"]} data-hover={hover} data-cols={columns} style={`--card-gap:${GAPS[gap]}`}>
+			{items.map((item, i) => (
+				<li class="card-grid__item" data-reveal={reveal ? "" : undefined} style={reveal ? `transition-delay:${Math.min(i, 5) * 80}ms` : undefined}>
+					<Card {...item} fit={imageFit} featured={featureFirst && i === 0} headingLevel={headingLevel} />
+				</li>
+			))}
+		</ul>
+	)
+}
+
+<script>
+	// Pointer-following glow for grids with hover="glow".
+	function initCardGlow() {
+		document.querySelectorAll<HTMLElement>('.card-grid[data-hover="glow"]').forEach((grid) => {
+			if (grid.dataset.glow) return;
+			grid.dataset.glow = "1";
+			grid.addEventListener("pointermove", (e) => {
+				const card = (e.target as HTMLElement).closest<HTMLElement>(".card");
+				if (!card) return;
+				const r = card.getBoundingClientRect();
+				card.style.setProperty("--mx", `${e.clientX - r.left}px`);
+				card.style.setProperty("--my", `${e.clientY - r.top}px`);
+			});
+		});
+	}
+	initCardGlow();
+	document.addEventListener("astro:page-load", initCardGlow);
+</script>
+
+<style>
+	.card-grid {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: var(--card-gap, 2rem);
+		grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
+	}
+
+	.card-grid[data-cols="1"] {
+		--cols: 1;
+	}
+
+	.card-grid[data-cols="2"] {
+		--cols: 2;
+	}
+
+	.card-grid[data-cols="3"] {
+		--cols: 3;
+	}
+
+	.card-grid[data-cols="4"] {
+		--cols: 4;
+	}
+
+	.card-grid--feature-first {
+		grid-template-columns: 1.45fr 1fr 1fr;
+	}
+
+	.card-grid__item {
+		display: flex;
+		min-width: 0;
+	}
+
+	.card-grid__item > :global(.card) {
+		flex: 1;
+	}
+
+	.card-grid__empty {
+		color: var(--color-text-muted);
+		font-size: var(--text-body);
+	}
+
+	@media (max-width: 1000px) {
+		.card-grid[data-cols="4"] {
+			--cols: 2;
+		}
+	}
+
+	@media (max-width: 900px) {
+		.card-grid[data-cols="3"] {
+			--cols: 2;
+		}
+
+		.card-grid--feature-first {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.card-grid[data-cols] {
+			--cols: 1;
+		}
+	}
+</style>

@@ -209,7 +209,33 @@ export interface PageLayoutFormSectionV1Block {
 
 export type PageLayoutFormSectionBlock = PageLayoutFormSectionV1Block;
 
-export type PageLayoutBlock = PageLayoutHeroSectionBlock | PageLayoutLogoWallBlock | PageLayoutGoalsSectionBlock | PageLayoutWorkSectionBlock | PageLayoutTestimonialsSectionBlock | PageLayoutFaqSectionBlock | PageLayoutLatestWritingBlock | PageLayoutRichTextBlock | PageLayoutTextImageBlock | PageLayoutFormSectionBlock;
+export interface PageLayoutCardGridV1Block {
+  _type: "card_grid";
+  _version: 1;
+  _key: string;
+  "eyebrow"?: string | null;
+  "heading"?: string | null;
+  "description"?: string | null;
+  "heading_align"?: "left" | "center" | "right" | null;
+  "cards"?: { "variant"?: "inherit" | "image-top" | "image-left" | "icon" | "text" | "highlight" | "numbered" | "link-row" | "editorial" | null; "title": string; "description"?: string | null; "eyebrow"?: string | null; "tags"?: string | null; "meta"?: string | null; "image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null; "icon"?: "discover" | "define" | "design" | "architect" | "develop" | "build" | "test" | "uat" | "preprod" | "deploy" | "launch" | "evolve" | "support" | "security" | "cloud" | "data" | "integrate" | null; "icon_image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null; "href"?: string | null; "cta_label"?: string | null; "new_tab"?: boolean | null; "card_background"?: "default" | "white" | "soft" | "dark" | "accent" | null }[] | null;
+  "columns"?: "1" | "2" | "3" | "4" | null;
+  "variant"?: "image-top" | "image-left" | "icon" | "text" | "highlight" | "numbered" | "link-row" | "editorial" | null;
+  "gap"?: "small" | "medium" | "large" | null;
+  "hover"?: "lift" | "glow" | "none" | null;
+  "image_fit"?: "contain" | "cover" | null;
+  "reveal"?: "fade-up" | "none" | null;
+  "background"?: "default" | "white" | "soft" | "dark" | "accent" | null;
+  "padding_top"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "padding_bottom"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "background_image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null;
+  "image_overlay"?: "dark" | "light" | "none" | null;
+  "image_position"?: "center" | "top" | "bottom" | null;
+  "text_color"?: "default" | "light" | "dark" | null;
+}
+
+export type PageLayoutCardGridBlock = PageLayoutCardGridV1Block;
+
+export type PageLayoutBlock = PageLayoutHeroSectionBlock | PageLayoutLogoWallBlock | PageLayoutGoalsSectionBlock | PageLayoutWorkSectionBlock | PageLayoutTestimonialsSectionBlock | PageLayoutFaqSectionBlock | PageLayoutLatestWritingBlock | PageLayoutRichTextBlock | PageLayoutTextImageBlock | PageLayoutFormSectionBlock | PageLayoutCardGridBlock;
 
 export interface Page {
   id: string;
