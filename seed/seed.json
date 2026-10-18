@@ -760,7 +760,7 @@
 							"label": "Cards",
 							"type": "repeater",
 							"validation": {
-								"minItems": 1,
+								"minItems": 0,
 								"maxItems": 24,
 								"subFields": [
 									{
