@@ -1,4 +1,5 @@
 ---
+import { normalizeHref } from "../../utils/href";
 // "Work Section" page-layout block: section title, CTA, "see all" link and a
 // repeater of work items (title, description, image, link) for the pinned
 // step-carousel.
@@ -27,7 +28,7 @@ const items = (value.items ?? []).filter((item) => item.title);
 				title: item.title,
 				description: item.description ?? undefined,
 				image: item.image ?? null,
-				href: item.link ?? undefined,
+				href: normalizeHref(item.link),
 			}))}
 		/>
 		</SectionShell>

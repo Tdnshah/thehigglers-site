@@ -1,4 +1,5 @@
 ---
+import { normalizeHref } from "../../utils/href";
 // "Social Links" page-layout block: follow icons for the site's profiles
 // (Settings > Social) or a custom list. Drop it on any page.
 import { getSiteSettings } from "emdash";
@@ -15,7 +16,10 @@ const { value } = Astro.props;
 
 const links: SocialLink[] =
 	value.source === "custom"
-		? (value.links ?? []).filter((l) => l.platform && l.url).map((l) => ({ platform: l.platform as string, url: l.url as string, label: l.label ?? undefined }))
+		? (value.links ?? []).flatMap((l): SocialLink[] => {
+				const url = normalizeHref(l.url);
+				return l.platform && url ? [{ platform: l.platform, url, label: l.label ?? undefined }] : [];
+			})
 		: socialLinksFromSettings((await getSiteSettings()).social);
 ---
 

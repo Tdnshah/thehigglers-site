@@ -12,6 +12,10 @@
  *   2. block types missing from the site (creates them at version 1)
  *   3. block types whose fields differ from the seed (amends the active version)
  *   4. the `pages.layout` blocks field allowed types
+ *   5. a block type whose seed is exactly one version ahead (a breaking change such
+ *      as a field type change): creates the new version inactive, then activates it.
+ *      Deploy the renderer first, then move stored blocks over with
+ *      scripts/migrate-block-versions.mjs.
  * Steps run in that order, so a layout never allows a block type that does not
  * exist yet. Block types cannot be deleted in EmDash, so review the dry run.
  *
@@ -195,7 +199,48 @@ for (const block of seed.blockTypes ?? []) {
 	const seedVersion = block.versions.find((v) => v.version === block.currentVersion) ?? block.versions.at(-1);
 	const liveVersion = live.versions.find((v) => v.version === live.currentVersion);
 	if (live.currentVersion !== block.currentVersion) {
-		notes.push(`block type "${block.slug}": site is on version ${live.currentVersion}, seed on ${block.currentVersion}; needs a deliberate version activation`);
+		// Breaking change: the seed is exactly one version ahead. Create the new
+		// version inactive, then activate it. Run this AFTER the renderer that
+		// handles both versions is deployed. Stored blocks keep their old version
+		// until migrated (scripts/migrate-block-versions.mjs).
+		const next = live.currentVersion + 1;
+		const seedNext = block.versions.find((v) => v.version === next);
+		if (block.currentVersion !== next || !seedNext) {
+			notes.push(`block type "${block.slug}": site is on version ${live.currentVersion}, seed on ${block.currentVersion}; only a single step is automated, do the rest deliberately`);
+			continue;
+		}
+		const existing = live.versions.find((v) => v.version === next);
+		const latestFingerprint = async () => {
+			const fresh = await call("GET", `/schema/block-types/${block.slug}`);
+			const item = fresh.json?.data?.item;
+			return { item, version: item?.versions?.find((v) => v.version === next) };
+		};
+		if (!existing) {
+			plan.push({
+				phase: 3,
+				label: `create block type ${block.slug} v${next} (breaking change, inactive)`,
+				run: async () => {
+					const { item } = await latestFingerprint();
+					const current = item?.versions?.find((v) => v.version === item.currentVersion);
+					return call("PUT", `/schema/block-types/${block.slug}`, {
+						fields: seedNext.fields,
+						breaking: true,
+						expectedFingerprint: current?.fingerprint,
+					});
+				},
+			});
+		}
+		plan.push({
+			phase: 3,
+			label: `activate block type ${block.slug} v${next}`,
+			run: async () => {
+				const { item, version } = await latestFingerprint();
+				if (!version) return { ok: false, status: 0, json: { error: "new version not found" } };
+				// The guard is the fingerprint of the version being replaced (the active one).
+				const active = item.versions.find((v) => v.version === item.currentVersion);
+				return call("POST", `/schema/block-types/${block.slug}/versions/${next}/activate`, { expectedFingerprint: active.fingerprint });
+			},
+		});
 		continue;
 	}
 	if (!same(seedVersion.fields, liveVersion.fields)) {
