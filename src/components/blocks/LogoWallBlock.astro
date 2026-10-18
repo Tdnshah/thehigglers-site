@@ -1,4 +1,5 @@
 ---
+import { normalizeHref } from "../../utils/href";
 // "Logo Wall" page-layout block: caption plus a repeater of logo images.
 import type { BlockComponentProps } from "emdash/ui";
 import type { PageLayoutBlock } from "../../../emdash-env";
@@ -20,7 +21,7 @@ const logos = (value.logos ?? []).filter((logo) => logo.image);
 			logos={logos.map((logo) => ({
 				label: logo.name ?? "",
 				image: logo.image,
-				href: logo.link,
+				href: normalizeHref(logo.link),
 			}))}
 		/>
 		</SectionShell>

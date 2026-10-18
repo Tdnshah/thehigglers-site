@@ -34,7 +34,22 @@ export interface PageLayoutLogoWallV1Block {
   "text_color"?: "default" | "light" | "dark" | null;
 }
 
-export type PageLayoutLogoWallBlock = PageLayoutLogoWallV1Block;
+export interface PageLayoutLogoWallV2Block {
+  _type: "logo_wall";
+  _version: 2;
+  _key: string;
+  "label"?: string | null;
+  "logos"?: { "image": { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } }; "name"?: string | null; "link"?: string | null }[] | null;
+  "background"?: "default" | "white" | "soft" | "dark" | "accent" | null;
+  "padding_top"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "padding_bottom"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "background_image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null;
+  "image_overlay"?: "dark" | "light" | "none" | null;
+  "image_position"?: "center" | "top" | "bottom" | null;
+  "text_color"?: "default" | "light" | "dark" | null;
+}
+
+export type PageLayoutLogoWallBlock = PageLayoutLogoWallV1Block | PageLayoutLogoWallV2Block;
 
 export interface PageLayoutGoalsSectionV1Block {
   _type: "goals_section";
@@ -76,7 +91,26 @@ export interface PageLayoutWorkSectionV1Block {
   "text_color"?: "default" | "light" | "dark" | null;
 }
 
-export type PageLayoutWorkSectionBlock = PageLayoutWorkSectionV1Block;
+export interface PageLayoutWorkSectionV2Block {
+  _type: "work_section";
+  _version: 2;
+  _key: string;
+  "heading"?: string | null;
+  "cta_label"?: string | null;
+  "cta_href"?: string | null;
+  "see_all_label"?: string | null;
+  "see_all_href"?: string | null;
+  "items"?: { "title": string; "description"?: string | null; "image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null; "link"?: string | null }[] | null;
+  "background"?: "default" | "white" | "soft" | "dark" | "accent" | null;
+  "padding_top"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "padding_bottom"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "background_image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null;
+  "image_overlay"?: "dark" | "light" | "none" | null;
+  "image_position"?: "center" | "top" | "bottom" | null;
+  "text_color"?: "default" | "light" | "dark" | null;
+}
+
+export type PageLayoutWorkSectionBlock = PageLayoutWorkSectionV1Block | PageLayoutWorkSectionV2Block;
 
 export interface PageLayoutTestimonialsSectionV1Block {
   _type: "testimonials_section";
@@ -233,7 +267,31 @@ export interface PageLayoutCardGridV1Block {
   "text_color"?: "default" | "light" | "dark" | null;
 }
 
-export type PageLayoutCardGridBlock = PageLayoutCardGridV1Block;
+export interface PageLayoutCardGridV2Block {
+  _type: "card_grid";
+  _version: 2;
+  _key: string;
+  "eyebrow"?: string | null;
+  "heading"?: string | null;
+  "description"?: string | null;
+  "heading_align"?: "left" | "center" | "right" | null;
+  "cards"?: { "variant"?: "inherit" | "image-top" | "image-left" | "icon" | "text" | "highlight" | "numbered" | "link-row" | "editorial" | null; "title": string; "description"?: string | null; "eyebrow"?: string | null; "tags"?: string | null; "meta"?: string | null; "image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null; "icon"?: "discover" | "define" | "design" | "architect" | "develop" | "build" | "test" | "uat" | "preprod" | "deploy" | "launch" | "evolve" | "support" | "security" | "cloud" | "data" | "integrate" | null; "icon_image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null; "href"?: string | null; "cta_label"?: string | null; "new_tab"?: boolean | null; "card_background"?: "default" | "white" | "soft" | "dark" | "accent" | null }[] | null;
+  "columns"?: "1" | "2" | "3" | "4" | null;
+  "variant"?: "image-top" | "image-left" | "icon" | "text" | "highlight" | "numbered" | "link-row" | "editorial" | null;
+  "gap"?: "small" | "medium" | "large" | null;
+  "hover"?: "lift" | "glow" | "none" | null;
+  "image_fit"?: "contain" | "cover" | null;
+  "reveal"?: "fade-up" | "none" | null;
+  "background"?: "default" | "white" | "soft" | "dark" | "accent" | null;
+  "padding_top"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "padding_bottom"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "background_image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null;
+  "image_overlay"?: "dark" | "light" | "none" | null;
+  "image_position"?: "center" | "top" | "bottom" | null;
+  "text_color"?: "default" | "light" | "dark" | null;
+}
+
+export type PageLayoutCardGridBlock = PageLayoutCardGridV1Block | PageLayoutCardGridV2Block;
 
 export interface PageLayoutSocialLinksV1Block {
   _type: "social_links";
@@ -255,7 +313,27 @@ export interface PageLayoutSocialLinksV1Block {
   "text_color"?: "default" | "light" | "dark" | null;
 }
 
-export type PageLayoutSocialLinksBlock = PageLayoutSocialLinksV1Block;
+export interface PageLayoutSocialLinksV2Block {
+  _type: "social_links";
+  _version: 2;
+  _key: string;
+  "heading"?: string | null;
+  "source"?: "settings" | "custom" | null;
+  "links"?: { "platform": "x" | "linkedin" | "github" | "facebook" | "instagram" | "youtube" | "tiktok" | "threads" | "bluesky" | "behance" | "dribbble" | "medium" | "rss" | "website"; "url": string; "label"?: string | null }[] | null;
+  "display"?: "icons" | "labels" | null;
+  "shape"?: "circle" | "outline" | "plain" | null;
+  "size"?: "small" | "medium" | "large" | null;
+  "align"?: "left" | "center" | "right" | null;
+  "background"?: "default" | "white" | "soft" | "dark" | "accent" | null;
+  "padding_top"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "padding_bottom"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "background_image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null;
+  "image_overlay"?: "dark" | "light" | "none" | null;
+  "image_position"?: "center" | "top" | "bottom" | null;
+  "text_color"?: "default" | "light" | "dark" | null;
+}
+
+export type PageLayoutSocialLinksBlock = PageLayoutSocialLinksV1Block | PageLayoutSocialLinksV2Block;
 
 export type PageLayoutBlock = PageLayoutHeroSectionBlock | PageLayoutLogoWallBlock | PageLayoutGoalsSectionBlock | PageLayoutWorkSectionBlock | PageLayoutTestimonialsSectionBlock | PageLayoutFaqSectionBlock | PageLayoutLatestWritingBlock | PageLayoutRichTextBlock | PageLayoutTextImageBlock | PageLayoutFormSectionBlock | PageLayoutCardGridBlock | PageLayoutSocialLinksBlock;
 
