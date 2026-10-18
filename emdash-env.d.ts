@@ -235,7 +235,29 @@ export interface PageLayoutCardGridV1Block {
 
 export type PageLayoutCardGridBlock = PageLayoutCardGridV1Block;
 
-export type PageLayoutBlock = PageLayoutHeroSectionBlock | PageLayoutLogoWallBlock | PageLayoutGoalsSectionBlock | PageLayoutWorkSectionBlock | PageLayoutTestimonialsSectionBlock | PageLayoutFaqSectionBlock | PageLayoutLatestWritingBlock | PageLayoutRichTextBlock | PageLayoutTextImageBlock | PageLayoutFormSectionBlock | PageLayoutCardGridBlock;
+export interface PageLayoutSocialLinksV1Block {
+  _type: "social_links";
+  _version: 1;
+  _key: string;
+  "heading"?: string | null;
+  "source"?: "settings" | "custom" | null;
+  "links"?: { "platform": "x" | "linkedin" | "github" | "facebook" | "instagram" | "youtube" | "tiktok" | "threads" | "bluesky" | "behance" | "dribbble" | "medium" | "rss" | "website"; "url": string; "label"?: string | null }[] | null;
+  "display"?: "icons" | "labels" | null;
+  "shape"?: "circle" | "outline" | "plain" | null;
+  "size"?: "small" | "medium" | "large" | null;
+  "align"?: "left" | "center" | "right" | null;
+  "background"?: "default" | "white" | "soft" | "dark" | "accent" | null;
+  "padding_top"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "padding_bottom"?: "default" | "none" | "small" | "medium" | "large" | null;
+  "background_image"?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown>; darkVariant?: { id: string; src?: string; alt?: string; width?: number; height?: number; filename?: string; mimeType?: string; blurhash?: string; dominantColor?: string; focalX?: number; focalY?: number; provider?: string; previewUrl?: string; meta?: Record<string, unknown> } } | null;
+  "image_overlay"?: "dark" | "light" | "none" | null;
+  "image_position"?: "center" | "top" | "bottom" | null;
+  "text_color"?: "default" | "light" | "dark" | null;
+}
+
+export type PageLayoutSocialLinksBlock = PageLayoutSocialLinksV1Block;
+
+export type PageLayoutBlock = PageLayoutHeroSectionBlock | PageLayoutLogoWallBlock | PageLayoutGoalsSectionBlock | PageLayoutWorkSectionBlock | PageLayoutTestimonialsSectionBlock | PageLayoutFaqSectionBlock | PageLayoutLatestWritingBlock | PageLayoutRichTextBlock | PageLayoutTextImageBlock | PageLayoutFormSectionBlock | PageLayoutCardGridBlock | PageLayoutSocialLinksBlock;
 
 export interface Page {
   id: string;
@@ -279,6 +301,7 @@ export interface Post {
   title_text_color?: "default" | "light" | "dark";
   title_padding_top?: "default" | "none" | "small" | "medium" | "large";
   title_padding_bottom?: "default" | "none" | "small" | "medium" | "large";
+  related_count?: number;
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date | null;

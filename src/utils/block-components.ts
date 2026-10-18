@@ -7,6 +7,7 @@ import GoalsSectionBlock from "../components/blocks/GoalsSectionBlock.astro";
 import HeroSectionBlock from "../components/blocks/HeroSectionBlock.astro";
 import LatestWritingBlock from "../components/blocks/LatestWritingBlock.astro";
 import LogoWallBlock from "../components/blocks/LogoWallBlock.astro";
+import SocialLinksBlock from "../components/blocks/SocialLinksBlock.astro";
 import RichTextBlock from "../components/blocks/RichTextBlock.astro";
 import TextImageBlock from "../components/blocks/TextImageBlock.astro";
 import TestimonialsSection from "../components/blocks/TestimonialsSection.astro";
@@ -25,6 +26,7 @@ export const blockComponents = defineBlockComponents<PageLayoutBlock>({
 	text_image: TextImageBlock,
 	form_section: FormSectionBlock,
 	card_grid: CardGridBlock,
+	social_links: SocialLinksBlock,
 });
 
 /** A page whose first block is a hero gets the full-bleed hero + overlay header. */

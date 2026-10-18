@@ -1,0 +1,55 @@
+---
+// "Social Links" page-layout block: follow icons for the site's profiles
+// (Settings > Social) or a custom list. Drop it on any page.
+import { getSiteSettings } from "emdash";
+import type { BlockComponentProps } from "emdash/ui";
+import type { PageLayoutBlock } from "../../../emdash-env";
+import SectionShell from "../site/SectionShell.astro";
+import SocialLinks from "../site/SocialLinks.astro";
+import { socialLinksFromSettings, type SocialLink } from "../../utils/social-icons";
+
+type SocialLinksValue = Extract<PageLayoutBlock, { _type: "social_links" }>;
+type Props = BlockComponentProps<SocialLinksValue>;
+
+const { value } = Astro.props;
+
+const links: SocialLink[] =
+	value.source === "custom"
+		? (value.links ?? []).filter((l) => l.platform && l.url).map((l) => ({ platform: l.platform as string, url: l.url as string, label: l.label ?? undefined }))
+		: socialLinksFromSettings((await getSiteSettings()).social);
+---
+
+{
+	links.length > 0 && (
+		<SectionShell background={value.background} paddingTop={value.padding_top} paddingBottom={value.padding_bottom} image={value.background_image} overlay={value.image_overlay} imagePosition={value.image_position} textColor={value.text_color}>
+			<div class="social-block" data-align={value.align ?? "left"}>
+				{value.heading && <h2 class="social-block__heading">{value.heading}</h2>}
+				<SocialLinks links={links} display={value.display} shape={value.shape} size={value.size} align={value.align} />
+			</div>
+		</SectionShell>
+	)
+}
+
+<style>
+	.social-block {
+		max-width: var(--content-max);
+		margin: 0 auto;
+		padding: var(--pad-top, 3rem) var(--gutter) var(--pad-bottom, 3rem);
+	}
+
+	.social-block[data-align="center"] {
+		text-align: center;
+	}
+
+	.social-block[data-align="right"] {
+		text-align: right;
+	}
+
+	.social-block__heading {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h2);
+		line-height: var(--leading-snug);
+		margin: 0 0 1.25rem;
+	}
+</style>
