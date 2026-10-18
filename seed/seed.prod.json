@@ -1083,7 +1083,7 @@
 							"label": "Steps",
 							"type": "repeater",
 							"validation": {
-								"minItems": 1,
+								"minItems": 0,
 								"maxItems": 12,
 								"subFields": [
 									{
@@ -1262,7 +1262,7 @@
 							"label": "Work Items",
 							"type": "repeater",
 							"validation": {
-								"minItems": 1,
+								"minItems": 0,
 								"maxItems": 12,
 								"subFields": [
 									{
@@ -1401,7 +1401,7 @@
 							"label": "Logos",
 							"type": "repeater",
 							"validation": {
-								"minItems": 1,
+								"minItems": 0,
 								"maxItems": 24,
 								"subFields": [
 									{
@@ -1545,7 +1545,7 @@
 							"label": "Questions",
 							"type": "repeater",
 							"validation": {
-								"minItems": 1,
+								"minItems": 0,
 								"maxItems": 20,
 								"subFields": [
 									{
