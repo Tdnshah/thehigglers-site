@@ -1,0 +1,179 @@
+---
+// Row of social profile links. Used by the Social Links block and the footer.
+// Colours follow currentColor, so it adapts to light and dark sections.
+import { SOCIAL_ICONS, type SocialLink } from "../../utils/social-icons";
+
+interface Props {
+	links: SocialLink[];
+	/** "icons" = icons only, "labels" = icon plus platform name. */
+	display?: string | null;
+	/** "plain" | "circle" | "outline" */
+	shape?: string | null;
+	/** "small" | "medium" | "large" */
+	size?: string | null;
+	/** "left" | "center" | "right" */
+	align?: string | null;
+	label?: string;
+}
+
+const { links, display, shape, size, align, label = "Social profiles" } = Astro.props;
+
+const pick = (v: string | null | undefined, allowed: string[], fallback: string) => (allowed.includes(v ?? "") ? (v as string) : fallback);
+const showLabels = display === "labels";
+const shapeKey = pick(shape, ["plain", "circle", "outline"], "circle");
+const sizeKey = pick(size, ["small", "medium", "large"], "medium");
+const alignKey = pick(align, ["left", "center", "right"], "left");
+
+const items = links
+	.filter((l) => l.url)
+	.map((l) => {
+		const icon = SOCIAL_ICONS[l.platform] ?? SOCIAL_ICONS.website;
+		return { ...l, icon, name: l.label?.trim() || icon.label };
+	});
+---
+
+{
+	items.length > 0 && (
+		<nav class={`social social--${shapeKey} social--${sizeKey} social--${alignKey}`} aria-label={label}>
+			<ul class="social__list">
+				{items.map((item) => (
+					<li>
+						<a class:list={["social__link", showLabels && "social__link--labelled"]} href={item.url} target="_blank" rel="me noopener noreferrer" aria-label={showLabels ? undefined : `${item.name} (opens in a new tab)`}>
+							<svg class="social__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill={item.icon.stroke ? "none" : "currentColor"} stroke={item.icon.stroke ? "currentColor" : undefined} stroke-width={item.icon.stroke ? "1.6" : undefined} stroke-linecap="round" stroke-linejoin="round">
+								<path d={item.icon.path} />
+							</svg>
+							{showLabels && (
+								<span class="social__text">
+									{item.name}
+									<span class="social__sr"> (opens in a new tab)</span>
+								</span>
+							)}
+						</a>
+					</li>
+				))}
+			</ul>
+		</nav>
+	)
+}
+
+<style>
+	.social {
+		--social-box: 2.75rem;
+		--social-icon: 1.25rem;
+	}
+
+	.social--small {
+		--social-box: 2.25rem;
+		--social-icon: 1rem;
+	}
+
+	.social--large {
+		--social-box: 3.5rem;
+		--social-icon: 1.5rem;
+	}
+
+	.social__list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+	}
+
+	.social--center .social__list {
+		justify-content: center;
+	}
+
+	.social--right .social__list {
+		justify-content: flex-end;
+	}
+
+	.social__link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.6rem;
+		min-width: var(--social-box);
+		min-height: var(--social-box);
+		color: inherit;
+		text-decoration: none;
+		transition:
+			background-color 0.2s ease,
+			color 0.2s ease,
+			border-color 0.2s ease,
+			transform 0.2s ease;
+	}
+
+	.social--circle .social__link,
+	.social--outline .social__link {
+		border-radius: var(--radius-pill);
+	}
+
+	.social--circle .social__link {
+		background: color-mix(in srgb, currentColor 10%, transparent);
+	}
+
+	.social--outline .social__link {
+		border: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+	}
+
+	.social__link--labelled {
+		padding: 0 1.1rem 0 0.9rem;
+	}
+
+	.social--plain .social__link {
+		opacity: 0.75;
+	}
+
+	.social__link:hover {
+		transform: translateY(-2px);
+	}
+
+	.social--plain .social__link:hover {
+		opacity: 1;
+	}
+
+	.social--circle .social__link:hover {
+		background: color-mix(in srgb, currentColor 20%, transparent);
+	}
+
+	.social--outline .social__link:hover {
+		border-color: currentColor;
+	}
+
+	.social__link:focus-visible {
+		outline: 2px solid currentColor;
+		outline-offset: 3px;
+	}
+
+	.social__icon {
+		width: var(--social-icon);
+		height: var(--social-icon);
+		flex: none;
+	}
+
+	.social__text {
+		font-size: var(--text-small);
+		font-weight: 500;
+	}
+
+	.social__sr {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		white-space: nowrap;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.social__link {
+			transition: none;
+		}
+
+		.social__link:hover {
+			transform: none;
+		}
+	}
+</style>

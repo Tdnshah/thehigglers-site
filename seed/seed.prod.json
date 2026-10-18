@@ -760,7 +760,7 @@
 							"label": "Cards",
 							"type": "repeater",
 							"validation": {
-								"minItems": 1,
+								"minItems": 0,
 								"maxItems": 24,
 								"subFields": [
 									{
@@ -1772,6 +1772,220 @@
 					]
 				}
 			]
+		},
+		{
+			"slug": "social_links",
+			"label": "Social Links",
+			"category": "Marketing",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "heading",
+							"label": "Heading (optional)",
+							"type": "string"
+						},
+						{
+							"slug": "source",
+							"label": "Where do the links come from?",
+							"type": "select",
+							"defaultValue": "settings",
+							"validation": {
+								"options": [
+									"settings",
+									"custom"
+								]
+							}
+						},
+						{
+							"slug": "links",
+							"label": "Custom links (used when the source is Custom)",
+							"type": "repeater",
+							"validation": {
+								"minItems": 0,
+								"maxItems": 16,
+								"subFields": [
+									{
+										"slug": "platform",
+										"label": "Platform",
+										"type": "select",
+										"required": true,
+										"options": [
+											"x",
+											"linkedin",
+											"github",
+											"facebook",
+											"instagram",
+											"youtube",
+											"tiktok",
+											"threads",
+											"bluesky",
+											"behance",
+											"dribbble",
+											"medium",
+											"rss",
+											"website"
+										]
+									},
+									{
+										"slug": "url",
+										"label": "Link",
+										"type": "url",
+										"required": true
+									},
+									{
+										"slug": "label",
+										"label": "Label (optional, used for the accessible name and the text style)",
+										"type": "string"
+									}
+								]
+							}
+						},
+						{
+							"slug": "display",
+							"label": "Show",
+							"type": "select",
+							"defaultValue": "icons",
+							"validation": {
+								"options": [
+									"icons",
+									"labels"
+								]
+							}
+						},
+						{
+							"slug": "shape",
+							"label": "Icon style",
+							"type": "select",
+							"defaultValue": "circle",
+							"validation": {
+								"options": [
+									"circle",
+									"outline",
+									"plain"
+								]
+							}
+						},
+						{
+							"slug": "size",
+							"label": "Size",
+							"type": "select",
+							"defaultValue": "medium",
+							"validation": {
+								"options": [
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "align",
+							"label": "Alignment",
+							"type": "select",
+							"defaultValue": "left",
+							"validation": {
+								"options": [
+									"left",
+									"center",
+									"right"
+								]
+							}
+						},
+						{
+							"slug": "background",
+							"label": "Background colour (default = the section's own look)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"white",
+									"soft",
+									"dark",
+									"accent"
+								]
+							}
+						},
+						{
+							"slug": "padding_top",
+							"label": "Padding top (default = built-in spacing)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"none",
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "padding_bottom",
+							"label": "Padding bottom (default = built-in spacing)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"none",
+									"small",
+									"medium",
+									"large"
+								]
+							}
+						},
+						{
+							"slug": "background_image",
+							"label": "Background image (optional, shown behind the section)",
+							"type": "image"
+						},
+						{
+							"slug": "image_overlay",
+							"label": "Image overlay (dark = light text, light = dark text; none can make text hard to read)",
+							"type": "select",
+							"defaultValue": "dark",
+							"validation": {
+								"options": [
+									"dark",
+									"light",
+									"none"
+								]
+							}
+						},
+						{
+							"slug": "image_position",
+							"label": "Image position",
+							"type": "select",
+							"defaultValue": "center",
+							"validation": {
+								"options": [
+									"center",
+									"top",
+									"bottom"
+								]
+							}
+						},
+						{
+							"slug": "text_color",
+							"label": "Text colour (default = automatic; override if a background image makes text hard to read)",
+							"type": "select",
+							"defaultValue": "default",
+							"validation": {
+								"options": [
+									"default",
+									"light",
+									"dark"
+								]
+							}
+						}
+					]
+				}
+			]
 		}
 	],
 	"collections": [
@@ -1903,6 +2117,16 @@
 					"slug": "excerpt",
 					"label": "Excerpt",
 					"type": "text"
+				},
+				{
+					"slug": "related_count",
+					"label": "Related articles to show (0 hides the section)",
+					"type": "integer",
+					"defaultValue": 4,
+					"validation": {
+						"min": 0,
+						"max": 8
+					}
 				},
 				{
 					"slug": "show_title",
@@ -2061,7 +2285,8 @@
 							"rich_text",
 							"text_image",
 							"form_section",
-							"card_grid"
+							"card_grid",
+							"social_links"
 						],
 						"maxItems": 30
 					}

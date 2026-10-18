@@ -18,9 +18,11 @@ interface Props {
 	emptyLabel?: string;
 	/** Renders the first card wider than the rest (homepage teaser row only). */
 	featureFirst?: boolean;
+	/** Cards per row on desktop (1-4). Defaults to 3. */
+	columns?: 1 | 2 | 3 | 4;
 }
 
-const { items, emptyLabel = "Nothing here yet.", featureFirst = false } = Astro.props;
+const { items, emptyLabel = "Nothing here yet.", featureFirst = false, columns = 3 } = Astro.props;
 const cards = items.map((p) => ({
 	variant: "editorial" as const,
 	title: p.title,
@@ -31,4 +33,4 @@ const cards = items.map((p) => ({
 }));
 ---
 
-<CardGrid items={cards} columns={3} hover="none" featureFirst={featureFirst} emptyLabel={emptyLabel} />
+<CardGrid items={cards} columns={columns} hover="none" featureFirst={featureFirst} emptyLabel={emptyLabel} />

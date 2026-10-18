@@ -1,0 +1,17 @@
+---
+// h2/h3 renderer for Portable Text that carries the anchor id set by buildToc().
+// scroll-margin keeps the heading clear of the sticky site header.
+import type { BlockProps } from "astro-portabletext/types";
+
+type Props = Omit<BlockProps, "node"> & { node: BlockProps["node"] & { _tocId?: string } };
+const { node, index: _index, isInline: _isInline, ...attrs } = Astro.props as Props;
+const Tag = node.style === "h3" ? "h3" : "h2";
+---
+
+<Tag id={node._tocId} class="toc-heading" {...attrs}><slot /></Tag>
+
+<style>
+	.toc-heading {
+		scroll-margin-top: calc(var(--site-header-h) + 1.5rem);
+	}
+</style>

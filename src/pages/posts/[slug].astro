@@ -5,6 +5,9 @@ import Base from "../../layouts/Base.astro";
 import Eyebrow from "../../components/site/Eyebrow.astro";
 import PageTitle from "../../components/site/PageTitle.astro";
 import PostCardGrid from "../../components/site/PostCardGrid.astro";
+import PostToc from "../../components/site/PostToc.astro";
+import TocHeading from "../../components/site/TocHeading.astro";
+import { buildToc } from "../../utils/toc";
 import { resolveStarterSiteIdentity } from "../../utils/site-identity";
 import { estimateReadingMinutes } from "../../utils/reading-time";
 
@@ -32,35 +35,56 @@ const seo = getSeoMeta(post, {
 const tags = post.data.terms?.tag ?? [];
 const categories = post.data.terms?.category ?? [];
 
+
 const publishedLabel = post.data.publishedAt
-	? post.data.publishedAt.toLocaleDateString("en-US", {
-			year: "numeric",
-			month: "long",
-			day: "numeric",
-		})
+	? post.data.publishedAt.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
 	: null;
+const toc = buildToc(post.data.content);
+const readMinutes = estimateReadingMinutes(post.data.content);
 
-const { entries: recent } = await getEmDashCollection("posts", {
-	orderBy: { published_at: "desc" },
-	limit: 4,
-});
+// Related articles: same category first, topped up with the latest posts.
+// Editors set how many on the post (0 hides the section).
+const relatedCount = Math.min(8, Math.max(0, post.data.related_count ?? 4));
+const formatDate = (d?: Date | null) => (d ? d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : null);
 
-const related = recent
-	.filter((p) => p.id !== post.id)
-	.slice(0, 3)
-	.map((p) => ({
-		title: p.data.title,
-		href: `/posts/${p.id}`,
-		image: p.data.featured_image,
-		date: p.data.publishedAt
-			? p.data.publishedAt.toLocaleDateString("en-US", {
-					year: "numeric",
-					month: "long",
-					day: "numeric",
-				})
-			: null,
-		readTime: `${estimateReadingMinutes(p.data.content)} min read`,
-	}));
+type PostEntry = Awaited<ReturnType<typeof getEmDashCollection<"posts">>>["entries"][number];
+const relatedEntries: PostEntry[] = [];
+const seen = new Set<string>([post.id]);
+const take = (list: PostEntry[]) => {
+	for (const p of list) {
+		if (relatedEntries.length >= relatedCount) return;
+		if (seen.has(p.id)) continue;
+		seen.add(p.id);
+		relatedEntries.push(p);
+	}
+};
+
+if (relatedCount > 0) {
+	for (const c of categories) {
+		const { entries } = await getEmDashCollection("posts", {
+			where: { category: c.slug },
+			orderBy: { published_at: "desc" },
+			limit: relatedCount + 1,
+		});
+		take(entries);
+	}
+	if (relatedEntries.length < relatedCount) {
+		const { entries: latest } = await getEmDashCollection("posts", {
+			orderBy: { published_at: "desc" },
+			limit: relatedCount + 1,
+		});
+		take(latest);
+	}
+}
+
+const related = relatedEntries.map((p) => ({
+	title: p.data.title,
+	href: `/posts/${p.id}`,
+	image: p.data.featured_image,
+	date: formatDate(p.data.publishedAt),
+	readTime: `${estimateReadingMinutes(p.data.content)} min read`,
+}));
+const relatedColumns = Math.min(4, Math.max(1, related.length)) as 1 | 2 | 3 | 4;
 ---
 
 <Base
@@ -75,7 +99,16 @@ const related = recent
 		{post.data.show_title !== false && categories.length > 0 && <Eyebrow tone="accent">{categories[0].label}</Eyebrow>}
 	</PageTitle>
 
-	<article class:list={["post", post.data.show_title !== false && "post--titled"]}>
+	<div class="post">
+		<div class="post__meta">
+			{post.data.bylines && post.data.bylines.length > 0 && (
+				<span>
+					By <strong>{post.data.bylines[0].byline.displayName}</strong>
+				</span>
+			)}
+			{publishedLabel && <time datetime={post.data.publishedAt?.toISOString()}>{publishedLabel}</time>}
+			<span>{readMinutes} min read</span>
+		</div>
 
 		{
 			post.data.featured_image && (
@@ -85,35 +118,37 @@ const related = recent
 			)
 		}
 
-		<div class="post__byline">
-			{post.data.bylines && post.data.bylines.length > 0 && (
-				<span>
-					Written by <strong>{post.data.bylines[0].byline.displayName}</strong>
-				</span>
+		<div class:list={["post__layout", toc.length > 1 && "post__layout--toc"]}>
+			{toc.length > 1 && (
+				<aside class="post__toc">
+					<PostToc items={toc} />
+				</aside>
 			)}
-			{publishedLabel && <span>Published {publishedLabel}</span>}
-		</div>
 
-		<div class="post__body">
-			<PortableText value={post.data.content} />
-		</div>
-
-		{
-			tags.length > 0 && (
-				<div class="post__tags">
-					{tags.map((t) => (
-						<a href={`/tag/${t.slug}`}>{t.label}</a>
-					))}
+			<article class="post__article">
+				<div class="post__body prose">
+					<PortableText value={post.data.content} components={{ block: { h2: TocHeading, h3: TocHeading } }} />
 				</div>
-			)
-		}
-	</article>
+
+				{
+					tags.length > 0 && (
+						<div class="post__tags">
+							{tags.map((t) => (
+								<a href={`/tag/${t.slug}`}>{t.label}</a>
+							))}
+						</div>
+					)
+				}
+			</article>
+		</div>
+	</div>
 
 	{
 		related.length > 0 && (
-			<section class="post__related">
+			<section class="post__related" aria-labelledby="related-heading">
 				<div class="post__related-inner">
-					<PostCardGrid items={related} />
+					<h2 id="related-heading" class="post__related-title">Related articles</h2>
+					<PostCardGrid items={related} columns={relatedColumns} />
 				</div>
 			</section>
 		)
@@ -122,32 +157,15 @@ const related = recent
 
 <style>
 	.post {
-		max-width: 42rem;
+		max-width: var(--content-max);
 		margin: 0 auto;
-		padding: var(--section-pad-y) var(--gutter) 3rem;
+		padding: 2rem var(--gutter) 3rem;
 	}
 
-	/* The title area above provides the top spacing. */
-	.post--titled {
-		padding-top: 2rem;
-	}
-
-	.post__image {
-		margin: 2.5rem 0;
-		border-radius: var(--radius-card);
-		overflow: hidden;
-	}
-
-	.post__image :global(img) {
-		width: 100%;
-		display: block;
-	}
-
-	.post__byline {
+	.post__meta {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 1.5rem;
-		justify-content: space-between;
+		gap: 0.5rem 1.5rem;
 		font-size: var(--text-small);
 		color: var(--color-text-muted);
 		padding-bottom: 1.5rem;
@@ -155,30 +173,49 @@ const related = recent
 		margin-bottom: 2rem;
 	}
 
-	.post__byline strong {
+	.post__meta strong {
 		color: var(--color-text);
 		font-weight: 600;
 	}
 
-	.post__body {
-		font-size: var(--text-body);
-		line-height: var(--leading-normal);
-		color: var(--color-text);
+	/* Natural proportions: the image is never cropped or stretched. */
+	.post__image {
+		margin: 0 0 3rem;
+		border-radius: var(--radius-card);
+		overflow: hidden;
 	}
 
-	.post__body :global(h2) {
-		font-family: var(--font-display);
-		font-weight: 600;
-		font-size: var(--text-h2);
-		margin: 2rem 0 1rem;
+	.post__image :global(img) {
+		width: 100%;
+		height: auto;
+		display: block;
 	}
 
-	.post__body :global(p) {
-		margin: 0 0 1.25rem;
+	.post__layout {
+		display: grid;
+		gap: 2rem;
+		grid-template-columns: minmax(0, 44rem);
+		justify-content: center;
+	}
+
+	@media (min-width: 64rem) {
+		.post__layout--toc {
+			grid-template-columns: 15rem minmax(0, 44rem);
+			gap: 4rem;
+		}
+
+		.post__toc {
+			position: sticky;
+			top: calc(var(--site-header-h) + 1.5rem);
+			align-self: start;
+			max-height: calc(100vh - var(--site-header-h) - 3rem);
+			overflow-y: auto;
+		}
 	}
 
 	.post__tags {
 		display: flex;
+		flex-wrap: wrap;
 		gap: 0.5rem;
 		margin-top: 2.5rem;
 		padding-top: 1.5rem;
@@ -203,11 +240,25 @@ const related = recent
 
 	.post__related {
 		border-top: 1px solid var(--color-line);
+		background: var(--color-paper-soft);
 		padding: var(--section-pad-y) var(--gutter);
 	}
 
 	.post__related-inner {
 		max-width: var(--content-max);
 		margin: 0 auto;
+	}
+
+	.post__related-title {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h2);
+		margin: 0 0 2rem;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		:global(html) {
+			scroll-behavior: smooth;
+		}
 	}
 </style>

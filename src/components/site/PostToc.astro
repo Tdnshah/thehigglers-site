@@ -1,0 +1,147 @@
+---
+// "On this page" navigation for long articles. Sticky in the left column on
+// desktop; a disclosure above the article on small screens. The active section
+// is marked with aria-current while reading.
+import type { TocItem } from "../../utils/toc";
+
+interface Props {
+	items: TocItem[];
+}
+const { items } = Astro.props;
+---
+
+{
+	items.length > 1 && (
+		<nav class="toc" aria-label="On this page">
+			<details class="toc__details" open>
+				<summary class="toc__summary">On this page</summary>
+				<ol class="toc__list">
+					{items.map((item) => (
+						<li class={`toc__item toc__item--l${item.level}`}>
+							<a href={`#${item.id}`} data-toc-link>
+								{item.text}
+							</a>
+						</li>
+					))}
+				</ol>
+			</details>
+		</nav>
+	)
+}
+
+<script>
+	const links = Array.from(document.querySelectorAll<HTMLAnchorElement>("[data-toc-link]"));
+	const details = document.querySelector<HTMLDetailsElement>(".toc__details");
+	const mobile = window.matchMedia("(max-width: 63.99rem)");
+
+	// Closed by default on small screens so it doesn't push the article down.
+	const syncOpen = () => {
+		if (details) details.open = !mobile.matches;
+	};
+	syncOpen();
+	mobile.addEventListener("change", syncOpen);
+
+	const targets = links
+		.map((a) => document.getElementById(decodeURIComponent(a.hash.slice(1))))
+		.filter((el): el is HTMLElement => Boolean(el));
+
+	const setActive = (id: string | null) => {
+		for (const a of links) {
+			if (id && a.hash === `#${id}`) a.setAttribute("aria-current", "location");
+			else a.removeAttribute("aria-current");
+		}
+	};
+
+	if (targets.length && "IntersectionObserver" in window) {
+		const visible = new Set<string>();
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const e of entries) {
+					if (e.isIntersecting) visible.add(e.target.id);
+					else visible.delete(e.target.id);
+				}
+				const first = targets.find((t) => visible.has(t.id));
+				if (first) setActive(first.id);
+			},
+			{ rootMargin: "-90px 0px -65% 0px" },
+		);
+		targets.forEach((t) => observer.observe(t));
+	}
+</script>
+
+<style>
+	.toc__summary {
+		font-family: var(--font-mono);
+		font-size: var(--text-label);
+		text-transform: uppercase;
+		letter-spacing: var(--tracking-label);
+		color: var(--color-text-muted);
+		cursor: pointer;
+		padding: 0.5rem 0;
+		list-style: none;
+	}
+
+	.toc__summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.toc__summary:focus-visible,
+	.toc a:focus-visible {
+		outline: 2px solid var(--color-brand);
+		outline-offset: 2px;
+		border-radius: 4px;
+	}
+
+	.toc__list {
+		list-style: none;
+		margin: 0.5rem 0 0;
+		padding: 0 0 0 0.75rem;
+		border-left: 1px solid var(--color-line);
+		display: grid;
+		gap: 0.15rem;
+	}
+
+	.toc a {
+		display: block;
+		padding: 0.3rem 0.5rem;
+		margin-left: -0.75rem;
+		padding-left: calc(0.75rem + 0.5rem);
+		border-left: 2px solid transparent;
+		font-size: var(--text-small);
+		line-height: var(--leading-snug);
+		color: var(--color-text-muted);
+		text-decoration: none;
+		transition:
+			color 0.15s ease,
+			border-color 0.15s ease;
+	}
+
+	.toc__item--l3 a {
+		padding-left: calc(0.75rem + 1.25rem);
+	}
+
+	.toc a:hover,
+	.toc a[aria-current] {
+		color: var(--color-text);
+	}
+
+	.toc a[aria-current] {
+		border-left-color: var(--color-brand);
+		font-weight: 600;
+	}
+
+	@media (max-width: 63.99rem) {
+		.toc {
+			border: 1px solid var(--color-line);
+			border-radius: var(--radius-card);
+			padding: 0.25rem 1rem;
+			margin-bottom: 2rem;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.toc a {
+			transition: none;
+		}
+	}
+</style>
