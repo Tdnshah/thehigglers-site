@@ -1159,7 +1159,7 @@
 									},
 									{
 										"slug": "href",
-										"label": "Link (makes the whole card clickable) (https://… or /page)",
+										"label": "Link (optional; makes the whole card clickable; https://… or /page)",
 										"type": "string"
 									},
 									{
@@ -1752,7 +1752,7 @@
 									},
 									{
 										"slug": "link",
-										"label": "Link (https://… or /page)",
+										"label": "Link (optional; https://… or /page)",
 										"type": "string"
 									}
 								]
@@ -2012,7 +2012,7 @@
 									},
 									{
 										"slug": "link",
-										"label": "Link (https://… or /page)",
+										"label": "Link (optional; https://… or /page)",
 										"type": "string"
 									}
 								]
